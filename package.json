@@ -1,0 +1,41 @@
+{
+  "name": "saasquatch-hubspot-integration",
+  "version": "1.0.0",
+  "description": "Integreation which allows synchronizing data between SaaSquatch and HubSpot services.",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "tsc && node .",
+    "live": "nodemon src/index.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SENG499-team-2/SaaSquatch-HubSpot-integration.git"
+  },
+  "keywords": [
+    "SaaSquatch",
+    "HubSpot",
+    "express",
+    "TypeScript",
+    "integration"
+  ],
+  "author": "Software Engineering Undergraduates at the University of Victoria",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/SENG499-team-2/SaaSquatch-HubSpot-integration/issues"
+  },
+  "homepage": "https://github.com/SENG499-team-2/SaaSquatch-HubSpot-integration#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.11",
+    "@types/node": "^15.3.0",
+    "@typescript-eslint/eslint-plugin": "^4.24.0",
+    "@typescript-eslint/parser": "^4.24.0",
+    "eslint": "^7.26.0",
+    "nodemon": "^2.0.7",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.2.4"
+  }
+}
