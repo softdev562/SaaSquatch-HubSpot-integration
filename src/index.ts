@@ -7,6 +7,8 @@ import bodyParser from 'express'
 dotenv.config({path: __dirname+'/index.env'});
 const port = process.env.PORT;
 const hapikey = process.env.HAPIKEY;
+const sapikey = process.env.SAPIKEY;
+const stenantalias = process.env.STENANTALIAS;
 
 // initialize application
 const app = express();
@@ -24,7 +26,7 @@ app.get('/', (req, res) => {
 // b indicates whether to include archived contacts
 app.get(`/${hs}/contacts`, (req, res) => {
 	axios({
-		method: 'get',
+		method: 'GET',
 		url: `https://api.hubapi.com/crm/v3/objects/contacts?limit=${req.query.limit}&archived=${req.query.archived}&hapikey=${hapikey}`
 	}).then(axiosRes => {
 		res.send(axiosRes.data);
@@ -37,7 +39,7 @@ app.get(`/${hs}/contacts`, (req, res) => {
 // Adds a contact to the hubspot account.
 app.post(`/${hs}/addcontact`, (req, res) => {
 	axios({
-		method: 'post',
+		method: 'POST',
 		url:`https://api.hubapi.com/crm/v3/objects/contacts?hapikey=${hapikey}`,
 		data: req.body
 	}).then(axiosRes =>{
@@ -45,6 +47,24 @@ app.post(`/${hs}/addcontact`, (req, res) => {
 	}).catch(err => {
 		res.send(err);
 	});
+});
+
+// /saasquatch/participants
+// gets a list of participants
+app.get(`/${sq}/participants`, (req, res) => {
+	axios({
+		method: 'GET',
+		url: `https://staging.referralsaasquatch.com/api/v1/${stenantalias}/users?offset=0`,
+		auth: {
+			username: '',
+			password: `${sapikey}`
+		}
+	}).then(axiosRes => {
+		res.send(axiosRes.data);
+	}).catch(err => {
+		res.send(err);
+	});
+	;
 });
 
 app.listen(port, () => console.log(`running express application on localhost:${port}`))
