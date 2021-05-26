@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "start": "tsc && node -r dotenv/config .",
-    "live": "nodemon src/index.ts"
+    "live": "nodemon -r dotenv/config src/index.ts"
   },
   "repository": {
     "type": "git",
