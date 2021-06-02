@@ -13,4 +13,8 @@ Feature: Connection
         When I turn on the integration
         And login with Hubspot oauth
         Then the two systems can communicate
-        
+    
+    Scenario: Disconnecting the integration
+        When I disconnect Hubspot and SaaSquatch
+        Then then the integration should be disabled
+        And should only be re-enabled when the user connects the integration again
