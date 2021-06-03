@@ -4,8 +4,8 @@ Feature: Connection
     Hubspot accounts using the integration.
 
     Background:
-        Given I have a SaaSquatch accounts
-        And a Husbspot account
+        Given I have a SaaSquatch account
+        And a Hubspot account
 
     Scenario: Enabling the integration
         When I log into SaaSquatch
@@ -15,6 +15,6 @@ Feature: Connection
         Then the two systems can communicate
     
     Scenario: Disconnecting the integration
-        When I disconnect Hubspot and SaaSquatch
+        When I disconnect from the integration
         Then then the integration should be disabled
         And should only be re-enabled when the user connects the integration again
