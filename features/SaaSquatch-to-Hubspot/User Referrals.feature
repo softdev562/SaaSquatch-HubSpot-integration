@@ -1,4 +1,4 @@
-Feature: SaaSquatch-to-Hubspot
+Feature: User Referrals
 
     As a sales person I want to see if someone is referred when
     I’m updating their record in Hubspot so that I can respond
