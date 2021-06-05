@@ -10,7 +10,7 @@
 		"frontend": "cd frontend && npm start",
 		"watch": "concurrently \"npm run server\" \"npm run frontend\"",
 		"start": "node ./build",
-		"heroku-postbuild": "cd frontend && npm run build && cd .. && rm -r public && mv frontend/build/ public && npx tsc"
+		"heroku-postbuild": "npm build ./frontend && rm -r public && mv frontend/build/ public && npx tsc"
 	},
 	"repository": {
 		"type": "git",
