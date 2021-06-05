@@ -44,10 +44,6 @@ jspm_packages/
 # Dependency Lockfile
 package-lock.json
 
-# Build Directories
-build/
-frontend/build/
-
 # TypeScript v1 declaration files
 typings/
 
