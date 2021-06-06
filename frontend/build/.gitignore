@@ -1,0 +1,3 @@
+# Preserver this directory, but ignore all children
+*
+!.gitignore
