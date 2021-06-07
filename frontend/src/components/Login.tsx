@@ -1,4 +1,3 @@
-import React from 'react';
 import {useState} from "react";
 import styled from 'styled-components';
 import logo from '../assets/logo.png';
@@ -52,17 +51,18 @@ const ErrorText = styled.p`
     display: flex;
 `;
 
-export interface LoginProps {
-  error?: boolean;
-  onClick?: () => void;
+interface states {
+  showError: boolean;
+  OAuth: ()=>void;
 }
 
-export const Login: React.FC<LoginProps> = ({
-  error = false,
-  onClick = () => OAuth,
-  ...props
-}) => {
+export function Login() {
+  return <View {...OAuthFunction()} />
+}
+
+export function OAuthFunction(){
   const [showError, setError] = useState(false);
+  
   const OAuth = () => {
     setError(false);
     // Size of popup window
@@ -79,29 +79,31 @@ export const Login: React.FC<LoginProps> = ({
           setError(true);
       }
     }, 200);
-  };
+  }
+  return {showError, OAuth} as states
+}
 
+export function View( states: states ){
   return (
     <Wrapper className= "wrapper">
-      <LoginBox className= "login">
-        <TitleText className= "title-text"> Log in to <Logo src={logo} /></TitleText>
-        <InfoText className= "info-text">Your contacts will be synced using the HubSpot data from this user’s permissions.</InfoText>
-        <InfoText className= "info-text">For more information read our&nbsp;<a href={`https://example.com`} >HubSpot Quickstart Guide.</a></InfoText>
-        <LoginButton 
-          onClick={OAuth}
-          type= "button"
-          className={"login-button"}
-          {...props}
-        >
-          {"Log in"}
-        </LoginButton>
-        <div>
-          { showError || error ? <ErrorText>
-            Failed to authenticate: User closed the popup window.
-          </ErrorText> : <div></div>
-          }
-        </div>
-      </LoginBox>
-    </Wrapper>
-  );
-};
+    <LoginBox className= "login">
+      <TitleText className= "title-text"> Log in to <Logo src={logo} /></TitleText>
+      <InfoText className= "info-text">Your contacts will be synced using the HubSpot data from this user’s permissions.</InfoText>
+      <InfoText className= "info-text">For more information read our&nbsp;<a href={`https://example.com`} >HubSpot Quickstart Guide.</a></InfoText>
+      <LoginButton 
+        onClick={states.OAuth}
+        type= "button"
+        className={"login-button"}
+      >
+        {"Log in"}
+      </LoginButton>
+      <div>
+        { states.showError ? <ErrorText>
+          Failed to authenticate: User closed the popup window.
+        </ErrorText> : <div></div>
+        }
+      </div>
+    </LoginBox>
+  </Wrapper>
+   );
+ }
