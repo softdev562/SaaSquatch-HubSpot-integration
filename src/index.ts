@@ -1,7 +1,9 @@
+require('dotenv').config();
 import express from 'express'
 import path from 'path'
 import chalk from 'chalk'
 import routes from './routes'
+import oauthroutes from './routes/oath'
 
 // constants
 const PORT = process.env.PORT || 8000
@@ -15,7 +17,8 @@ const {
 const app = express()
 
 // dynamic routes
-app.use(routes)
+app.use(routes);
+app.use(oauthroutes);
 
 // static routes
 app.use(express.static(path.join(__dirname, '../public')))
