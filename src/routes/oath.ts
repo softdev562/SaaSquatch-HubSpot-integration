@@ -4,7 +4,6 @@ import axios from 'axios';
 import querystring from 'querystring';
 
 
-
 const router = Router()
 
 // env constants
@@ -22,6 +21,31 @@ const isAuthorized = (userId: string) =>{
     return tokenStore[userId] ? true : false;
 };
 
+// Get new access token from Hubspot
+// returns null if error
+const newHubspotAccessToken = async (sessionId: string) => {
+	try {
+		const url = "https://api.hubapi.com/oauth/v1/token";
+		const headers = {
+			"Content-Type": "application/x-www-form-urlencoded",
+			"charset": "utf-8"
+		};
+		const data = {
+			"grant_type": "refresh_token",
+			"client_id": HUBSPOT_CLIENT_ID,
+			"client_secret": HUBSPOT_CLIENT_SECRET,
+			"refresh_token": tokenStore[sessionId]["refresh_token"]
+		}
+		const resp = await axios.post(url, {headers, data});
+		if (resp.status != 200) {
+			console.log(resp.data["message"]);
+		}
+		return resp.data["refresh_token"];
+	} catch(e) {
+		console.log(e);
+		return null;
+	}
+}
 
 // Start HubSpot OAuth flow
 // 1. Send user to authorization page
@@ -67,9 +91,8 @@ router.get('/oauth-callback', async (req, res) => {
         try {
             const responseBody = await axios.post('https://api.hubapi.com/oauth/v1/token', querystring.stringify(authCodeProof));
             // 4.Get access and refresh tokens
-            tokenStore[req.sessionID] = responseBody.data.access_token;
+            tokenStore[req.sessionID] = {"access_token": responseBody.data.access_token, "refresh_token": responseBody.data.refresh_token};
             res.redirect('/hubspot');
-
         } catch(e){
             console.error(e);
         }
@@ -79,6 +102,5 @@ router.get('/oauth-callback', async (req, res) => {
         console.error("HubSpot OAuth callback did not receive temp access code.")
     }
 })
-
 
 export default router
