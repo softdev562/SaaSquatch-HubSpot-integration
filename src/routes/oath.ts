@@ -8,10 +8,11 @@ import querystring from 'querystring';
 const router = Router()
 
 // env constants
-const CLIENT_ID = process.env.CLIENT_ID;
-const CLIENT_SECRET = process.env.CLIENT_SECRET;
-const REDIRECT_URI = process.env.REDIRECT_URI;
-const AUTH_URL = process.env.AUTH_URL;
+const HUBSPOT_CLIENT_ID = process.env.HUBSPOT_CLIENT_ID;
+const HUBSPOT_CLIENT_SECRET = process.env.HUBSPOT_CLIENT_SECRET;
+const HUBSPOT_REDIRECT_URI = process.env.HUBSPOT_REDIRECT_URI;
+const HUBSPOT_AUTH_URL = `https://app.hubspot.com/oauth/authorize?client_id=${HUBSPOT_CLIENT_ID}&redirect_uri=${HUBSPOT_REDIRECT_URI}&scope=contacts`;
+
 
 // Temp token store, 
 // TODO: move to Firebase DB?
@@ -42,8 +43,8 @@ router.get('/hubspot', async (req, res) => {
         }
     } else{
         // If not authorized, send to auth url
-        if(AUTH_URL){
-            res.redirect(AUTH_URL);
+        if(HUBSPOT_AUTH_URL){
+            res.redirect(HUBSPOT_AUTH_URL);
         }else{
             console.error("env AUTH_URL is undefined.")
         }
@@ -58,9 +59,9 @@ router.get('/oauth-callback', async (req, res) => {
         const code: any = req.query.code;
         const authCodeProof = {
             grant_type: 'authorization_code',
-            client_id: CLIENT_ID,
-            client_secret: CLIENT_SECRET,
-            redirect_uri: REDIRECT_URI,
+            client_id: HUBSPOT_CLIENT_ID,
+            client_secret: HUBSPOT_CLIENT_SECRET,
+            redirect_uri: HUBSPOT_REDIRECT_URI,
             code: code
         };
         try {
@@ -73,9 +74,9 @@ router.get('/oauth-callback', async (req, res) => {
             console.error(e);
         }
     }
-    // Try oauth flow again if no code received
+    // Log error if no code received
     else{
-        res.redirect('/hubspot');
+        console.error("HubSpot OAuth callback did not receive temp access code.")
     }
 })
 
