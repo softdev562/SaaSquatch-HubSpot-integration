@@ -22,28 +22,32 @@ const isAuthorized = (userId: string) =>{
 };
 
 // Get new access token from Hubspot
-// returns null if error
-const newHubspotAccessToken = async (sessionId: string) => {
+// Return: Access token object or error object.
+// Access token object: {"refresh_token", "access_token", "expires_in"}
+// Error object: {"message"}
+const getHubspotAccessToken = async (refreshToken: string) => {
+	// return early if missing some env variables
+	if (!HUBSPOT_CLIENT_ID || !HUBSPOT_CLIENT_SECRET) {
+		return {message: "ERROR: Hubspot client id or secret missing."};
+	}
 	try {
-		const url = "https://api.hubapi.com/oauth/v1/token";
-		const headers = {
-			"Content-Type": "application/x-www-form-urlencoded",
-			"charset": "utf-8"
-		};
-		const data = {
-			"grant_type": "refresh_token",
-			"client_id": HUBSPOT_CLIENT_ID,
-			"client_secret": HUBSPOT_CLIENT_SECRET,
-			"refresh_token": tokenStore[sessionId]["refresh_token"]
-		}
-		const resp = await axios.post(url, {headers, data});
-		if (resp.status != 200) {
-			console.log(resp.data["message"]);
-		}
-		return resp.data["refresh_token"];
+		const url = `https://api.hubapi.com/oauth/v1/token`;
+		const resp = await axios.post(url, null, {
+			params: {
+				grant_type: "refresh_token",
+				client_id: HUBSPOT_CLIENT_ID,
+				client_secret: HUBSPOT_CLIENT_SECRET,
+				refresh_token: refreshToken
+			},
+			headers: {
+				Content_type: "application/x-www-form-urlencoded",
+				charset: "utf-8"
+			}
+		});
+		return resp.data;
 	} catch(e) {
 		console.log(e);
-		return null;
+		return e;
 	}
 }
 
@@ -52,14 +56,14 @@ const newHubspotAccessToken = async (sessionId: string) => {
 router.get('/hubspot', async (req, res) => {
     if(isAuthorized(req.sessionID)) {
         // If authorized get contacts from HubSpot API
-        const accessToken = tokenStore[req.sessionID];
+        const accessToken = tokenStore[req.sessionID]["access_token"];
         const headers = {
             Authorization: `Bearer ${accessToken}`,
             'Content-Type': 'application/json'
         }
         const contacts = 'https://api.hubapi.com/contacts/v1/lists/all/contacts/recent';
         try{
-            const resp = await axios.get(contacts, {headers});
+            const resp = await axios.get(contacts, {"headers": headers});
             res.status(200).send(resp.data);
         }
         catch(e){
@@ -102,5 +106,16 @@ router.get('/oauth-callback', async (req, res) => {
         console.error("HubSpot OAuth callback did not receive temp access code.")
     }
 })
+
+// Test route, delete later
+router.get("/hubspot_refresh_token", async (req, res) => {
+	try {
+		const token = await getHubspotAccessToken(tokenStore[req.sessionID]["refresh_token"]);
+		res.send(token);
+	} catch(e) {
+		console.log(e);
+		res.send(e);
+	}
+});
 
 export default router
