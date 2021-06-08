@@ -1,4 +1,12 @@
 import { Router } from 'express'
+const axios = require("axios");
+import * as dotenv from 'dotenv';
+dotenv.config();
+
+if (!process.env.HAPIKEY) {
+    throw new Error('Missing HAPIKEY environment variable.')
+}
+const HAPIKEY = process.env.HAPIKEY;
 
 const router = Router()
 router.get('/api/', (_, res) => {
@@ -9,4 +17,29 @@ router.get('/api/', (_, res) => {
 	}))
 })
 
+
+
+
+const getContacts = async () => {
+    try {
+        console.log('=== attempting to get all hubpsot conacts api key is ===' + HAPIKEY);
+        const allContacts = 'https://api.hubapi.com/contacts/v1/lists/all/contacts/all?hapikey=' + HAPIKEY;
+        const response = await axios.get(allContacts);
+        const data = response.data;
+        return data;
+    } catch (e) {
+        console.error('  > Unable to retrieve contact');
+        return JSON.parse(e.response.body);
+    }
+	
+
+}
+
+router.get('/contacts', async (req, res) => {
+
+    const contact = await getContacts();
+    res.json(contact);
+    console.log('got contacts');
+    res.end();
+});
 export default router
