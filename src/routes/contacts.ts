@@ -1,26 +1,11 @@
-import { Router } from 'express'
+import router from './index'
 import axios from 'axios'
 import http from 'http'
 import chalk from 'chalk'
-import * as dotenv from 'dotenv';
-dotenv.config();
 
-if (!process.env.HAPIKEY || !process.env.SAPIKEY || !process.env.STENANTALIAS) {
-    throw new Error('Missing HAPIKEY environment variable.')
-}
-
-const HAPIKEY = process.env.HAPIKEY;
-const SAPIKEY = process.env.SAPIKEY;
-const STENANTALIAS = process.env.STENANTALIAS;
-
-const router = Router()
-router.get('/api/', (_, res) => {
-	res.setHeader('content-type', 'application/json')
-	res.end(JSON.stringify({
-		apiVersion: 1,
-		documentation: 'https://github.com/SENG499-team-2/SaaSquatch-HubSpot-integration'
-	}))
-})
+const HAPIKEY = process.env.HAPIKEY || '';
+const SAPIKEY = process.env.SAPIKEY || '';
+const STENANTALIAS = process.env.STENANTALIAS || '';
 
 const getContacts = async () => {
     try {
@@ -77,4 +62,3 @@ router.get('/participants', async (req, res) => {
     console.log('got Participants');
     res.end();
 });
-export default router
