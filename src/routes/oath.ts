@@ -61,16 +61,8 @@ const getSaasquatchToken = async () =>  {
 // 1. Send user to authorization page
 router.get('/hubspot', async (req, res) => {
     if(isAuthorized(req.sessionID)) {
-        // If authorized get contacts from HubSpot API
-        const accessToken = tokenStore[req.sessionID];
-        const headers = {
-            Authorization: `Bearer ${accessToken}`,
-            'Content-Type': 'application/json'
-        };
-        const contacts = 'https://api.hubapi.com/contacts/v1/lists/all/contacts/recent';
-        try{
-            const resp = await axios.get(contacts, {headers});
-            res.status(200).send(resp.data);
+        try {
+            res.status(200).send("<script>window.opener.location = 'https://app.hubspot.com'; window.close();</script>");
         }
         catch(e){
             console.error(e);
