@@ -23,6 +23,36 @@ const isAuthorized = (userId: string) =>{
     return tokenStore[userId] ? true : false;
 };
 
+// Get new access token from Hubspot
+// Return: Access token object or error object.
+// Access token object: {"refresh_token", "access_token", "expires_in"}
+// Error object: {"message"}
+const getHubspotAccessToken = async (refreshToken: string) => {
+	// return early if missing some env variables
+	if (!HUBSPOT_CLIENT_ID || !HUBSPOT_CLIENT_SECRET) {
+		return {message: "ERROR: Hubspot client id or secret missing."};
+	}
+	try {
+		const url = `https://api.hubapi.com/oauth/v1/token`;
+		const resp = await axios.post(url, null, {
+			params: {
+				grant_type: "refresh_token",
+				client_id: HUBSPOT_CLIENT_ID,
+				client_secret: HUBSPOT_CLIENT_SECRET,
+				refresh_token: refreshToken
+			},
+			headers: {
+				Content_type: "application/x-www-form-urlencoded",
+				charset: "utf-8"
+			}
+		});
+		return resp.data;
+	} catch(e) {
+		console.log(e);
+		return e;
+	}
+}
+
 // Gets a new access token from saasquatch
 // return: access token object, or error object.
 // Access token object: {"access_token", "expires_in", "token_type"}
@@ -93,9 +123,8 @@ router.get('/oauth-callback', async (req, res) => {
         try {
             const responseBody = await axios.post('https://api.hubapi.com/oauth/v1/token', querystring.stringify(authCodeProof));
             // 4.Get access and refresh tokens
-            tokenStore[req.sessionID] = responseBody.data.access_token;
+            tokenStore[req.sessionID] = {"access_token": responseBody.data.access_token, "refresh_token": responseBody.data.refresh_token};
             res.redirect('/hubspot');
-
         } catch(e){
             console.error(e);
         }
@@ -117,5 +146,15 @@ router.get("/saasquatch_token", async (req, res) => {
 	}
 });
 
+// Test route, delete later
+router.get("/hubspot_refresh_token", async (req, res) => {
+	try {
+		const token = await getHubspotAccessToken(tokenStore[req.sessionID]["refresh_token"]);
+		res.send(token);
+	} catch(e) {
+		console.log(e);
+		res.send(e);
+	}
+});
 
 export default router
