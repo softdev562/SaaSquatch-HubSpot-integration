@@ -3,6 +3,7 @@ import axios from 'axios'
 import http from 'http'
 import chalk from 'chalk'
 import * as dotenv from 'dotenv';
+import { listenerCount } from 'events';
 dotenv.config();
 
 if (!process.env.HAPIKEY || !process.env.SAPIKEY || !process.env.STENANTALIAS) {
@@ -22,12 +23,85 @@ router.get('/api/', (_, res) => {
 	}))
 })
 
+async function isHubspotEmail(identities: any){
+	
+	try {
+		if (identities['type'] === 'EMAIL'){
+			return true;
+		}
+		else{
+			return false;
+		}
+	} catch (e) {
+        console.error('  > Unable to retrieve contact');
+        return e;
+    }
+}
+
+async function postContacts(contact: any) {
+	try {
+		console.log('EMAIL:' + contact['identity-profiles'][0]['identities'][0]['value']);
+		const identities = contact['identity-profiles'][0]['identities']
+		if (identities){
+			if (isHubspotEmail(identities[0])){
+				const firstName = contact['properties']['firstname']['value'];
+				const lastName = contact['properties']['lastname']['value']; 
+				const postParticipant = 'https://staging.referralsaasquatch.com/api/v1/' +STENANTALIAS+ '/open/account/' + firstName + lastName + '/user/' + firstName + lastName;
+				console.log(postParticipant);
+				const email = identities[0]['value'];
+				const response = await axios.post(postParticipant, {
+				    auth: {
+				        username: '',
+				        password: SAPIKEY
+				    },
+					data: {
+						id: firstName+lastName,
+						accountId: firstName+lastName,
+						firstName: firstName,
+						lastInitial: lastName[0],
+						referralCode: null,
+						imageUrl: '',
+						email: email,
+						cookieId: null,
+						paymentProviderId: null,
+						lastName: lastName,
+						locale: null,
+						countryCode: null,
+						firstSeenIP: null,
+						lastSeenIP: null,
+						dateCreated: 1621795179198,
+						emailHash: null,
+						referralSource: null,
+						shareLinks: null,
+						dateBlocked: null
+					  }
+				});
+				
+			}
+		}
+
+        return;
+    } catch (e) {
+        console.log(e);
+        return e;
+    }
+	
+
+}
+
+
 const getContacts = async () => {
     try {
         console.log('=== attempting to get all hubpsot conacts api key is ===' + HAPIKEY);
         const allContacts = 'https://api.hubapi.com/contacts/v1/lists/all/contacts/all?hapikey=' + HAPIKEY;
         const response = await axios.get(allContacts);
         const data = response.data;
+		console.log(data);
+		let hubspotContacts = data['contacts'] || [];
+		console.log(hubspotContacts);
+		if(hubspotContacts.length !== 0){
+			await hubspotContacts.forEach(postContacts);
+		}
         return data;
     } catch (e) {
         console.error('  > Unable to retrieve contact');
