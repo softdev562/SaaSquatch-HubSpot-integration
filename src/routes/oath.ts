@@ -5,18 +5,25 @@ import querystring from 'querystring';
 
 const router = Router();
 
-// env constants
+// Constants
 // Hubspot
 const HUBSPOT_CLIENT_ID = process.env.HUBSPOT_CLIENT_ID;
 const HUBSPOT_CLIENT_SECRET = process.env.HUBSPOT_CLIENT_SECRET;
 const HUBSPOT_REDIRECT_URI = process.env.HUBSPOT_REDIRECT_URI;
-const HUBSPOT_AUTH_URL = `https://app.hubspot.com/oauth/authorize?client_id=${HUBSPOT_CLIENT_ID}&redirect_uri=${HUBSPOT_REDIRECT_URI}&scope=contacts`;
+
+let HUBSPOT_AUTH_URL: string;
+if(HUBSPOT_CLIENT_ID && HUBSPOT_REDIRECT_URI){
+    HUBSPOT_AUTH_URL = `https://app.hubspot.com/oauth/authorize?client_id=${encodeURIComponent(HUBSPOT_CLIENT_ID)}&redirect_uri=${encodeURIComponent(HUBSPOT_REDIRECT_URI)}&scope=contacts`;
+}else{
+    console.error("HUBSPOT_CLIENT_ID:"+HUBSPOT_CLIENT_ID+" or HUBSPOT_REDIRECT_URI:"+HUBSPOT_REDIRECT_URI+" not defined in environment variables.");
+}
+
 // Saasquatch
 const SAASQUATCH_CLIENT_ID = process.env.SAASQUATCH_CLIENT_ID;
 const SAASQUATCH_CLIENT_SECRET = process.env.SAASQUATCH_CLIENT_SECRET;
 
 // Temp token store, 
-// TODO: move to Firebase DB?
+// TODO: move to Firebase DB
 const tokenStore: any = {};
 
 const isAuthorized = (userId: string) =>{
@@ -34,18 +41,13 @@ const getHubspotAccessToken = async (refreshToken: string) => {
 	}
 	try {
 		const url = `https://api.hubapi.com/oauth/v1/token`;
-		const resp = await axios.post(url, null, {
-			params: {
-				grant_type: "refresh_token",
-				client_id: HUBSPOT_CLIENT_ID,
-				client_secret: HUBSPOT_CLIENT_SECRET,
-				refresh_token: refreshToken
-			},
-			headers: {
-				Content_type: "application/x-www-form-urlencoded",
-				charset: "utf-8"
-			}
-		});
+        const refreshTokenProof = {
+            grant_type: 'refresh_token',
+            client_id: HUBSPOT_CLIENT_ID,
+            client_secret: HUBSPOT_CLIENT_SECRET,
+            refresh_token: refreshToken,
+        };
+		const resp = await axios.post(url, querystring.stringify(refreshTokenProof));
 		return resp.data;
 	} catch(e) {
 		console.log(e);
@@ -75,7 +77,7 @@ const getSaasquatchToken = async () =>  {
 	};
 
 	try {
-		const resp = await axios.post(url, body);
+		const resp = await axios.post(url, querystring.stringify(body));
 		if (resp.status != 200) {
 			console.log(resp.data["error"]);
 			return resp.data;
@@ -121,9 +123,12 @@ router.get('/oauth-callback', async (req, res) => {
             code: code
         };
         try {
-            const responseBody = await axios.post('https://api.hubapi.com/oauth/v1/token', querystring.stringify(authCodeProof));
             // 4.Get access and refresh tokens
-            tokenStore[req.sessionID] = {"access_token": responseBody.data.access_token, "refresh_token": responseBody.data.refresh_token};
+            const resp = await axios.post('https://api.hubapi.com/oauth/v1/token', querystring.stringify(authCodeProof));
+            if (resp.status != 200) {
+                throw Error("POST to get access and refresh tokens from HubSpot failed. Error:" + resp.data["error"]);
+            }
+            tokenStore[req.sessionID] = {"access_token": resp.data.access_token, "refresh_token": resp.data.refresh_token};
             res.redirect('/hubspot');
         } catch(e){
             console.error(e);
@@ -139,10 +144,10 @@ router.get('/oauth-callback', async (req, res) => {
 router.get("/saasquatch_token", async (req, res) => {
 	try {
 		const token = await getSaasquatchToken();
-		res.send(token)
+		res.send(token);
 	} catch(e) {
 		console.log(e);
-		res.send(e)
+		res.send(e);
 	}
 });
 
