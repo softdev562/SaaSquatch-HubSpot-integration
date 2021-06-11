@@ -1,20 +1,13 @@
-import { Story, Meta } from '@storybook/react';
-import { Login, LoginProps } from '../components/Login';
+import { Meta } from '@storybook/react';
+import { View } from '../components/Login';
+
+const props = {showError: false, OAuth: ()=>console.log("Sign in")};
 
 export default {
-    title: 'Integration/Login',
-    component: Login,
-  } as Meta;
-  
-  const Template: Story<LoginProps> = (args) => <Login {...args} />;
-  
-  export const Regular = Template.bind({});
-  Regular.args = {
-    error: false,
-  };
-  
-  export const Error = Template.bind({});
-  Error.args = {
-    error: true,
-  };
+  title: 'Integration/Login',
+  component: View,
+} as Meta;
+
+export const Default = ()=> <View {...props} />
+export const Error = ()=> <View {...props} showError={true} />
   
