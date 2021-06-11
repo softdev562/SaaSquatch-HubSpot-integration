@@ -66,17 +66,22 @@ export function OAuthFunction(){
   const OAuth = () => {
     setError(false);
     // Size of popup window
-    const h = 600;
+    const h = 800;
     const w = 500;
     // Center popup window on screen
     const y = window.top.outerHeight / 2 + window.top.screenY - ( h / 2);
     const x = window.top.outerWidth / 2 + window.top.screenX - ( w / 2);
-    const myWindow = window.open("https://example.com", "OAuth Popup",`toolbar=no, location=no, statusbar=no, menubar=no, scrollbars=1, resizable=0, width=${w}, height=${h}, top=${y}, left=${x}`);
+    const myWindow = window.open("http://localhost:8000/hubspot", "OAuth Popup",`toolbar=no, location=no, statusbar=no, menubar=no, scrollbars=1, resizable=0, width=${w}, height=${h}, top=${y}, left=${x}`);
+
     // Show error message when popup window is closed
     var timer = setInterval(function() { 
       if(myWindow && myWindow.closed) {
-          clearInterval(timer);
-          setError(true);
+        clearInterval(timer);
+        setTimeout(function(){ 
+          if(window.location.href !== "http://app.hubspot.com"){
+            setError(true)
+          }
+          }, 600);
       }
     }, 200);
   }
