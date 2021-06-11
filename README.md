@@ -9,6 +9,8 @@ To setup your development environment:
 3. Launch the project: `cd .. && npm run watch`
 4. View the launched project in your browser at `http://localhost:3000`
 
+The backend can be viewed at `http://localhost:8000`. The port `8000` can be changed with the `PORT` environment variable.
+
 ## Environment Variables
 The API requires environment variables PORT and HAPIKEY.
 You can specify them in the terminal:
