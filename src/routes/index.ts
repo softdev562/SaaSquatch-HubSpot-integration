@@ -49,33 +49,22 @@ async function postContacts(contact: any) {
 				const postParticipant = 'https://staging.referralsaasquatch.com/api/v1/' +STENANTALIAS+ '/open/account/' + firstName + lastName + '/user/' + firstName + lastName;
 				console.log(postParticipant);
 				const email = identities[0]['value'];
-				const response = await axios.post(postParticipant, {
-				    auth: {
-				        username: '',
-				        password: SAPIKEY
-				    },
-					data: {
+				const response = await axios.post(postParticipant,{
+				    
+					
 						id: firstName+lastName,
 						accountId: firstName+lastName,
 						firstName: firstName,
 						lastInitial: lastName[0],
-						referralCode: null,
-						imageUrl: '',
 						email: email,
-						cookieId: null,
-						paymentProviderId: null,
 						lastName: lastName,
-						locale: null,
-						countryCode: null,
-						firstSeenIP: null,
-						lastSeenIP: null,
-						dateCreated: 1621795179198,
-						emailHash: null,
-						referralSource: null,
-						shareLinks: null,
-						dateBlocked: null
-					  }
-				});
+					
+					},
+					{
+					  headers: {
+				        'Authorization':'token '+SAPIKEY
+				    }
+					});
 				
 			}
 		}
