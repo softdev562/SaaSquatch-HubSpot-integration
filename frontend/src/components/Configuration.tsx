@@ -1,10 +1,11 @@
-import { Switch } from '@material-ui/core';
-import React, { useState } from 'react';
+import { STATUS_CODES } from 'http';
+import { useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import styled from 'styled-components';
+import { ToggleSetting } from './ToggleSetting';
 
-const Wrapper = styled.div`
+const PageWrapper = styled.div`
   min-height: 100vh;
   display: flex;
   flex-direction: row;
@@ -17,10 +18,12 @@ const PageContent = styled.div`
   align-items: start;
   justify-content: start;
 `;
-const ItemContainer = styled.div`
+const ChildrenContainer = styled.div`
+  margin-left: 3em;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  align-items: start;
+  justify-content: start;
 `;
 const TitleText = styled.h1`
   font-family: 'Nunito Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -69,11 +72,25 @@ interface Config {
   }
 }
 
-export function Configuration() {
-  return <View/>
+interface states {
+  config: Config;
+  handleSubmit: ()=>void;
+  handleToggles: {
+    toggleHubSync: ()=>void;
+    toggleHubCreate: ()=>void;
+    toggleHubUpdate: ()=>void;
+    toggleHubRefLinks: ()=>void;
+    toggleSaasSync: ()=>void;
+    toggleSaasCreate: ()=>void;
+    toggleSaasUpdate: ()=>void;
+  }
 }
 
-export function View(){
+export function Configuration() {
+  return <View {...Controller()}/>
+}
+
+export function Controller(){
   const emptyConfig: Config = {
     hubSync: {
       isActive: false,
@@ -87,55 +104,96 @@ export function View(){
       updateUser: false,
     }
   }
-  
   const [config, setConfig] = useState<Config>(emptyConfig)
-  const notify = () => toast.success("HubSpot Integration is Connected", {
+
+  // Need a handler for each toggle because Switches are kinda weird
+  const toggleHubSync = () => setConfig({...config, hubSync: {...config.hubSync, isActive: !config.hubSync.isActive}});
+  const toggleHubCreate = () => setConfig({...config, hubSync: {...config.hubSync, createContact: !config.hubSync.createContact}});
+  const toggleHubUpdate = () => setConfig({...config, hubSync: {...config.hubSync, updateContact: !config.hubSync.updateContact}});
+  const toggleHubRefLinks = () => setConfig({...config, hubSync: {...config.hubSync, syncRefLinks: !config.hubSync.syncRefLinks}});
+  const toggleSaasSync = () => setConfig({...config, saasSync: {...config.saasSync, isActive: !config.saasSync.isActive}});
+  const toggleSaasCreate = () => setConfig({...config, saasSync: {...config.saasSync, createUser: !config.saasSync.createUser}});
+  const toggleSaasUpdate = () => setConfig({...config, saasSync: {...config.saasSync, updateUser: !config.saasSync.updateUser}});
+
+  const handleToggles = {
+    toggleHubSync,
+    toggleHubCreate,
+    toggleHubUpdate,
+    toggleHubRefLinks,
+    toggleSaasSync,
+    toggleSaasCreate,
+    toggleSaasUpdate,
+  };
+  
+  const handleSubmit = () => {
+    // Here we will make the requests to the backend to store the config info and to begin the integration
+    successToast()
+  }
+
+  const successToast = () => toast.success("HubSpot Integration is Connected", {
     position: toast.POSITION.BOTTOM_RIGHT
   });
+  return {config, handleSubmit, handleToggles} as states
+}
 
+export function View(states: states){
   return (
-    <Wrapper>
+    <PageWrapper>
       <PageContent>
       <TitleText>Configure your HubSpot Integration</TitleText>
-      <ItemContainer>
-        <Switch checked={config.hubSync.isActive} onChange={() => setConfig({...config, hubSync: {...config.hubSync, isActive: !config.hubSync.isActive}})} />
-        <InfoText>Sync with HubSpot</InfoText>
-      </ItemContainer>
-      <ItemContainer>
-        <Switch checked={config.hubSync.createContact} onChange={() => setConfig({...config, hubSync: {...config.hubSync, createContact: !config.hubSync.createContact}})} />
-        <InfoText>Create a Contact in HubSpot when a new user is added to SaaSquatch</InfoText>
-      </ItemContainer>
-      <ItemContainer>
-        <Switch checked={config.hubSync.updateContact} onChange={() => setConfig({...config, hubSync: {...config.hubSync, updateContact: !config.hubSync.updateContact}})} />
-        <InfoText>Update existing Contacts in HubSpot when Users are updated in SaaSquatch</InfoText>
-      </ItemContainer>
-      <ItemContainer>
-        <Switch checked={config.hubSync.syncRefLinks} onChange={() => setConfig({...config, hubSync: {...config.hubSync, syncRefLinks: !config.hubSync.syncRefLinks}})} />
-        <InfoText>Sync SaaSquatch referral links into HubSpot</InfoText>
-      </ItemContainer>
-      <ItemContainer>
-        <Switch checked={config.saasSync.isActive} onChange={() => setConfig({...config, saasSync: {...config.saasSync, isActive: !config.saasSync.isActive}})} />
-        <InfoText>Sync with SaaSquatch</InfoText>
-      </ItemContainer>
-      <ItemContainer>
-        <Switch checked={config.saasSync.createUser} onChange={() => setConfig({...config, saasSync: {...config.saasSync, createUser: !config.saasSync.createUser}})} />
-        <InfoText>Create a new User in SaaSquatch when a Contact is added to HubSpot</InfoText>
-      </ItemContainer>
-      <ItemContainer>
-        <Switch checked={config.saasSync.updateUser} onChange={() => setConfig({...config, saasSync: {...config.saasSync, updateUser: !config.saasSync.updateUser}})} />
-        <InfoText>Update existing Users in SaaSquatch when Contacts are updated in HubSpot</InfoText>
-      </ItemContainer>
-      <ItemContainer>
+      <ToggleSetting 
+        settingText={"Sync with HubSpot"} 
+        isChecked={states.config.hubSync.isActive} 
+        handleChange={states.handleToggles.toggleHubSync} 
+      />
+      <ChildrenContainer>
+        <ToggleSetting 
+          settingText={"Create a Contact in HubSpot when a new user is added to SaaSquatch"} 
+          isChecked={states.config.hubSync.createContact} 
+          handleChange={states.handleToggles.toggleHubCreate}
+          disabled={!states.config.hubSync.isActive}
+        />
+        <ToggleSetting 
+          settingText={"Update existing Contacts in HubSpot when Users are updated in SaaSquatch"} 
+          isChecked={states.config.hubSync.updateContact} 
+          handleChange={states.handleToggles.toggleHubUpdate}
+          disabled={!states.config.hubSync.isActive}
+        />
+        <ToggleSetting 
+          settingText={"Sync SaaSquatch referral links into HubSpot"} 
+          isChecked={states.config.hubSync.syncRefLinks} 
+          handleChange={states.handleToggles.toggleHubRefLinks}
+          disabled={!states.config.hubSync.isActive}
+        />
+      </ChildrenContainer>
+      <ToggleSetting 
+        settingText={"Sync with SaaSquatch"} 
+        isChecked={states.config.saasSync.isActive} 
+        handleChange={states.handleToggles.toggleSaasSync}
+      />
+      <ChildrenContainer>
+        <ToggleSetting 
+          settingText={"Create a new User in SaaSquatch when a Contact is added to HubSpot"} 
+          isChecked={states.config.saasSync.createUser} 
+          handleChange={states.handleToggles.toggleSaasCreate}
+          disabled={!states.config.saasSync.isActive}
+        />
+        <ToggleSetting 
+          settingText={"Update existing Users in SaaSquatch when Contacts are updated in HubSpot"} 
+          isChecked={states.config.saasSync.updateUser} 
+          handleChange={states.handleToggles.toggleSaasUpdate}
+          disabled={!states.config.saasSync.isActive}
+        />
+      </ChildrenContainer>
         <SyncButton 
-          onClick={notify}
+          onClick={states.handleSubmit}
           type= "button"
         >
           {"Turn on Sync"}
         </SyncButton>
         <InfoText>By turning on this integration, we will import 420 contacts from HubSpot into SaaSquatch</InfoText>
-      </ItemContainer>
       <ToastContainer/>
       </PageContent>
-    </Wrapper>
+    </PageWrapper>
    );
  }
