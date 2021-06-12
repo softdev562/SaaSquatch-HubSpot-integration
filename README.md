@@ -34,3 +34,10 @@ HUBSPOT_REDIRECT_URI=...
 SAASQUATCH_CLIENT_ID=...
 SAASQUATCH_CLIENT_SECRET=...
 ```
+
+## Setup the Integration with a HubSpot Dev Account
+To use this Integration app with a HubSpot app:
+
+1. Create an app in a HubSpot dev account. More information on how to do this can be found in HubSpot's dev docs: https://developers.hubspot.com/docs/api/working-with-oauth.
+2. Get your client ID and client secret and save them in your `.env` file.
+3. Set your redirect_uri in the HubSpot app. For running the app locally, this is `http:localhost:8000/oauth-callback`. Add this to your `.env` file.
