@@ -38,16 +38,20 @@ async function isHubspotEmail(identities: any){
     }
 }
 
+//
 async function postContacts(contact: any) {
 	try {
 		console.log('EMAIL:' + contact['identity-profiles'][0]['identities'][0]['value']);
 		const identities = contact['identity-profiles'][0]['identities']
 		if (identities){
 			if (isHubspotEmail(identities[0])){
+				//can be just dot mo [']
 				const firstName = contact['properties']['firstname']['value'];
 				const lastName = contact['properties']['lastname']['value']; 
+
+				//should be built using express URL class
 				const postParticipant = 'https://staging.referralsaasquatch.com/api/v1/' +STENANTALIAS+ '/open/account/' + firstName + lastName + '/user/' + firstName + lastName;
-				console.log(postParticipant);
+				//console.log(postParticipant);
 				const email = identities[0]['value'];
 				const response = await axios.post(postParticipant,{
 				    
@@ -85,9 +89,11 @@ const getContacts = async () => {
         const allContacts = 'https://api.hubapi.com/contacts/v1/lists/all/contacts/all?hapikey=' + HAPIKEY;
         const response = await axios.get(allContacts);
         const data = response.data;
-		console.log(data);
+		//console.log(data);
+		//isolates just the contacts portion of the response
 		let hubspotContacts = data['contacts'] || [];
-		console.log(hubspotContacts);
+		//console.log(hubspotContacts);
+
 		if(hubspotContacts.length !== 0){
 			await hubspotContacts.forEach(postContacts);
 		}
@@ -108,6 +114,14 @@ router.get('/contacts', async (req, res) => {
     res.end();
 });
 
+router.post('/contacts', async (req, res) => {
+
+    const contact = await getContacts();
+    res.json(contact);
+    console.log('got contacts');
+    res.end();
+});
+
 const getParticipants = async () => {
     try {
         console.log('=== attempting to get all SaaSquatch participants api key is ===' + SAPIKEY);
@@ -119,14 +133,14 @@ const getParticipants = async () => {
                 password: SAPIKEY
             }
         });
-        console.log(response);
+        console.log('test' + response);
         const data = response.data;
         console.log(data);
         return data;
     } catch (e) {
         console.error('  > Unable to retrieve participants');
         console.log(e);
-        return JSON.parse(e);
+        return e;
     }
 	
 
