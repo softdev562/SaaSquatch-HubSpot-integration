@@ -1,9 +1,9 @@
-import { STATUS_CODES } from 'http';
 import { useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import styled from 'styled-components';
 import { ToggleSetting } from './ToggleSetting';
+import HubspotLogo from '../assets/HubspotLogo.png';
 
 const PageWrapper = styled.div`
   min-height: 100vh;
@@ -34,11 +34,18 @@ const TitleText = styled.h1`
   font-weight: bold;
   display: flex;
 `;
+const Logo = styled.img`
+  height: 60px;
+`;
 const InfoText = styled.p`
   color: #000000;
   font-size: 20px;
   display: flex;
   margin-right: 5px;
+`;
+const PaddedSelect = styled.select`
+  margin-right: 5px;
+  margin-left: 5px;
 `;
 const SyncButton = styled.button`
   &:hover {
@@ -140,13 +147,26 @@ export function View(states: states){
   return (
     <PageWrapper>
       <PageContent>
-      <TitleText>Configure your HubSpot Integration</TitleText>
+      <TitleText>Configure your <Logo src={HubspotLogo} /> Integration</TitleText>
       <ToggleSetting 
-        settingText={"Sync with HubSpot"} 
+        settingText={"Sync contacts in HubSpot to users in SaaSquatch"} 
         isChecked={states.config.hubSync.isActive} 
         handleChange={states.handleToggles.toggleHubSync} 
       />
       <ChildrenContainer>
+        <InfoText>
+          Connect
+          <PaddedSelect>
+            <option value="name">Name</option>
+            <option value="email">Email</option>
+          </PaddedSelect>
+          from SaaSquatch to
+          <PaddedSelect>
+            <option value="name">Name</option>
+            <option value="email">Email</option>
+          </PaddedSelect>
+          in HubSpot
+        </InfoText>
         <ToggleSetting 
           settingText={"Create a Contact in HubSpot when a new user is added to SaaSquatch"} 
           isChecked={states.config.hubSync.createContact} 
@@ -167,7 +187,7 @@ export function View(states: states){
         />
       </ChildrenContainer>
       <ToggleSetting 
-        settingText={"Sync with SaaSquatch"} 
+        settingText={"Sync users in SaaSquatch with contacts in Hubspot"} 
         isChecked={states.config.saasSync.isActive} 
         handleChange={states.handleToggles.toggleSaasSync}
       />

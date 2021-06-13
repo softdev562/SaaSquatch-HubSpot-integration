@@ -1,6 +1,6 @@
 import {useState} from "react";
 import styled from 'styled-components';
-import logo from '../assets/logo.png';
+import HubspotLogo from '../assets/HubspotLogo.png';
 
 const Wrapper = styled.div`
   min-height: 100vh;
@@ -92,7 +92,7 @@ export function View( states: states ){
   return (
     <Wrapper className= "wrapper">
     <LoginBox className= "login">
-      <TitleText className= "title-text"> Log in to <Logo src={logo} /></TitleText>
+      <TitleText className= "title-text"> Log in to <Logo src={HubspotLogo} /></TitleText>
       <InfoText className= "info-text">Your contacts will be synced using the HubSpot data from this user’s permissions.</InfoText>
       <InfoText className= "info-text">For more information read our&nbsp;<a href={`https://example.com`} >HubSpot Quickstart Guide.</a></InfoText>
       <LoginButton 

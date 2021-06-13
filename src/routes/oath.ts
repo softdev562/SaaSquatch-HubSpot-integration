@@ -94,7 +94,7 @@ const getSaasquatchToken = async () =>  {
 router.get('/hubspot', async (req, res) => {
     if(isAuthorized(req.sessionID)) {
         try {
-            res.status(200).send("<script>window.opener.location = 'https://app.hubspot.com'; window.close();</script>");
+            res.status(200).send("<script>window.opener.location = 'http://localhost:3000/configuration'; window.close();</script>");
         }
         catch(e){
             console.error(e);
