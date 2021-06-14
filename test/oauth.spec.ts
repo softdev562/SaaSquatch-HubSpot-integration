@@ -45,6 +45,17 @@ it(' If the api call returns an error and an invalid refresh token is passed the
 {
     const res = await ApiCall(errorCall,"wrongtoken");
 
+    assert(res.response.status == 400);
+
+    assert(res.response.data.status =='BAD_REFRESH_TOKEN');
+
+
+})
+
+
+it(' If the api call returns an error and a valid refresh token is passed then "BAD_REFRESH_TOKEN" error is returned  ',async function()
+{
+    const res = await ApiCall(errorCall,"wrongtoken");
     assert(res.response.data.status, 'BAD_REFRESH_TOKEN');
 
 })

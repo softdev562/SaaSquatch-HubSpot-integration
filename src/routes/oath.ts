@@ -5,7 +5,7 @@ import querystring from 'querystring';
 
 const router = Router();
 
-let current_user:any ='imaginary_user';
+let current_user:any ='VALUE_ASSIGNED_IN_HUBSPOT_ENDPOINT'; // current_user = req.SessionID
 // Constants
 // Hubspot
 const HUBSPOT_CLIENT_ID = process.env.HUBSPOT_CLIENT_ID;
@@ -51,7 +51,7 @@ const getHubspotAccessToken = async (refreshToken: string) => {
 		const resp = await axios.post(url, querystring.stringify(refreshTokenProof));
 		return resp.data;
 	} catch(e) {
-		console.log(e);
+		//console.log(e);
 		return e;
 	}
 }
@@ -165,7 +165,8 @@ router.get("/hubspot_refresh_token", async (req, res) => {
 });
 
 
-export const ApiCall = async(myapifunc:Function,refresh_token:string) => {
+export const ApiCall:any = async function (myapifunc:Function,refresh_token:string)
+{
 
 	// first try to see if the api call goes through if it does then send response back
 	try
@@ -178,28 +179,34 @@ export const ApiCall = async(myapifunc:Function,refresh_token:string) => {
 	{
 		try
 		{
-			//error in the api get a new access token
+			//error in the api call get a new access token
 			let result = await getHubspotAccessToken(refresh_token);
 
-			if(result.response.data.status == 'BAD_REFRESH_TOKEN')
+			if(result.response.status == 400)
 			{
 				if(process.env.NODE_ENV == 'test')
 				{
-					// return error for the testing purpose
+					// return error result for the testing purpose
 					return result;
 				}
-				else {
-					// in production if the refresh token was invalid then we need the user to authenticate themselves again.
-					axios.get("localhost:3000/hubspot");
+				else
+				{
+				//below is equivalent to rejecting promise return Promise.reject(400 /*or Error*/ );
+					return JSON.parse(result);
 
 				}
 
 			}
 			else
+				// there was no error so we can store the result.
 			{
+
 				tokenStore[current_user] = {"access_token": result};
+
+				return await ApiCall(myapifunc,refresh_token);
+
 				// over here we probably want to call the ApiCall again with the same arguments
-				// or we want to redirect to the url we called from
+				// or we want to redirect to the url we were called from
 			}
 
 		}
@@ -207,7 +214,7 @@ export const ApiCall = async(myapifunc:Function,refresh_token:string) => {
 		catch(e)
 		{
 			//something went wrong?
-			axios.get("localhost:3000/hubspot");
+			return Promise.reject(400 /*or Error*/ );
 
 		}
 	}

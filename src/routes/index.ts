@@ -2,6 +2,7 @@ import { Router } from 'express'
 const axios = require("axios");
 import * as dotenv from 'dotenv';
 dotenv.config();
+import {ApiCall} from "./oath";
 
 if (!process.env.HAPIKEY) {
     throw new Error('Missing HAPIKEY environment variable.')
@@ -29,6 +30,7 @@ const getContacts = async () => {
         return data;
     } catch (e) {
         console.error('  > Unable to retrieve contact');
+
         return JSON.parse(e.response.body);
     }
 	
@@ -37,9 +39,17 @@ const getContacts = async () => {
 
 router.get('/contacts', async (req, res) => {
 
-    const contact = await getContacts();
-    res.json(contact);
-    console.log('got contacts');
-    res.end();
+    try
+    {
+        const contact = await ApiCall(getContacts,"string");//await getContacts();
+        res.json(contact);
+        console.log('got contacts');
+        res.end();
+
+    }
+    catch(e)
+    {
+        res.redirect("/hubspot");
+    }
 });
 export default router
