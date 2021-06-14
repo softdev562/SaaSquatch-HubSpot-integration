@@ -6,6 +6,7 @@ import * as dotenv from 'dotenv';
 import { listenerCount } from 'events';
 dotenv.config();
 
+//ensures that API keys are accessible THIS Will be replaced by OATH
 if (!process.env.HAPIKEY || !process.env.SAPIKEY || !process.env.STENANTALIAS) {
     throw new Error('Missing HAPIKEY environment variable.')
 }
@@ -23,6 +24,9 @@ router.get('/api/', (_, res) => {
 	}))
 })
 
+//checks the JSON identity item returned from hubspot is infact an email
+// TODO
+// - it would be nice to validate that the string is in email format
 async function isHubspotEmail(identities: any){
 	
 	try {
@@ -38,7 +42,14 @@ async function isHubspotEmail(identities: any){
     }
 }
 
-//
+//accepts a single hubspot contact JSON object, and tries to post them as new users in Saasquatch
+//	TO DO
+//	- use the graphQL api instead of REST
+// 	- search saasquatch to see if the user exists yet
+// 	- generate share links and codes for new participants
+//	- establish standards for making 'id' and 'accountId' maybe using the hubspot ID with a specific tag so that imports can be reversed
+//	- Parsing the JSON shouldn't rely on hardcoding the value locations
+//	- Use Oauth to post instead of API key
 async function postContacts(contact: any) {
 	try {
 		console.log('EMAIL:' + contact['identity-profiles'][0]['identities'][0]['value']);
@@ -49,7 +60,7 @@ async function postContacts(contact: any) {
 				const firstName = contact['properties']['firstname']['value'];
 				const lastName = contact['properties']['lastname']['value']; 
 
-				//should be built using express URL class
+				//URL should be built using express URL class
 				const postParticipant = 'https://staging.referralsaasquatch.com/api/v1/' +STENANTALIAS+ '/open/account/' + firstName + lastName + '/user/' + firstName + lastName;
 				//console.log(postParticipant);
 				const email = identities[0]['value'];
@@ -82,6 +93,11 @@ async function postContacts(contact: any) {
 
 }
 
+// queries the list of users for the account with the given API key and returns the list
+// TO DO
+//	- Add parameters for custom integrations as documented in the UI diagrams
+// 	- Change this function to use pagination instead of getting the entire list
+//	- move the postContacts funtion to its own route
 
 const getContacts = async () => {
     try {
@@ -122,6 +138,8 @@ router.post('/contacts', async (req, res) => {
     res.end();
 });
 
+
+//returns a list of Saasquatch participants for a given api key and tenet alias
 const getParticipants = async () => {
     try {
         console.log('=== attempting to get all SaaSquatch participants api key is ===' + SAPIKEY);
