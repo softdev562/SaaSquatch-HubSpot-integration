@@ -30,17 +30,12 @@ const isAuthorized = (userId: string) =>{
     return tokenStore[userId] ? true : false;
 };
 
-// Get new access token from Hubspot
-// Return: Access token object or error object.
-// Access token object: {"refresh_token", "access_token", "expires_in"}
-// Error object: {"message"}
+// Gets a new access token from Hubspot
+// Input: Hubspot account refresh token.
+// Return: {"refresh_token", "access_token", "expires_in"}, else if error {"status", "statusText"}
 const getHubspotAccessToken = async (refreshToken: string) => {
-	// return early if missing some env variables
-	if (!HUBSPOT_CLIENT_ID || !HUBSPOT_CLIENT_SECRET) {
-		return {message: "ERROR: Hubspot client id or secret missing."};
-	}
 	try {
-		const url = `https://api.hubapi.com/oauth/v1/token`;
+		const url = 'https://api.hubapi.com/oauth/v1/token';
         const refreshTokenProof = {
             grant_type: 'refresh_token',
             client_id: HUBSPOT_CLIENT_ID,
@@ -50,42 +45,28 @@ const getHubspotAccessToken = async (refreshToken: string) => {
 		const resp = await axios.post(url, querystring.stringify(refreshTokenProof));
 		return resp.data;
 	} catch(e) {
-		console.log(e);
-		return e;
+		console.error(`Request to '${e.config.url}' resulted in error ${e.response.status} ${e.response.statusText}.`);
+		return {status: e.response.status, statusText: e.response.statusText};
 	}
 }
 
-// Gets a new access token from saasquatch
-// return: access token object, or error object.
-// Access token object: {"access_token", "expires_in", "token_type"}
-// Error object: {"error", "error_description"}
+// Gets a new JWT from saasquatch
+// Input: None.
+// Return: {"access_token", "expires_in", "token_type"}, else if error {"status", "statusText"}
 const getSaasquatchToken = async () =>  {
-	// Return early if missing some env variables.
-	if (!SAASQUATCH_CLIENT_ID || !SAASQUATCH_CLIENT_SECRET) {
-		return {"error": "Client id/secret error", "error_description": "Client id or secret not provided correctly."};
-	}
-
-	const url: string = "https://squatch-dev.auth0.com/oauth/token";
-	const grant_type: string = "client_credentials";
-	const audience: string = "https://staging.referralsaasquatch.com";
-
-	const body = {
-		"grant_type": grant_type,
-		"client_id": SAASQUATCH_CLIENT_ID,
-		"client_secret": SAASQUATCH_CLIENT_SECRET,
-		"audience": audience
-	};
-
 	try {
-		const resp = await axios.post(url, querystring.stringify(body));
-		if (resp.status != 200) {
-			console.log(resp.data["error"]);
-			return resp.data;
-		}
+		const url = "https://squatch-dev.auth0.com/oauth/token";
+		const tokenProof = {
+			"grant_type": "client_credentials",
+			"client_id": SAASQUATCH_CLIENT_ID,
+			"client_secret": SAASQUATCH_CLIENT_SECRET,
+			"audience": "https://staging.referralsaasquatch.com"
+		};
+		const resp = await axios.post(url, querystring.stringify(tokenProof));
 		return resp.data;
 	} catch(e) {
-		console.log(e);
-		return {"error": e, "error_description": e};
+		console.error(`Request to '${e.config.url}' resulted in error ${e.response.status} ${e.response.statusText}.`);
+		return {status: e.response.status, statusText: e.response.statusText};
 	}
 };
 
@@ -147,7 +128,6 @@ router.get("/saasquatch_token", async (req, res) => {
 		res.send(token);
 	} catch(e) {
 		console.log(e);
-		res.send(e);
 	}
 });
 
@@ -158,7 +138,6 @@ router.get("/hubspot_refresh_token", async (req, res) => {
 		res.send(token);
 	} catch(e) {
 		console.log(e);
-		res.send(e);
 	}
 });
 
