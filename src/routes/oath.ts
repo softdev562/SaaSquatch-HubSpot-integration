@@ -5,6 +5,7 @@ import querystring from 'querystring';
 
 const router = Router();
 
+let current_user:any ='imaginary_user';
 // Constants
 // Hubspot
 const HUBSPOT_CLIENT_ID = process.env.HUBSPOT_CLIENT_ID;
@@ -128,6 +129,7 @@ router.get('/oauth-callback', async (req, res) => {
             if (resp.status != 200) {
                 throw Error("POST to get access and refresh tokens from HubSpot failed. Error:" + resp.data["error"]);
             }
+            current_user = req.sessionID;
             tokenStore[req.sessionID] = {"access_token": resp.data.access_token, "refresh_token": resp.data.refresh_token};
             res.redirect('/hubspot');
         } catch(e){
@@ -161,5 +163,59 @@ router.get("/hubspot_refresh_token", async (req, res) => {
 		res.send(e);
 	}
 });
+
+
+export const ApiCall = async(myapifunc:Function,refresh_token:string) => {
+
+	// first try to see if the api call goes through if it does then send response back
+	try
+	{
+		let result = await myapifunc()
+		// api call went through everything is fine
+		return result;
+	}
+	catch(e)
+	{
+		try
+		{
+			//error in the api get a new access token
+			let result = await getHubspotAccessToken(refresh_token);
+
+			if(result.response.data.status == 'BAD_REFRESH_TOKEN')
+			{
+				if(process.env.NODE_ENV == 'test')
+				{
+					// return error for the testing purpose
+					return result;
+				}
+				else {
+					// in production if the refresh token was invalid then we need the user to authenticate themselves again.
+					axios.get("localhost:3000/hubspot");
+
+				}
+
+			}
+			else
+			{
+				tokenStore[current_user] = {"access_token": result};
+				// over here we probably want to call the ApiCall again with the same arguments
+				// or we want to redirect to the url we called from
+			}
+
+		}
+
+		catch(e)
+		{
+			//something went wrong?
+			axios.get("localhost:3000/hubspot");
+
+		}
+	}
+
+
+}
+
+
+
 
 export default router
