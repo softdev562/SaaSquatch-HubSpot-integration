@@ -7,7 +7,7 @@ const axios = require("axios");
 
 const HAPIKEY = process.env.HAPIKEY;
 
-const getContacts = async () => {
+const correctCall = async () => {
     try {
       //  const allContacts = 'https://api.hubapi.com/contacts/v1/lists/all/contacts/all?hapikey=' + HAPIKEY;
         const response = await axios.get('https://dog.ceo/api/breeds/list/all')
@@ -36,8 +36,9 @@ const errorCall = async () => {
 
 it(' If the API call returns no errrors then getHubspotAccessfunc is not called ',async function()
 {
-    const res = await ApiCall(getContacts,"wrongtoken");
+    const res = await ApiCall(correctCall,"wrongtoken");
     assert(res.status == 'success');
+
 })
 
 
@@ -53,9 +54,11 @@ it(' If the api call returns an error and an invalid refresh token is passed the
 })
 
 
-it(' If the api call returns an error and a valid refresh token is passed then "BAD_REFRESH_TOKEN" error is returned  ',async function()
+it(' If the api call returns an error and a valid refresh token is passed then the API call is repeated',async function()
 {
-    const res = await ApiCall(errorCall,"wrongtoken");
-    assert(res.response.data.status, 'BAD_REFRESH_TOKEN');
+    // this can be tested once we have the refresh token stored in db
+
+    // const res = await ApiCall(errorCall,"correct_token");
+    // assert(res.status == 'success');
 
 })
