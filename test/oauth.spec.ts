@@ -1,5 +1,5 @@
 import "mocha";
-import {ApiCall} from "../src/routes/oath";
+import {HubApiCall} from "../src/routes/oath";
 //import {refresh_token} from "../src/routes/oath";
 const chai = require( 'chai')
 var assert = chai.assert;
@@ -36,7 +36,7 @@ const errorCall = async () => {
 
 it(' If the API call returns no errrors then getHubspotAccessfunc is not called ',async function()
 {
-    const res = await ApiCall(correctCall,"wrongtoken");
+    const res = await HubApiCall(correctCall,"wrongtoken");
     assert(res.status == 'success');
 
 })
@@ -44,7 +44,7 @@ it(' If the API call returns no errrors then getHubspotAccessfunc is not called 
 
 it(' If the api call returns an error and an invalid refresh token is passed then "BAD_REFRESH_TOKEN" error is returned  ',async function()
 {
-    const res = await ApiCall(errorCall,"wrongtoken");
+    const res = await HubApiCall(errorCall,"wrongtoken");
 
     assert(res.response.status == 400);
 

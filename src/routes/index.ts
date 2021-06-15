@@ -2,7 +2,14 @@ import { Router } from 'express'
 const axios = require("axios");
 import * as dotenv from 'dotenv';
 dotenv.config();
-import {ApiCall} from "./oath";
+
+import {HubApiCall} from "./oath";
+
+//#todo: probably replace the line below with a DB import when the DB is ready
+import {tokenStore} from "./oath";
+
+
+
 
 if (!process.env.HAPIKEY) {
     throw new Error('Missing HAPIKEY environment variable.')
@@ -41,7 +48,8 @@ router.get('/contacts', async (req, res) => {
 
     try
     {
-        const contact = await ApiCall(getContacts,"string");//await getContacts();
+        //#todo: Update line below to get refresh_token from db when its ready
+        const contact = await HubApiCall(getContacts,tokenStore[req.sessionID]["refresh_token"]);//await getContacts();
         res.json(contact);
         console.log('got contacts');
         res.end();
