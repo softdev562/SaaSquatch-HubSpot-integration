@@ -5,24 +5,27 @@ import jwksRsa = require("jwks-rsa");
 import { Base64 } from "js-base64";
 import crypto from "crypto";
 
-
-
 /**
  * Handles Webhooks from SaaSquatch and Hubspot by validating they actually came from SaaSquatch
  * or HubSpot
  */
 
-
 const router = Router();
 
 const HUBSPOT_CLIENT_SECRET = process.env.HUBSPOT_CLIENT_SECRET;
 const HUBSPOT_WEBHOOK_URI = process.env.HUBSPOT_WEBHOOK_URI;
+const SAASQUATCH_JWKS_URI = process.env.SAASQUATCH_JWKS_URI;
 
-const saasquatchJwksClient = jwksRsa({
-    jwksUri: "https://app.referralsaasquatch.com/.well-known/jwks.json",
-    cache: true,
-});
-
+let saasquatchJwksClient: jwksRsa.JwksClient;
+if(SAASQUATCH_JWKS_URI){
+    saasquatchJwksClient = jwksRsa({
+        jwksUri: SAASQUATCH_JWKS_URI,
+        cache: false,
+    });
+}else{
+    console.error("SAASQUATCH_JWKS_URI is not defined in environment variables and is required for SaaSquatch Webhooks.\
+     For staging this should be https://staging.referralsaasquatch.com/.well-known/jwks.json.");
+}
 
 
 /**
@@ -63,7 +66,6 @@ router.post("/hubspot-webhook", async (req, res) => {
         const isValid: boolean = validateHubSpotWebhook(signatureVersion, signature, JSON.stringify(req.body));
         if (isValid){
             console.log("Received valid HubSpot Webhook.");
-            console.log(req.body);
             /**
              * Here you would process the webhook. ie. determine "type" and from there post to 
              * SaaSquatch API with update, etc.
@@ -80,9 +82,6 @@ router.post("/hubspot-webhook", async (req, res) => {
         res.status(401).end();
     }
 });
-
-
-
 
 /**
  * Validate the given JWT with SaaSquatch public JWKS and get the claims.
@@ -162,7 +161,6 @@ export function validateSaaSquatchWebhook(
     // If X-HubSpot-Signature header is version 1
     if(signatureVersion == 'v1'){
         sourceString = HUBSPOT_CLIENT_SECRET;
-
     }
     // If X-HubSpot-Signature header is version 2
     else if(signatureVersion == 'v2'){
@@ -179,8 +177,7 @@ export function validateSaaSquatchWebhook(
         console.error("Invalid or missing X-HubSpot-Signature-Version header.");
         return false;
     }
-
-    if(webhookBody) sourceString + webhookBody;
+    if(webhookBody) sourceString += webhookBody;
     const hash = crypto.createHash('sha256').update(sourceString).digest('hex');
     return hash == signature;
 }
