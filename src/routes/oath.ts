@@ -24,7 +24,7 @@ const SAASQUATCH_CLIENT_SECRET = process.env.SAASQUATCH_CLIENT_SECRET;
 
 // Temp token store, 
 // TODO: move to Firebase DB
-const tokenStore: any = {};
+export const tokenStore: any = {};
 
 const isAuthorized = (userId: string) =>{
     return tokenStore[userId] ? true : false;
@@ -33,7 +33,7 @@ const isAuthorized = (userId: string) =>{
 // Gets a new access token from Hubspot
 // Input: Hubspot account refresh token.
 // Return: {"refresh_token", "access_token", "expires_in"}, else if error {"status", "statusText"}
-const getHubspotAccessToken = async (refreshToken: string) => {
+export const getHubspotAccessToken = async (refreshToken: string) => {
 	try {
 		const url = 'https://api.hubapi.com/oauth/v1/token';
         const refreshTokenProof = {
@@ -53,7 +53,7 @@ const getHubspotAccessToken = async (refreshToken: string) => {
 // Gets a new JWT from saasquatch
 // Input: None.
 // Return: {"access_token", "expires_in", "token_type"}, else if error {"status", "statusText"}
-const getSaasquatchToken = async () =>  {
+export const getSaasquatchToken = async () =>  {
 	try {
 		const url = "https://squatch-dev.auth0.com/oauth/token";
 		const tokenProof = {
