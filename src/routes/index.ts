@@ -140,11 +140,11 @@ router.post('/contacts', async (req, res) => {
 
 
 // add the participants in Saas to Hubspot contact list
-async function addcontacts(participant:any)  {
+async function addContacts(participant:any)  {
     try {
         console.log('=== attempting to get all hubpsot conacts api key is ===' + HAPIKEY);
-        const addcontact = 'https://api.hubapi.com/crm/v3/objects/contacts?hapikey=' + HAPIKEY;
-        const response = await axios.post(addcontact,{
+        const addContact = 'https://api.hubapi.com/crm/v3/objects/contacts?hapikey=' + HAPIKEY;
+        const response = await axios.post(addContact,{
             properties: {
                 company: '',
                 email: participant.email,
@@ -182,7 +182,7 @@ const getParticipants = async () => {
             console.log('there are total '+  data.count + " contacts");
             for(let i=0; i<data.count; i++){
                 console.log(data.users[i].id);
-                addcontacts(data.users[i]);
+                addContacts(data.users[i]);
             }
         }
         return data;
