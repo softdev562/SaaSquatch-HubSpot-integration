@@ -28,7 +28,7 @@ router.get('/api/', (_, res) => {
 // TODO
 // - it would be nice to validate that the string is in email format
 async function isHubspotEmail(identities: any){
-	
+
 	try {
 		if (identities['type'] === 'EMAIL'){
 			return true;
@@ -58,29 +58,29 @@ async function postContacts(contact: any) {
 			if (isHubspotEmail(identities[0])){
 				//can be just dot mo [']
 				const firstName = contact['properties']['firstname']['value'];
-				const lastName = contact['properties']['lastname']['value']; 
+				const lastName = contact['properties']['lastname']['value'];
 
 				//URL should be built using express URL class
 				const postParticipant = 'https://staging.referralsaasquatch.com/api/v1/' +STENANTALIAS+ '/open/account/' + firstName + lastName + '/user/' + firstName + lastName;
 				//console.log(postParticipant);
 				const email = identities[0]['value'];
 				const response = await axios.post(postParticipant,{
-				    
-					
+
+
 						id: firstName+lastName,
 						accountId: firstName+lastName,
 						firstName: firstName,
 						lastInitial: lastName[0],
 						email: email,
 						lastName: lastName,
-					
+
 					},
 					{
 					  headers: {
 				        'Authorization':'token '+SAPIKEY
 				    }
 					});
-				
+
 			}
 		}
 
@@ -89,7 +89,7 @@ async function postContacts(contact: any) {
         console.log(e);
         return e;
     }
-	
+
 
 }
 
@@ -118,7 +118,7 @@ const getContacts = async () => {
         console.error('  > Unable to retrieve contact');
         return JSON.parse(e.response.body);
     }
-	
+
 
 }
 
@@ -139,6 +139,30 @@ router.post('/contacts', async (req, res) => {
 });
 
 
+// add the participants in Saas to Hubspot contact list
+async function addcontacts(participant:any)  {
+    try {
+        console.log('=== attempting to get all hubpsot conacts api key is ===' + HAPIKEY);
+        const addcontact = 'https://api.hubapi.com/crm/v3/objects/contacts?hapikey=' + HAPIKEY;
+        const response = await axios.post(addcontact,{
+            properties: {
+                company: '',
+                email: participant.email,
+                firstname: participant.firstName,
+                lastname: participant.lastName,
+                phone: '',
+                website: ''
+            },
+        });
+
+
+        return response;
+    } catch (e) {
+        console.error('  > Unable to add new contact');
+        return JSON.parse(e.response.body);
+    }
+}
+
 //returns a list of Saasquatch participants for a given api key and tenet alias
 const getParticipants = async () => {
     try {
@@ -153,14 +177,21 @@ const getParticipants = async () => {
         });
         console.log('test' + response);
         const data = response.data;
-        console.log(data);
+        //console.log(data);
+        if (data.count != 0 ){
+            console.log('there are total '+  data.count + " contacts");
+            for(let i=0; i<data.count; i++){
+                console.log(data.users[i].id);
+                addcontacts(data.users[i]);
+            }
+        }
         return data;
     } catch (e) {
         console.error('  > Unable to retrieve participants');
         console.log(e);
         return e;
     }
-	
+
 
 }
 
@@ -172,4 +203,5 @@ router.get('/participants', async (req, res) => {
     console.log('got Participants');
     res.end();
 });
+
 export default router
