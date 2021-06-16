@@ -59,11 +59,11 @@ async function postContacts(contact: any) {
 				//can be just dot mo [']
 				const firstName = contact['properties']['firstname']['value'];
 				const lastName = contact['properties']['lastname']['value'];
-
+                const email = identities[0]['value'];
 				//URL should be built using express URL class
-				const postParticipant = 'https://staging.referralsaasquatch.com/api/v1/' +STENANTALIAS+ '/open/account/' + firstName + lastName + '/user/' + firstName + lastName;
+				const postParticipant = 'https://staging.referralsaasquatch.com/api/v1/' +STENANTALIAS+ '/open/account/' + email + '/user/' + email;
 				//console.log(postParticipant);
-				const email = identities[0]['value'];
+				
 				const response = await axios.post(postParticipant,{
 
 
