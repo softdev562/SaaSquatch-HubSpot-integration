@@ -42,13 +42,13 @@ it(' If the API call returns no errrors then getHubspotAccessfunc is not called 
 })
 
 
-it(' If the api call returns an error and an invalid refresh token is passed then "BAD_REFRESH_TOKEN" error is returned  ',async function()
+it(' If the api call returns an error and an invalid refresh token is passed then "BAD_REQUEST" error is returned  ',async function()
 {
     const res = await HubApiCall(errorCall,"wrongtoken");
 
-    assert(res.response.status == 400);
+    assert(res.status==400)//res.response.status == 400);
 
-    assert(res.response.data.status =='BAD_REFRESH_TOKEN');
+    assert(res.statusText =='Bad Request');//res.response.data.status =='BAD_REFRESH_TOKEN');
 
 
 })

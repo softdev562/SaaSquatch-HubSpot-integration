@@ -52,7 +52,7 @@ const getHubspotAccessToken = async (refreshToken: string) => {
 		return resp.data;
 	} catch(e) {
 		//console.log(e);
-		return e;
+		return {status: e.response.status, statusText: e.response.statusText};
 	}
 }
 
@@ -182,7 +182,7 @@ export const HubApiCall:any = async function (myapifunc:Function,refresh_token:s
 			//error in the api call get a new access token
 			let result = await getHubspotAccessToken(refresh_token);
 
-			if(result.response.status == 400)
+			if(result.status ==400)//result.response.status == 400)
 			{
 				if(process.env.NODE_ENV == 'test')
 				{
