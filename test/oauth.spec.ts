@@ -23,7 +23,7 @@ const correctCall = async () => {
 
 const errorCall = async () => {
     try {
-          const allContacts = 'https://api.hubapi.com/contacts/v1/lists/all/contacts/all?hapikey=' + HAPIKEY;
+          const allContacts = 'https://api.hubapi.com/contacts/v1/lists/all/contacts/all?hapikey=thisisawrongapikeyitwillfail' + HAPIKEY;
           const response = await axios.get(allContacts);
           const data = response.data;
           return data;
