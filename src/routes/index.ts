@@ -196,12 +196,25 @@ const getParticipants = async () => {
 }
 
 router.get('/participants', async (req, res) => {
-
+    try{
     const Participants = await getParticipants();
     console.log('res:' + res)
     res.json(Participants);
     console.log('got Participants');
     res.end();
+    } 
+    catch (e) {
+        //  As per Muhammads request: 
+        //  user disconnects our integration and access 
+        //  token has expired so the API calls will return 
+        //  an error. In this scenario We must redirect user 
+        //  to authorize the application again. So in the catch 
+        //  we can have res.redirect("/hubspot"))
+    console.error('  > Unable to retrieve participants');
+    console.log(e);
+    return e;
+}
+
 });
 
 export default router
