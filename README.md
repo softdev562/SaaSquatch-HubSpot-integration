@@ -43,3 +43,20 @@ To use this Integration app with a HubSpot app:
 1. Create an app in a HubSpot dev account. More information on how to do this can be found in HubSpot's dev docs: https://developers.hubspot.com/docs/api/working-with-oauth.
 2. Get your client ID and client secret and save them in your `.env` file.
 3. Set your redirect_uri in the HubSpot app. For running the app locally, this is `http:localhost:8000/oauth-callback`. Add this to your `.env` file.
+
+## Tests with jest-cucumber
+A sample test has been prepared in both the root directory and the frontend directory. `jest-cucumber` works by building test cases around `.feature` files.
+Here are some files of interest:
+
+* `jest.config.json` contains configurations for jest
+* `package.json` contains scripts for running jest tests
+* `/src/test` and `/frontend/src/test` contain test files with the extension `.steps.ts`
+* `/features/MatchUsersContacts.feature` and `/frontend/features/MatchUsersContacts.feature` is used in the sample test file `index.steps.ts`
+
+To run the tests use the command `yarn test`. The command will:
+
+1. Compile the `.steps.ts` tests into `.steps.js`
+2. Run the tests using `jest-cucumber`
+3. Remove the `.steps.js` files
+
+There are three other scripts: `build-tests` for building the test files, `run-tests` for executing the tests, and `clean-tests` for removing the `.steps.js` test files. `test` performs all three of these steps together.
