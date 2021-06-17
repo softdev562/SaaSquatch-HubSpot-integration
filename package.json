@@ -5,12 +5,15 @@
 	"main": "index.js",
 	"scripts": {
 		"tsc": "tsc",
-		"test": "echo UNIMPLEMENTED",
 		"server": "nodemon src/index.ts",
 		"frontend": "cd frontend && npm start",
 		"watch": "concurrently \"npm run server\" \"npm run frontend\"",
 		"start": "node ./build",
-		"heroku-postbuild": "bash ./production-build.sh"
+		"heroku-postbuild": "bash ./production-build.sh",
+		"test": "tsc **/test/*.ts && jest && rm **/test/*.js",
+		"build-tests": "tsc **/test/*.ts",
+		"run-tests": "jest",
+		"clean-tests": "rm **/test/*.js"
 	},
 	"repository": {
 		"type": "git",
@@ -35,7 +38,9 @@
 		"@types/jsonwebtoken": "^8.5.1",
 		"@types/node": "^15.12.1",
 		"concurrently": "^6.2.0",
+		"jest-cucumber": "^3.0.1",
 		"nodemon": "^2.0.7",
+		"ts-jest": "^27.0.3",
 		"ts-node": "^10.0.0",
 		"typescript": "^4.3.2"
 	},
