@@ -1,0 +1,26 @@
+{
+    "title": "HubSpot Webhook Payload",
+    "description": "The payload of a HubSpot webhook",
+    "type": "array",
+    "items":{
+        "type": "object",
+        "properties": {
+            "eventId": {"type": "number"},
+            "subscriptionId": {"type": "number"},
+            "portalId": {"type": "number"},
+            "appId": {"type": "number"},
+            "occurredAt": {"type": "number"},
+            "subscriptionType": {"type": "string"},
+            "attemptNumber": {"type": "number"},
+            "objectId": {"type": "number"},
+            "propertyName": {"type": "string"},
+            "propertyValue": {"type": "string"},
+            "changeFlag": {"type": "string"},
+            "changeSource": {"type": "string"}
+            
+            
+        },
+        "required": ["eventId", "subscriptionId", "portalId", "appId", "occurredAt", "subscriptionType", "attemptNumber", "objectId", "changeSource"],
+        "additionalProperties": false
+    }
+}

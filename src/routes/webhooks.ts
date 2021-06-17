@@ -4,6 +4,12 @@ import * as jwt from "jsonwebtoken";
 import jwksRsa = require("jwks-rsa");
 import { Base64 } from "js-base64";
 import crypto from "crypto";
+import { SubscriptionType, HubspotPayload, SaasquatchPayload, EventType } from '../Types/types';
+import saasquatchSchema from '../Types/saasquatch-payload-schema.json';
+import hubspotSchema from '../Types/hubspot-payload-schema.json';
+import Ajv from "ajv";
+import * as hubspotUpdate from "../integration/hubspot-updates";
+import * as saasquatchUpdate from "../integration/saasquatch-updates";
 
 /**
  * Handles Webhooks from SaaSquatch and Hubspot by validating they actually came from SaaSquatch
@@ -27,33 +33,51 @@ if(SAASQUATCH_JWKS_URI){
      For staging this should be https://staging.referralsaasquatch.com/.well-known/jwks.json.");
 }
 
+// JSON schema validator
+const ajv: any = new Ajv();
+ajv.addSchema(hubspotSchema, "hubspot");
+ajv.addSchema(saasquatchSchema, "saasquatch");
+
+const validateHubspotSchema = ajv.getSchema("hubspot");
+const validateSaasquatchSchema = ajv.getSchema("saasquatch");
+
+
 
 /**
  * Endpoint for webhooks from SaaSquatch
  */ 
 router.post("/saasquatch-webhook", async (req, res) => {
     const jwsNoPayloadHeader: string | undefined = req.get("X-Hook-JWS-RFC-7797");
-    if (jwsNoPayloadHeader){
-        validateSaaSquatchWebhook(JSON.stringify(req.body), jwsNoPayloadHeader)
-        .then(decoded =>{
-            console.log("Received valid SaaSquatch Webhook.")
-            console.log(decoded);
-            /**
-             * Here you would process the webhook. ie. determine "type" and from there post to 
-             * Hubspot API with update, etc.
-             * While we can confirm this came from SaaSquatch, they make no guarantees the JSON is 
-             * formatted correctly, so we will need to verify that as well.
-             */
-            res.status(200).end();
-        })
-        .catch(error => {
-            console.warn("Received invalid SaaSquatch Webhook.")
-            console.error(error);
-            res.status(500).end();
-        });
-    }else{
+    if (!jwsNoPayloadHeader){
         res.status(401).end();
+        return;
     }
+    // Verify request came from SaaSquatch
+    validateSaaSquatchWebhook(JSON.stringify(req.body), jwsNoPayloadHeader)
+    .then(decoded =>{
+        // Validate JSON format with schema
+        // Note: this does not validate fields or format within the 'data' object as this varies greatly between webhooks.
+        if(!validateSaasquatchSchema(decoded)){
+            console.error("Request body is invalid in format and does not match expected SaaSquatch schema");
+            console.error("Failed at "+ validateSaasquatchSchema.errors);
+            res.status(400).end();
+            return;
+        }
+        res.status(200).end();
+
+        // Map to interface
+        const saasquatchPayload = decoded as SaasquatchPayload;
+        console.log(saasquatchPayload);
+
+        processSaasquatchPayload(saasquatchPayload);
+
+    })
+    .catch(error => {
+        console.warn("Received invalid SaaSquatch Webhook.")
+        console.error(error);
+        res.status(500).end();
+    });
+    
 });
 
 /**
@@ -62,26 +86,70 @@ router.post("/saasquatch-webhook", async (req, res) => {
 router.post("/hubspot-webhook", async (req, res) => {
     const signatureVersion = req.get("X-HubSpot-Signature-Version");
     const signature = req.get("X-HubSpot-Signature");
-    if (signatureVersion && signature){
-        const isValid: boolean = validateHubSpotWebhook(signatureVersion, signature, JSON.stringify(req.body));
-        if (isValid){
-            console.log("Received valid HubSpot Webhook.");
-            /**
-             * Here you would process the webhook. ie. determine "type" and from there post to 
-             * SaaSquatch API with update, etc.
-             * While we can confirm this came from HubSpot, they make no guarantees the JSON is 
-             * formatted correctly, so we will need to verify that as well.
-             */
-            res.status(200).end();
-        }
-        else{
-            console.warn("Received invalid HubSpot Webhook.")
-            res.status(401).end();
-        }
-    }else{
+    if (!(signatureVersion && signature)){
         res.status(401).end();
+        return;
     }
+    // Verify request came from HubSpot
+    const isValid: boolean = validateHubSpotWebhook(signatureVersion, signature, JSON.stringify(req.body));
+    if (!isValid){
+        console.warn("Received invalid HubSpot Webhook.")
+        res.status(401).end();
+        return;
+    }
+    // Validate JSON format with schema
+    if(!validateHubspotSchema(req.body)){
+        console.error("Request body is invalid in format and does not match expected HubSpot schema.");
+        console.error("Failed at "+ validateHubspotSchema.errors);
+        res.status(400).end();
+        return;
+    }
+    res.status(200).end();
+    console.log(req.body);
+
+    // Map each object to interface and process subscription type
+    req.body.forEach( (hubspotPayload: HubspotPayload) => {
+        processHubspotPayload(hubspotPayload);
+    });
+    
 });
+
+function processSaasquatchPayload(saasquatchPayload: SaasquatchPayload) {  
+    switch(saasquatchPayload.type){
+        case EventType.UserCreated:
+            saasquatchUpdate.NewUser(saasquatchPayload);
+            break;
+        case EventType.Test:
+            saasquatchUpdate.Test(saasquatchPayload);
+            break;
+        default:
+            console.error("No matching EventType. May not yet be implemented.\
+             Received type: "+saasquatchPayload.type);
+
+    }
+}
+
+
+function processHubspotPayload(hubspotPayload: HubspotPayload) {  
+    switch (hubspotPayload.subscriptionType){
+        case SubscriptionType.ContactCreation:
+            hubspotUpdate.NewContact(hubspotPayload);
+            break;
+        case SubscriptionType.ContactDeletion:
+            hubspotUpdate.DeletedContact(hubspotPayload);
+            break;
+        case SubscriptionType.ContactPropertyChange:
+            hubspotUpdate.ChangedContact(hubspotPayload);
+            break;
+        default:
+            console.error("No matching subscriptionType. May not yet be implemented.\
+             Received subscriptionType: "+hubspotPayload.subscriptionType);
+    }
+}
+
+
+
+
 
 /**
  * Validate the given JWT with SaaSquatch public JWKS and get the claims.
