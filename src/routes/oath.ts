@@ -1,7 +1,8 @@
 import { Router } from 'express';
 require('dotenv').config();
 import axios from 'axios';
-import querystring from 'querystring';
+const querystring = require('query-string');
+//import querystring from 'querystring';
 
 const router = Router();
 
