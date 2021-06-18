@@ -6,6 +6,15 @@ import * as dotenv from 'dotenv';
 import { listenerCount } from 'events';
 dotenv.config();
 
+import {HubApiCall} from "./oath";
+
+//#todo: probably replace the line below with a DB import when the DB is ready
+import {tokenStore} from "./oath";
+
+
+
+
+
 //ensures that API keys are accessible THIS Will be replaced by OATH
 if (!process.env.HAPIKEY || !process.env.SAPIKEY || !process.env.STENANTALIAS) {
     throw new Error('Missing HAPIKEY environment variable.')
@@ -116,6 +125,7 @@ const getContacts = async () => {
         return data;
     } catch (e) {
         console.error('  > Unable to retrieve contact');
+
         return JSON.parse(e.response.body);
     }
 
@@ -124,10 +134,19 @@ const getContacts = async () => {
 
 router.get('/contacts', async (req, res) => {
 
-    const contact = await getContacts();
-    res.json(contact);
-    console.log('got contacts');
-    res.end();
+    try
+    {
+        //#todo: Update line below to get refresh_token from db when its ready
+        const contact = await HubApiCall(getContacts,tokenStore[req.sessionID]["refresh_token"]);//await getContacts();
+        res.json(contact);
+        console.log('got contacts');
+        res.end();
+
+    }
+    catch(e)
+    {
+        res.redirect("/hubspot");
+    }
 });
 
 router.post('/contacts', async (req, res) => {
