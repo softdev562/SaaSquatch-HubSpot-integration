@@ -1,0 +1,15 @@
+{
+    "title": "SaaSquatch Webhook Payload",
+    "description": "The payload of a SaaSquatch webhook",
+    "type": "object",
+    "properties": {
+        "id": {"type": "string"},
+        "type": {"type": "string"},
+        "tenantAlias": {"type": "string"},
+        "live": {"type": "boolean"},
+        "created": {"type": "number"},
+        "data": {"type": "object"}
+    },
+    "required": ["id", "type", "tenantAlias", "live", "created", "data"],
+    "additionalProperties": false
+}
