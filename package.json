@@ -6,7 +6,7 @@
 	"scripts": {
 		"tsc": "tsc",
 		"server": "nodemon src/index.ts",
-		"frontend": "cd frontend && npm start",
+		"frontend": "cd frontend && yarn start",
 		"watch": "concurrently \"npm run server\" \"npm run frontend\"",
 		"start": "node ./build",
 		"heroku-postbuild": "bash ./production-build.sh",
@@ -38,9 +38,9 @@
 		"@types/jsonwebtoken": "^8.5.1",
 		"@types/node": "^15.12.1",
 		"concurrently": "^6.2.0",
+		"jest": "26.6.0",
 		"jest-cucumber": "^3.0.1",
 		"nodemon": "^2.0.7",
-		"ts-jest": "^27.0.3",
 		"ts-node": "^10.0.0",
 		"typescript": "^4.3.2"
 	},
