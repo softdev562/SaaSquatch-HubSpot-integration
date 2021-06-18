@@ -2,8 +2,7 @@ import { useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import styled from 'styled-components';
-import { ToggleSetting } from './ToggleSetting';
-import HubspotLogo from '../assets/HubspotLogo.png';
+import SaaSquatchLogo from '../assets/SaaSquatchLogo.png';
 
 const PageWrapper = styled.div`
   min-height: 100vh;
@@ -13,13 +12,6 @@ const PageWrapper = styled.div`
   justify-content: center;
 `;
 const PageContent = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: start;
-  justify-content: start;
-`;
-const ChildrenContainer = styled.div`
-  margin-left: 3em;
   display: flex;
   flex-direction: column;
   align-items: start;
@@ -42,10 +34,6 @@ const InfoText = styled.p`
   font-size: 20px;
   display: flex;
   margin-right: 5px;
-`;
-const PaddedSelect = styled.select`
-  margin-right: 5px;
-  margin-left: 5px;
 `;
 const SyncButton = styled.button`
   &:hover {
@@ -93,7 +81,7 @@ interface states {
   }
 }
 
-export function Configuration() {
+export function ConfigurationP2() {
   return <View {...Controller()}/>
 }
 
@@ -147,64 +135,7 @@ export function View(states: states){
   return (
     <PageWrapper>
       <PageContent>
-      <TitleText>Configure your <Logo src={HubspotLogo} /> Integration</TitleText>
-      <ToggleSetting 
-        settingText={"Sync contacts in HubSpot to users in SaaSquatch"} 
-        isChecked={states.config.hubSync.isActive} 
-        handleChange={states.handleToggles.toggleHubSync} 
-      />
-      <ChildrenContainer>
-        <InfoText>
-          Connect
-          <PaddedSelect>
-            <option value="name">Name</option>
-            <option value="email">Email</option>
-          </PaddedSelect>
-          from SaaSquatch to
-          <PaddedSelect>
-            <option value="name">Name</option>
-            <option value="email">Email</option>
-          </PaddedSelect>
-          in HubSpot
-        </InfoText>
-        <ToggleSetting 
-          settingText={"Create a Contact in HubSpot when a new user is added to SaaSquatch"} 
-          isChecked={states.config.hubSync.createContact} 
-          handleChange={states.handleToggles.toggleHubCreate}
-          disabled={!states.config.hubSync.isActive}
-        />
-        <ToggleSetting 
-          settingText={"Update existing Contacts in HubSpot when Users are updated in SaaSquatch"} 
-          isChecked={states.config.hubSync.updateContact} 
-          handleChange={states.handleToggles.toggleHubUpdate}
-          disabled={!states.config.hubSync.isActive}
-        />
-        <ToggleSetting 
-          settingText={"Sync SaaSquatch referral links into HubSpot"} 
-          isChecked={states.config.hubSync.syncRefLinks} 
-          handleChange={states.handleToggles.toggleHubRefLinks}
-          disabled={!states.config.hubSync.isActive}
-        />
-      </ChildrenContainer>
-      <ToggleSetting 
-        settingText={"Sync users in SaaSquatch with contacts in Hubspot"} 
-        isChecked={states.config.saasSync.isActive} 
-        handleChange={states.handleToggles.toggleSaasSync}
-      />
-      <ChildrenContainer>
-        <ToggleSetting 
-          settingText={"Create a new User in SaaSquatch when a Contact is added to HubSpot"} 
-          isChecked={states.config.saasSync.createUser} 
-          handleChange={states.handleToggles.toggleSaasCreate}
-          disabled={!states.config.saasSync.isActive}
-        />
-        <ToggleSetting 
-          settingText={"Update existing Users in SaaSquatch when Contacts are updated in HubSpot"} 
-          isChecked={states.config.saasSync.updateUser} 
-          handleChange={states.handleToggles.toggleSaasUpdate}
-          disabled={!states.config.saasSync.isActive}
-        />
-      </ChildrenContainer>
+      <TitleText>Configure your <Logo src={SaaSquatchLogo} /> Integration</TitleText>
         <SyncButton 
           onClick={states.handleSubmit}
           type= "button"

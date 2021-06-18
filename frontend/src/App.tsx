@@ -1,15 +1,23 @@
-import { Route } from 'react-router-dom';
+import { Redirect, Route } from 'react-router-dom';
 import {Login} from './components/Login';
-import {Configuration} from './components/Configuration';
+import {ConfigurationP1} from './components/ConfigurationP1';
+import {ConfigurationP2} from './components/ConfigurationP2';
 
 function App() {
   return (
     <div className="App">
         <div className="app-container">
           <Route
-            path="/configuration"
-            exact component={Configuration}
+            path="/configuration/1"
+            exact component={ConfigurationP1}
           />
+          <Route
+            path="/configuration/2"
+            exact component={ConfigurationP2}
+          />
+          <Route path="/configuration" exact >
+            <Redirect to="/configuration/1"/>
+          </Route>
           <Route path="/login" exact component={Login} />
           <Route path="/" exact component={Login} />
         </div>
