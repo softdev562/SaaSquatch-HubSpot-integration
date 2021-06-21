@@ -8,8 +8,8 @@ import { SubscriptionType, HubspotPayload, SaasquatchPayload, EventType } from '
 import saasquatchSchema from '../Types/saasquatch-payload-schema.json';
 import hubspotSchema from '../Types/hubspot-payload-schema.json';
 import Ajv from "ajv";
-import * as hubspotUpdate from "../integration/hubspot-updates";
-import * as saasquatchUpdate from "../integration/saasquatch-updates";
+import { hubspotUpdatesController } from '../integration/hubspotUpdatesController';
+import { saasquatchUpdatesController } from '../integration/saasquatchUpdatesController';
 
 /**
  * Handles Webhooks from SaaSquatch and Hubspot by validating they actually came from SaaSquatch
@@ -32,6 +32,10 @@ if(SAASQUATCH_JWKS_URI){
     console.error("SAASQUATCH_JWKS_URI is not defined in environment variables and is required for SaaSquatch Webhooks.\
      For staging this should be https://staging.referralsaasquatch.com/.well-known/jwks.json.");
 }
+// Replace with access token from OAuth when DB set up
+if (!process.env.HAPIKEY || !process.env.SAPIKEY || !process.env.STENANTALIAS) {
+    throw new Error('Missing environment variable.')
+}
 
 // JSON schema validator
 const ajv: any = new Ajv();
@@ -40,6 +44,9 @@ ajv.addSchema(saasquatchSchema, "saasquatch");
 
 const validateHubspotSchema = ajv.getSchema("hubspot");
 const validateSaasquatchSchema = ajv.getSchema("saasquatch");
+
+const hubUpdatesController = new hubspotUpdatesController(process.env.HAPIKEY, process.env.SAPIKEY, process.env.STENANTALIAS);
+const saasUpdatesController = new saasquatchUpdatesController(process.env.HAPIKEY, process.env.SAPIKEY, process.env.STENANTALIAS);
 
 
 
@@ -67,7 +74,7 @@ router.post("/saasquatch-webhook", async (req, res) => {
 
         // Map to interface
         const saasquatchPayload = decoded as SaasquatchPayload;
-        console.log(saasquatchPayload);
+        //console.log(saasquatchPayload);
 
         processSaasquatchPayload(saasquatchPayload);
 
@@ -105,8 +112,10 @@ router.post("/hubspot-webhook", async (req, res) => {
         return;
     }
     res.status(200).end();
-    console.log(req.body);
+    //console.log(req.body);
 
+    // Sort payload by time occured. ie. contact creation should come before contact property change
+    req.body.sort((a: HubspotPayload, b: HubspotPayload) => a.occurredAt < b.occurredAt ? -1 : 1 );
     // Map each object to interface and process subscription type
     req.body.forEach( (hubspotPayload: HubspotPayload) => {
         processHubspotPayload(hubspotPayload);
@@ -117,10 +126,10 @@ router.post("/hubspot-webhook", async (req, res) => {
 function processSaasquatchPayload(saasquatchPayload: SaasquatchPayload) {  
     switch(saasquatchPayload.type){
         case EventType.UserCreated:
-            saasquatchUpdate.NewUser(saasquatchPayload);
+            saasUpdatesController.NewUser(saasquatchPayload);
             break;
         case EventType.Test:
-            saasquatchUpdate.Test(saasquatchPayload);
+            saasUpdatesController.Test(saasquatchPayload);
             break;
         default:
             console.error("No matching EventType. May not yet be implemented.\
@@ -133,13 +142,13 @@ function processSaasquatchPayload(saasquatchPayload: SaasquatchPayload) {
 function processHubspotPayload(hubspotPayload: HubspotPayload) {  
     switch (hubspotPayload.subscriptionType){
         case SubscriptionType.ContactCreation:
-            hubspotUpdate.NewContact(hubspotPayload);
+            hubUpdatesController.NewContact(hubspotPayload);
             break;
         case SubscriptionType.ContactDeletion:
-            hubspotUpdate.DeletedContact(hubspotPayload);
+            hubUpdatesController.DeletedContact(hubspotPayload);
             break;
         case SubscriptionType.ContactPropertyChange:
-            hubspotUpdate.ChangedContact(hubspotPayload);
+            hubUpdatesController.ChangedContact(hubspotPayload);
             break;
         default:
             console.error("No matching subscriptionType. May not yet be implemented.\
