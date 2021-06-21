@@ -9,6 +9,7 @@ import Accordion from '@material-ui/core/Accordion';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { DataGrid } from '@material-ui/data-grid';
 
 const PageWrapper = styled.div`
   min-height: 100vh;
@@ -41,9 +42,9 @@ const InfoText = styled.p`
   display: flex;
   margin-right: 5px;
 `;
-const PaddedSelect = styled.select`
-  margin-right: 5px;
-  margin-left: 5px;
+const DataGridContainer = styled.div`
+  height: 400px;
+  width: '100%';
 `;
 const SyncButton = styled.button`
   &:hover {
@@ -156,19 +157,20 @@ export function View(states: states){
           Create a Contact in HubSpot when a new user is added to SaaSquatch
         </AccordionSummary>
         <AccordionDetails>
-          <InfoText>
-            Connect
-            <PaddedSelect>
-              <option value="name">Name</option>
-              <option value="email">Email</option>
-            </PaddedSelect>
-            from SaaSquatch to
-            <PaddedSelect>
-              <option value="name">Name</option>
-              <option value="email">Email</option>
-            </PaddedSelect>
-            in HubSpot
-          </InfoText>
+          <DataGridContainer>
+            <DataGrid 
+              rows={[
+                { id: 1, fieldName: 'First name',},
+                { id: 2, fieldName: 'Last name',},
+                { id: 3, fieldName: 'email',},
+                { id: 4, fieldName: 'other stuff',},
+                ]} 
+              columns={[
+                { field: 'fieldName', headerName: 'Fields to populate', width: 200 },
+              ]} 
+              checkboxSelection
+            />
+          </DataGridContainer>
         </AccordionDetails>
       </Accordion>
         <SyncButton 
