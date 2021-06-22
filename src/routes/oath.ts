@@ -28,7 +28,7 @@ const SAASQUATCH_CLIENT_SECRET = process.env.SAASQUATCH_CLIENT_SECRET;
 // TODO: move to Firebase DB
 export const tokenStore: any = {};
 
-const isAuthorized = (userId: string) =>{
+export const isAuthorized = (userId: string) =>{
     return tokenStore[userId] ? true : false;
 };
 
