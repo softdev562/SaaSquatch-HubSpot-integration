@@ -62,8 +62,6 @@ defineFeature(HubspotOauth, test => {
 	 */
     test('User completes Hubspot oauth flow correctly', ({given, when, then, and}) => {
         given('The user has a Hubspot account', () => {
-            email = 'adamh@gmail.com';
-            password = 'test';
         });
 
         when('The user starts the Hubspot oauth flow from the integration', async () => {
