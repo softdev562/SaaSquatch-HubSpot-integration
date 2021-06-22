@@ -5,7 +5,9 @@ import { Options } from 'selenium-webdriver/chrome'
 require('chromedriver'); // Selenium chrome webdriver
 const waitOn = require('wait-on');
 
-const HubspotOauth = loadFeature('features/Oauth/Hubspot\ Oauth.feature');
+const HubspotOauth = loadFeature('features/Oauth/Hubspot\ Oauth.feature', {
+	tagFilter: 'not @manual'
+});
 
 defineFeature(HubspotOauth, test => {
 	// Integration server process

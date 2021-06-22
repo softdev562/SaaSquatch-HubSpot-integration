@@ -10,7 +10,7 @@ let current_user:any ='VALUE_ASSIGNED_IN_HUBSPOT_ENDPOINT'; // current_user = re
 // Constants
 // Hubspot
 const HUBSPOT_CLIENT_ID = process.env.HUBSPOT_CLIENT_ID;
-const HUBSPOT_CLIENT_SECRET = process.env.HUBSPOT_CLIENT_SECRET;
+const HUBSPOT_CLIENT_SECRET = 2;//process.env.HUBSPOT_CLIENT_SECRET;
 const HUBSPOT_REDIRECT_URI = process.env.HUBSPOT_REDIRECT_URI;
 
 let HUBSPOT_AUTH_URL: string;

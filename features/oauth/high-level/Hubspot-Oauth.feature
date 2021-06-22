@@ -4,25 +4,34 @@ Feature: Hubspot oauth flow
 	Scenario: User completes Hubspot oauth flow correctly
 		Given The user has a Hubspot account
 		When The user starts the Hubspot oauth flow from the integration
-		And The user correctly signs into Hubspot
+		And The user correctly login to Hubspot
 		And The user is redirected to the integration's callback page
-		Then The integration should have access to the user's account data
-		And The user should be redirected to the configuration page
+		Then The user should be redirected to the configuration page
 		And The pop up window should close
 
-	# 	# TODO:
-	# 	# Is this a front end test?
-	# Scenario: User completes Hubspot oauth flow with errors
+	@manual
+	Scenario: User completes Hubspot oauth flow with errors
+		Given The user starts the Hubspot oauth flow
+		When The user <Oauth Error>
+		Then The user <Outcome>
+		And The user should not be redirected to the configuration page
 
+	| Oauth Error                     | Outcome                           |
+	| Closes the pupup window         | Should be shown with error text   |
+	| Does not have a Hubspot account | Will not be redirected to Hubspot |
+	| Internal integration error      | Will not have the app installed   |
+
+	Scenario: User tries to access confinuration page without being authenticated
+		Given The user is not authenticated
+		When The user tries to navigate the the configuration page
+		Then The integartion does not show any configuration data
+		And The user is redirected to the root page
 
 	Scenario: The integration is able to obtain a new refresh token from Hubspot
 		Given The user has completed the integration's Hubspot oauth flow
 		When The integration needs a new refrsh token from Hubspot
 		Then A new refrsh token should be returned from Hubspot
 
-	# TODO:
-	# Can this be done automatically, needs the user to disconnect the app from there account manually.
-	# Or can be done once we have Firebse DB and have a test account so we have the refresh token but is permenantly disconnected.
 	Scenario: The integration is not able to obtain a new refresh token from Hubspot
 		Given The user has completed the integration's Hubspot oauth flow
 		And The integration is disconnected on the users account
