@@ -2,10 +2,23 @@ import { Redirect, Route } from 'react-router-dom';
 import {Login} from './components/Login';
 import {ConfigurationP1} from './components/ConfigurationP1';
 import {ConfigurationP2} from './components/ConfigurationP2';
+import { createMuiTheme, ThemeProvider } from '@material-ui/core';
+
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      main: '#255fcc',
+    },
+    secondary: {
+      main: '#5BC236',
+    },
+  },
+});
 
 function App() {
   return (
-    <div className="App">
+    <ThemeProvider theme={theme}>
+      <div className="App">
         <div className="app-container">
           <Route
             path="/configuration/1"
@@ -22,6 +35,7 @@ function App() {
           <Route path="/" exact component={Login} />
         </div>
       </div>
+    </ThemeProvider>
   );
 }
 
