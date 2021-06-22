@@ -19,17 +19,37 @@ export class saasquatchUpdatesController{
      * Received webhook of event type 'user.created'
      * @param saasquatchPayload Payload of SaaSquatch webhook
      */
-    public NewUser(saasquatchPayload: SaasquatchPayload){
-        console.log('Received SaaSquatch user.created. This is not yet implemented.');
-        
-        /**
-         * TODO:
-         * Steps
-         * 1. Check if user exists as contact in HubSpot (match by email)
-         * 2. If it does not exist, create new contact in HubSpot
-         * 3. If it does exist, send referral link to HubSpot for that contact.
-         * 4. Done?
-         */
+    public async NewUser(saasquatchPayload: any){
+        console.log('Received SaaSquatch user.created.');
+
+        const saasquatchPayloadData = saasquatchPayload.data;
+        const contactsSearchBody = {
+            filterGroups: [
+                {
+                    filters: [
+                    {
+                      "value": saasquatchPayloadData.email, 
+                      "propertyName": 'email', 
+                      "operator": 'EQ'
+                  }
+                   ]
+                  }
+              ],
+              limit: 1,
+
+        };
+        const contactsSearchResponse = await this.hubApiModel.searchObject("contacts", contactsSearchBody);
+         if (contactsSearchResponse?.data.total == 0){
+            const createContactBody = {
+                "properties":{
+                    "email": saasquatchPayloadData.email,
+                    "firstname": saasquatchPayloadData.firstName,
+                    "lastname": saasquatchPayloadData.lastName,
+                }
+    
+            };
+            await this.hubApiModel.createObject("contacts", createContactBody);
+         }
     }
 
 
