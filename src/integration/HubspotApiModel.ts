@@ -9,7 +9,6 @@ export class HubspotApiModel {
         this.hub_access_token = hub_access_token;
     }
 
-
     /**
      * Gets contact from HubSpot.
      * 
@@ -17,7 +16,7 @@ export class HubspotApiModel {
      * @param paramToGet query parameters to filter by. eg. 'email'.
      */
 
-    //#todo: suggest renaming objectID to contactObjectID
+    //#todo: suggestion renaming objectID to contactObjectID
     public async getContact(objectId: number, paramToGet?: string){
         const headers = { accept: 'application/json',authorization:`Bearer ${this.hub_access_token}` };
         const url = `https://api.hubapi.com/crm/v3/objects/contacts/${encodeURIComponent(objectId)}`;

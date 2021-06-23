@@ -37,6 +37,8 @@ if(SAASQUATCH_JWKS_URI){
      For staging this should be https://staging.referralsaasquatch.com/.well-known/jwks.json.");
 }
 // Replace with access token from OAuth when DB set up
+// # todo: the saasquatch controller appears to use the HAPI key will need to verify
+// # todo: whether that can be replaced with hub access token
 if (!process.env.HAPIKEY || !process.env.SAPIKEY || !process.env.STENANTALIAS) {
     throw new Error('Missing environment variable.')
 }
@@ -48,8 +50,6 @@ ajv.addSchema(saasquatchSchema, "saasquatch");
 
 const validateHubspotSchema = ajv.getSchema("hubspot");
 const validateSaasquatchSchema = ajv.getSchema("saasquatch");
-
-//const hubUpdatesController = new hubspotUpdatesController(process.env.HAPIKEY, process.env.SAPIKEY, process.env.STENANTALIAS);
 const hubUpdatesController = new hubspotUpdatesController(tokenStore[current_user]["access_token"], process.env.SAPIKEY, process.env.STENANTALIAS);
 const saasUpdatesController = new saasquatchUpdatesController(process.env.HAPIKEY, process.env.SAPIKEY, process.env.STENANTALIAS);
 
