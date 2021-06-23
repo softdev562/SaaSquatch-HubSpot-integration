@@ -41,10 +41,17 @@ export class HubspotApiModel {
         }
     }
 
-    public async createObject(objectType:string, createContactBody:object){
+    /**
+     * Creates an object in Hubspot
+     * 
+     * @param objectType object type to be created. e.g. deals, contacts, company
+     * @param createObjectBody body specifiying the create properties of the object
+     * @returns axios response
+     */
+    public async createObject(objectType:string, createObjectBody:object){
         try{
-            const createContactURL = 'https://api.hubapi.com/crm/v3/objects/' + objectType;
-            const response = await axios.post(createContactURL, createContactBody,{
+            const createObjectURL = 'https://api.hubapi.com/crm/v3/objects/' + objectType;
+            const response = await axios.post(createObjectURL, createObjectBody,{
         
                 params: {
                     hapikey: this.HAPIKEY
@@ -54,15 +61,21 @@ export class HubspotApiModel {
         } catch (e) {
             console.error("Was not able to create contact");
             console.log(e);
+            return JSON.parse(e.response.body);
         }
     }
    
 
-
+    /**
+     * 
+     * @param objectType object to search for. e.g. deals, contacts, company
+     * @param body body specifiying the search properties of the object
+     * @returns axios response
+     */
     public async searchObject(objectType:string, body:object){
-        const searchURL = 'https://api.hubapi.com/crm/v3/objects/' + objectType + '/search';
+        const searchObjectURL = 'https://api.hubapi.com/crm/v3/objects/' + objectType + '/search';
         try {
-            const response = await axios.post(searchURL,body, {
+            const response = await axios.post(searchObjectURL,body, {
                 params: {
                     hapikey: this.HAPIKEY,
                 }
@@ -71,6 +84,7 @@ export class HubspotApiModel {
         } catch (e) {
             console.error("===== WAS NOT ABLE TO SEARCH FOR PROPERTIES OF OBJECT: " + objectType);
             console.error(e);
+            return JSON.parse(e.response.body);
         }
     }
 
