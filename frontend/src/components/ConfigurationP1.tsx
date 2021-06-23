@@ -10,7 +10,6 @@ import { DataGrid } from '@material-ui/data-grid';
 import Checkbox from '@material-ui/core/Checkbox';
 import history from '../types/history';
 
-
 const PageWrapper = styled.div`
   min-height: 100vh;
   display: flex;
@@ -77,23 +76,17 @@ const SyncButton = styled.button`
   margin-right: 10px;
 `;
 
-interface Config {
-  hubSync: {
-    createContact: boolean,
-    importHistoricalContacts: boolean,
-    deleteContact: boolean,
-    syncRefLinks: boolean,
-    importHistoricalRefLinks: boolean,
-  },
-  saasSync: {
-    createUser: boolean,
-    importHistoricalUsers: boolean,
-    deleteUser: boolean,
-  }
+interface HubConfig {
+  createContact: boolean,
+  importHistoricalContacts: boolean,
+  deleteContact: boolean,
+  syncRefLinks: boolean,
+  importHistoricalRefLinks: boolean,
 }
 
 interface states {
-  config: Config;
+  config: HubConfig;
+  expandAccordion: boolean;
   handleSubmit: ()=>void;
   handleToggles: {
     toggleHubCreate: ()=>void;
@@ -101,6 +94,7 @@ interface states {
     toggleHubDelete: ()=>void;
     toggleHubRefLinks: ()=>void;
     toggleHubHitoricalRefLinksImport: ()=>void;
+    toggleExpandAccordion: ()=>void;
   }
 }
 
@@ -109,28 +103,28 @@ export function ConfigurationP1() {
 }
 
 export function Controller(){
-  const emptyConfig: Config = {
-    hubSync: {
-      createContact: false,
-      importHistoricalContacts: false,
-      deleteContact: false,
-      syncRefLinks: false,
-      importHistoricalRefLinks: false,
-    },
-    saasSync: {
-      createUser: false,
-      importHistoricalUsers: false,
-      deleteUser: false,
-    }
+  const emptyConfig: HubConfig = {
+    createContact: false,
+    importHistoricalContacts: false,
+    deleteContact: false,
+    syncRefLinks: false,
+    importHistoricalRefLinks: false,
   }
-  const [config, setConfig] = useState<Config>(emptyConfig)
+  const [config, setConfig] = useState<HubConfig>(emptyConfig)
+  const [expandAccordion, setExpandAccordion] = useState<boolean>(false)
 
   // Need a handler for each toggle because Switches are kinda weird
-  const toggleHubCreate = () => setConfig({...config, hubSync: {...config.hubSync, createContact: !config.hubSync.createContact}});
-  const toggleHubHistoricalImport = () => setConfig({...config, hubSync: {...config.hubSync, importHistoricalContacts: !config.hubSync.importHistoricalContacts}});
-  const toggleHubDelete = () => setConfig({...config, hubSync: {...config.hubSync, deleteContact: !config.hubSync.deleteContact}});
-  const toggleHubRefLinks = () => setConfig({...config, hubSync: {...config.hubSync, syncRefLinks: !config.hubSync.syncRefLinks}});
-  const toggleHubHitoricalRefLinksImport = () => setConfig({...config, hubSync: {...config.hubSync, importHistoricalRefLinks: !config.hubSync.importHistoricalRefLinks}});
+  const toggleHubCreate = () => {
+    if (!expandAccordion && !config.createContact) {
+      setExpandAccordion(true)
+    }
+    setConfig({...config, createContact: !config.createContact});
+  }
+  const toggleHubHistoricalImport = () => setConfig({...config, importHistoricalContacts: !config.importHistoricalContacts});
+  const toggleHubDelete = () => setConfig({...config, deleteContact: !config.deleteContact});
+  const toggleHubRefLinks = () => setConfig({...config, syncRefLinks: !config.syncRefLinks});
+  const toggleHubHitoricalRefLinksImport = () => setConfig({...config, importHistoricalRefLinks: !config.importHistoricalRefLinks});
+  const toggleExpandAccordion = () => setExpandAccordion(!expandAccordion);
 
   const handleToggles = {
     toggleHubCreate,
@@ -138,13 +132,14 @@ export function Controller(){
     toggleHubDelete,
     toggleHubRefLinks,
     toggleHubHitoricalRefLinksImport,
+    toggleExpandAccordion,
   };
   
   const handleSubmit = () => {
     // Here we will make the requests to the backend to store the config info and to begin the integration and redirect to second config screen
     history.push('/configuration/2');
   }
-  return {config, handleSubmit, handleToggles} as states
+  return {config, expandAccordion, handleSubmit, handleToggles} as states
 }
 
 export function View(states: states){
@@ -152,17 +147,17 @@ export function View(states: states){
     <PageWrapper>
       <PageContent>
         <TitleText>Configure your <Logo src={HubspotLogo} /> Integration</TitleText>
-        <UnpaddedAccordion defaultExpanded>
+        <UnpaddedAccordion expanded={states.expandAccordion} onChange={states.handleToggles.toggleExpandAccordion}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <ToggleSetting 
               settingText={"Create a Contact in HubSpot when a new user is added to SaaSquatch"} 
-              isChecked={states.config.hubSync.createContact} 
+              isChecked={states.config.createContact} 
               handleChange={states.handleToggles.toggleHubCreate} 
             />
           </AccordionSummary>
           <AccordionDetails>
             <AccordionDetailsContainer>
-              <InfoText>A contact will be created in Hubspot when new participant is created in SaaSquatch with the selected fields</InfoText>
+              <InfoText>A contact will be created in Hubspot when a new participant is created in SaaSquatch with the selected fields</InfoText>
               <DataGrid 
                 rows={[
                   { id: 1, fieldName: 'First name',},
@@ -176,7 +171,7 @@ export function View(states: states){
                 checkboxSelection
               />
               <ItemContainer>
-                <Checkbox checked={states.config.hubSync.importHistoricalContacts} onChange={states.handleToggles.toggleHubHistoricalImport} color={"primary"} />
+                <Checkbox checked={states.config.importHistoricalContacts} onChange={states.handleToggles.toggleHubHistoricalImport} color={"primary"} />
                 <InfoText>Import 420 existing participants from SaaSquatch into HubSpot with the selected fields</InfoText>
               </ItemContainer>
             </AccordionDetailsContainer>
@@ -184,17 +179,17 @@ export function View(states: states){
         </UnpaddedAccordion>
         <ToggleSetting 
           settingText={"Delete contact in HubSpot when participant is deleted in SaaSquatch"} 
-          isChecked={states.config.hubSync.deleteContact} 
+          isChecked={states.config.deleteContact} 
           handleChange={states.handleToggles.toggleHubDelete} 
         />
         <ToggleSetting 
           settingText={"Add share link to contact in HubSpot when new share link is created for particpant in SaaSquatch"} 
-          isChecked={states.config.hubSync.syncRefLinks} 
+          isChecked={states.config.syncRefLinks} 
           handleChange={states.handleToggles.toggleHubRefLinks} 
         />
         <ToggleSetting 
           settingText={"Import existing share links from participants in SaaSquatch to contacts in HubSpot"} 
-          isChecked={states.config.hubSync.importHistoricalRefLinks} 
+          isChecked={states.config.importHistoricalRefLinks} 
           handleChange={states.handleToggles.toggleHubHitoricalRefLinksImport} 
         />
         <ItemContainer>

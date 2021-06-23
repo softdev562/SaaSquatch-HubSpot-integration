@@ -11,7 +11,6 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { DataGrid } from '@material-ui/data-grid';
 import Checkbox from '@material-ui/core/Checkbox';
 
-
 const PageWrapper = styled.div`
   min-height: 100vh;
   display: flex;
@@ -78,28 +77,21 @@ const SyncButton = styled.button`
   margin-right: 10px;
 `;
 
-interface Config {
-  hubSync: {
-    createContact: boolean,
-    importHistoricalContacts: boolean,
-    deleteContact: boolean,
-    syncRefLinks: boolean,
-    importHistoricalRefLinks: boolean,
-  },
-  saasSync: {
-    createUser: boolean,
-    importHistoricalUsers: boolean,
-    deleteUser: boolean,
-  }
+interface SaasConfig {
+  createParticipant: boolean,
+  importHistoricalParticipants: boolean,
+  deleteParticipant: boolean,
 }
 
 interface states {
-  config: Config;
+  config: SaasConfig;
+  expandAccordion: boolean;
   handleSubmit: ()=>void;
   handleToggles: {
     toggleSaasCreate: ()=>void;
-    toggleSaasHistoricalUserImport: ()=>void;
+    toggleSaasHistoricalParticipantImport: ()=>void;
     toggleSaasDelete: ()=>void;
+    toggleExpandAccordion: ()=>void;
   }
 }
 
@@ -108,31 +100,30 @@ export function ConfigurationP2() {
 }
 
 export function Controller(){
-  const emptyConfig: Config = {
-    hubSync: {
-      createContact: false,
-      importHistoricalContacts: false,
-      deleteContact: false,
-      syncRefLinks: false,
-      importHistoricalRefLinks: false,
-    },
-    saasSync: {
-      createUser: false,
-      importHistoricalUsers: false,
-      deleteUser: false,
-    }
+  const emptyConfig: SaasConfig = {
+    createParticipant: false,
+    importHistoricalParticipants: false,
+    deleteParticipant: false,
   }
-  const [config, setConfig] = useState<Config>(emptyConfig)
+  const [config, setConfig] = useState<SaasConfig>(emptyConfig)
+  const [expandAccordion, setExpandAccordion] = useState<boolean>(false)
 
   // Need a handler for each toggle because Switches are kinda weird
-  const toggleSaasCreate = () => setConfig({...config, saasSync: {...config.saasSync, createUser: !config.saasSync.createUser}});
-  const toggleSaasHistoricalUserImport = () => setConfig({...config, saasSync: {...config.saasSync, importHistoricalUsers: !config.saasSync.importHistoricalUsers}});
-  const toggleSaasDelete = () => setConfig({...config, saasSync: {...config.saasSync, deleteUser: !config.saasSync.deleteUser}});
+  const toggleSaasCreate = () => {
+    if (!expandAccordion && !config.createParticipant) {
+      setExpandAccordion(true)
+    }
+    setConfig({...config, createParticipant: !config.createParticipant});
+  }
+  const toggleSaasHistoricalParticipantImport = () => setConfig({...config, importHistoricalParticipants: !config.importHistoricalParticipants});
+  const toggleSaasDelete = () => setConfig({...config, deleteParticipant: !config.deleteParticipant});
+  const toggleExpandAccordion = () => setExpandAccordion(!expandAccordion);
 
   const handleToggles = {
     toggleSaasCreate,
-    toggleSaasHistoricalUserImport,
+    toggleSaasHistoricalParticipantImport,
     toggleSaasDelete,
+    toggleExpandAccordion,
   };
   
   const handleSubmit = () => {
@@ -143,7 +134,7 @@ export function Controller(){
   const successToast = () => toast.success("HubSpot Integration is Connected", {
     position: toast.POSITION.BOTTOM_RIGHT
   });
-  return {config, handleSubmit, handleToggles} as states
+  return {config, expandAccordion, handleSubmit, handleToggles} as states
 }
 
 export function View(states: states){
@@ -151,11 +142,11 @@ export function View(states: states){
     <PageWrapper>
       <PageContent>
         <TitleText>Configure your <Logo src={SaaSquatchLogo} /> Integration</TitleText>
-        <UnpaddedAccordion defaultExpanded>
+        <UnpaddedAccordion expanded={states.expandAccordion} onChange={states.handleToggles.toggleExpandAccordion} >
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <ToggleSetting 
               settingText={"Connect contacts in HubSpot to particpants in SaaSquatch"} 
-              isChecked={states.config.saasSync.createUser} 
+              isChecked={states.config.createParticipant} 
               handleChange={states.handleToggles.toggleSaasCreate} 
             />
           </AccordionSummary>
@@ -167,7 +158,7 @@ export function View(states: states){
                   { id: 1, fieldName: 'Participant Field'},
                   { id: 2, fieldName: 'First name',},
                   { id: 3, fieldName: 'Last name',},
-                  { id: 4, fieldName: 'email',},
+                  { id: 4, fieldName: 'Email',},
                   { id: 5, fieldName: 'Referrable',},
                   { id: 6, fieldName: 'other stuff',},
                   ]} 
@@ -177,7 +168,11 @@ export function View(states: states){
                 checkboxSelection
               />
               <ItemContainer>
-                <Checkbox checked={states.config.saasSync.importHistoricalUsers} onChange={states.handleToggles.toggleSaasHistoricalUserImport} color={"primary"} />
+                <Checkbox 
+                  checked={states.config.importHistoricalParticipants} 
+                  onChange={states.handleToggles.toggleSaasHistoricalParticipantImport} 
+                  color={"primary"} 
+                />
                 <InfoText>Import 420 contacts from HubSpot into SaaSquatch with the selected fields</InfoText>
               </ItemContainer>
             </AccordionDetailsContainer>
@@ -185,7 +180,7 @@ export function View(states: states){
         </UnpaddedAccordion>
         <ToggleSetting 
           settingText={"Delete participant in SaaSquatch when contact is deleted in HubSpot"} 
-          isChecked={states.config.saasSync.deleteUser} 
+          isChecked={states.config.deleteParticipant} 
           handleChange={states.handleToggles.toggleSaasDelete} 
         />
         <ItemContainer>
