@@ -32,11 +32,11 @@ Feature: Hubspot low level actions
 		And The user was redirected to to the redirect uri
 		And The url contains a code from Hubspot
 		When The integration sends a post request to Hubspot
-		And With a 'grant_type' parameter that has a value of 'authorization_code'
-		And With a 'client_id' parameter that has the value of the Hubspot app client id
-		And Have a 'client_secret' parameter that has the value of the Hubspot app client secret
-		And With a 'redirect_uri' parameter that has the value of the Hubspot app redirect uri
-		And With a 'code' parameter that has the value of the code provided in the request from Hubspot
+		And Includes a 'grant_type' parameter that has a value of 'authorization_code'
+		And Includes a 'client_id' parameter that has the value of the Hubspot app client id
+		And Includes a 'client_secret' parameter that has the value of the Hubspot app client secret
+		And Includes a 'redirect_uri' parameter that has the value of the Hubspot app redirect uri
+		And Includes a 'code' parameter that has the value of the code provided in the request from Hubspot
 		Then An access token and refresh token should be apart of the response from Hubspot to access the accounts data
 		And The user is redirected to the configuration page
 
@@ -45,10 +45,10 @@ Feature: Hubspot low level actions
 		And The getHubspotAccessToken function is used to obtain a new access token
 		And The function is provided the refresh token for the account
 		When The integration sends a post request to Hubspot
-		And With a 'grant_type' parameter that has a value of 'refresh_token'
-		And With a 'client_id' parameter that has the value of the Hubspot app client id
-		And With a 'client_secret' parameter that has the value of the Hubspot app client secret
-		And With a 'refresh_token' parameter that has the value of the refresh token
+		And Includes a 'grant_type' parameter that has a value of 'refresh_token'
+		And Includes a 'client_id' parameter that has the value of the Hubspot app client id
+		And Includes a 'client_secret' parameter that has the value of the Hubspot app client secret
+		And Includes a 'refresh_token' parameter that has the value of the refresh token
 		Then The original refresh token and a new access token is returned
 
 	Scenario: Requesting a new access token from Hubspot with the getHubspotAccessToken function
@@ -56,10 +56,10 @@ Feature: Hubspot low level actions
 		And The getHubspotAccessToken function is used to obtain a new access token
 		And The function is provided the refresh token for the account
 		When The integration sends a post request to Hubspot
-		And With a 'grant_type' parameter that has a value of 'refresh_token'
-		And With a 'client_id' parameter that has the value of the Hubspot app client id
-		And With a 'client_secret' parameter that has the value of the Hubspot app client secret
-		And With a 'refresh_token' parameter that has the value of the refresh token
+		And Includes a 'grant_type' parameter that has a value of 'refresh_token'
+		And Includes a 'client_id' parameter that has the value of the Hubspot app client id
+		And Includes a 'client_secret' parameter that has the value of the Hubspot app client secret
+		And Includes a 'refresh_token' parameter that has the value of the refresh token
 		But One or many of the parameters are missing or misspelled
 		Then An error resposne is returned
 		
