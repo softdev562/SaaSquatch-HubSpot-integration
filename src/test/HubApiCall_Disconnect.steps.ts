@@ -22,21 +22,15 @@ const apiCallThatReturnsSuccess = async () => {
 
 const apiCallWithExpiredAccessToken = async () => {
     try {
-
         const response = await axios.get('https://api.hubapi.com/crm/v3/objects/contacts', {
             headers: {
             accept: 'application/json', authorization: "Bearer" + access_token
             }
         })
-
         const data = response.data;
-
         return data;
-
     } catch (e) {
-
         console.log('  > Unable to retrieve contact');
-
         return JSON.parse(e.response.body);
     }
 
@@ -78,12 +72,10 @@ defineFeature(Disconnect, test => {
                         accept: 'application/json', authorization: "Bearer" + access_token
                     }
                 })
-
             }
             catch(e)
             {
                 expect(e.response.data.category).toBe('INVALID_AUTHENTICATION');
-
             }
         })
 
@@ -94,7 +86,6 @@ defineFeature(Disconnect, test => {
 
         then('a bad request error is returned', async () => {
             const res = await HubApiCall(apiCallWithExpiredAccessToken,refresh_token);
-
             expect(res.statusText).toBe('Bad Request');
 
         });
