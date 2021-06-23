@@ -41,6 +41,39 @@ export class HubspotApiModel {
         }
     }
 
+    public async createObject(objectType:string, createContactBody:object){
+        try{
+            const createContactURL = 'https://api.hubapi.com/crm/v3/objects/' + objectType;
+            const response = await axios.post(createContactURL, createContactBody,{
+        
+                params: {
+                    hapikey: this.HAPIKEY
+                }
+            });
+            return response;
+        } catch (e) {
+            console.error("Was not able to create contact");
+            console.log(e);
+        }
+    }
+   
+
+
+    public async searchObject(objectType:string, body:object){
+        const searchURL = 'https://api.hubapi.com/crm/v3/objects/' + objectType + '/search';
+        try {
+            const response = await axios.post(searchURL,body, {
+                params: {
+                    hapikey: this.HAPIKEY,
+                }
+            });
+            return response;
+        } catch (e) {
+            console.error("===== WAS NOT ABLE TO SEARCH FOR PROPERTIES OF OBJECT: " + objectType);
+            console.error(e);
+        }
+    }
+
 
    
 
