@@ -8,9 +8,14 @@ export class hubspotUpdatesController{
     private hubApiModel: HubspotApiModel;
     private saasApiModel: SaasquatchApiModel;
 
-    constructor(hApiKey: string, sApiKey: string, sTenantAlias: string){
+    // constructor(hApiKey: string, sApiKey: string, sTenantAlias: string){
+    //     this.saasApiModel = new SaasquatchApiModel(sApiKey, sTenantAlias);
+    //     this.hubApiModel = new HubspotApiModel(hApiKey);
+    // }
+
+    constructor(hub_access_token: string, sApiKey: string, sTenantAlias: string){
         this.saasApiModel = new SaasquatchApiModel(sApiKey, sTenantAlias);
-        this.hubApiModel = new HubspotApiModel(hApiKey);
+        this.hubApiModel = new HubspotApiModel(hub_access_token);
     }
 
     /**

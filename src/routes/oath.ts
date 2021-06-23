@@ -4,8 +4,7 @@ import axios from 'axios';
 import querystring from 'querystring';
 
 const router = Router();
-
-let current_user:any ='VALUE_ASSIGNED_IN_HUBSPOT_ENDPOINT'; // current_user = req.SessionID
+export let current_user:any ='VALUE_ASSIGNED_IN_HUBSPOT_ENDPOINT'; // current_user = req.SessionID
 // Constants
 // Hubspot
 const HUBSPOT_CLIENT_ID = process.env.HUBSPOT_CLIENT_ID;

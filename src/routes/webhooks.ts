@@ -11,6 +11,10 @@ import Ajv from "ajv";
 import { hubspotUpdatesController } from '../integration/hubspotUpdatesController';
 import { saasquatchUpdatesController } from '../integration/saasquatchUpdatesController';
 
+//#TODO REPLACE CURRENT USER AND TOKEN STORE ONCE ACCESS TOKENS ARE STORED IN DB
+import {tokenStore} from "../routes/oath";
+import {current_user} from "../routes/oath"
+
 /**
  * Handles Webhooks from SaaSquatch and Hubspot by validating they actually came from SaaSquatch
  * or HubSpot
@@ -45,7 +49,9 @@ ajv.addSchema(saasquatchSchema, "saasquatch");
 const validateHubspotSchema = ajv.getSchema("hubspot");
 const validateSaasquatchSchema = ajv.getSchema("saasquatch");
 
-const hubUpdatesController = new hubspotUpdatesController(process.env.HAPIKEY, process.env.SAPIKEY, process.env.STENANTALIAS);
+//const hubUpdatesController = new hubspotUpdatesController(process.env.HAPIKEY, process.env.SAPIKEY, process.env.STENANTALIAS);
+const hubUpdatesController = new hubspotUpdatesController(tokenStore[current_user]["access_token"], process.env.SAPIKEY, process.env.STENANTALIAS);
+
 const saasUpdatesController = new saasquatchUpdatesController(process.env.HAPIKEY, process.env.SAPIKEY, process.env.STENANTALIAS);
 
 
