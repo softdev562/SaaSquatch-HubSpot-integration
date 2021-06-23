@@ -3,16 +3,6 @@ import querystring from 'querystring';
 
 
 export class HubspotApiModel {
-
-    
-    // Temp access until DB has OAuth access tokens
-    // private HAPIKEY: string;
-    //
-    // constructor(apiKey: string){
-    //     this.HAPIKEY = apiKey;
-    // }
-
-   //Temp access until DB has OAuth access tokens
     private hub_access_token: string;
 
     constructor(hub_access_token: string){
@@ -29,16 +19,14 @@ export class HubspotApiModel {
 
     //#todo: suggest renaming objectID to contactObjectID
     public async getContact(objectId: number, paramToGet?: string){
-        //const headers = { accept: 'application/json' };
-        const headers = { accept: 'application/json',authorization:'Bearer'+ };
-
+        const headers = { accept: 'application/json',authorization:`Bearer ${this.hub_access_token}` };
         const url = `https://api.hubapi.com/crm/v3/objects/contacts/${encodeURIComponent(objectId)}`;
         let qs;
         if (paramToGet){
-            qs = {"properties": 'email', "archived": 'false'}//,// "hapikey": `${this.HAPIKEY}`};
+            qs = {"properties": 'email', "archived": 'false'}
         }
         else{
-            qs = {archived: 'false'}//, hapikey: this.HAPIKEY};
+            qs = {archived: 'false'}
         }
         try{
             const resp = await axios.get( url, { params: qs } );
@@ -50,6 +38,8 @@ export class HubspotApiModel {
                 return resp.data;
             }
         }catch(e){
+            // this causes a promise rejection to be sent (necessary for integration with hubapicallfun)
+            return JSON.parse(e.response.body);
             console.error(e);
         }
     }
