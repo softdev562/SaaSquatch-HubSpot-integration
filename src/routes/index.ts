@@ -236,49 +236,4 @@ router.get('/participants', async (req, res) => {
 
 });
 
-const getConfigData = async () => {
-    try {
-        console.log('Attempting to get config data from database');
-        // TODO get config data from database
-        const configData:JSON = <JSON><unknown>{
-            "hubspotToSaasquatch": true,
-            "saasquatchToHubspot": true
-        }
-        return configData;
-    } catch (e) {
-        console.error('  > Unable to retrieve configData');
-        return JSON.parse(e.response.body);
-    }
-}
-
-async function postConfigData(configData: any) {
-    try {
-		if (configData){
-            const hubSync = configData['hubspotToSaasquatch'];
-            const saasSync = configData['saasquatchToHubspot'];
-            // TODO post config data to database
-		}
-        return;
-    } catch (e) {
-        console.log(e);
-        return e;
-    }
-}
-
-router.get('/configData', async (req, res) => {
-    try {
-        const configData = await getConfigData();
-        res.json(configData);
-    }
-    catch(e) {
-        console.log(e);
-        return e;
-    }
-});
-
-router.post('/configData', async (req, res) => {
-    const configData = await postConfigData;
-    res.end();
-});
-
 export default router
