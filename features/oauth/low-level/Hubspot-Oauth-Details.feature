@@ -1,5 +1,6 @@
 Feature: Hubspot low level actions
 
+	@manual
 	Scenario: Hubspot app and integration have different client ID
 		Given The integration will try to install a Hubspot app that exists
 		But The integration does not have the correct Client ID
@@ -8,6 +9,7 @@ Feature: Hubspot low level actions
 		Then The pop-up should display a connection error
 		And A 404 error should be returned in the pop-up window
 
+	@manual
 	Scenario: Hubspot app and integration have different redirect uri
 		Given The integration will try to install a Hubspot app that exists
 		But The integration does not have the correct redirect uri
@@ -17,6 +19,7 @@ Feature: Hubspot low level actions
 		Then The pop-up should display a connection error
 		And A 400 error should be returned in the pop-up window
 
+	@manual
 	Scenario: Hubspot app and inteagration have different client secret
 		Given The integration will try to install a Hubspot app that exists
 		And The integration does not have the correct client secret
@@ -27,6 +30,7 @@ Feature: Hubspot low level actions
 		And The integration is not installed on the users account
 		And A 400 error should be returned to the integration
 
+	@manual
 	Scenario: Requesting refresh token and access token from Hubspot
 		Given The user has completed the Hubspot oauth flow
 		And The user was redirected to to the redirect uri
@@ -40,21 +44,17 @@ Feature: Hubspot low level actions
 		Then An access token and refresh token should be apart of the response from Hubspot to access the accounts data
 		And The user is redirected to the configuration page
 
-	Scenario: Requesting a new access token from Hubspot with the getHubspotAccessToken function
+	Scenario: Requesting a new access token from Hubspot
 		Given The integration needs a new refresh token from Hubspot
-		And The getHubspotAccessToken function is used to obtain a new access token
-		And The function is provided the refresh token for the account
 		When The integration sends a post request to Hubspot
 		And Includes a 'grant_type' parameter that has a value of 'refresh_token'
 		And Includes a 'client_id' parameter that has the value of the Hubspot app client id
 		And Includes a 'client_secret' parameter that has the value of the Hubspot app client secret
 		And Includes a 'refresh_token' parameter that has the value of the refresh token
-		Then The original refresh token and a new access token is returned
+		Then The original refresh token and a new access token are returned
 
-	Scenario: Requesting a new access token from Hubspot with the getHubspotAccessToken function
+	Scenario: Requesting a new access token from Hubspot with errors
 		Given The integration needs a new refresh token from Hubspot
-		And The getHubspotAccessToken function is used to obtain a new access token
-		And The function is provided the refresh token for the account
 		When The integration sends a post request to Hubspot
 		And Includes a 'grant_type' parameter that has a value of 'refresh_token'
 		And Includes a 'client_id' parameter that has the value of the Hubspot app client id

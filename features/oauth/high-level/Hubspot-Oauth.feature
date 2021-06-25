@@ -16,16 +16,16 @@ Feature: Hubspot oauth flow
 		Then The user <Outcome>
 		And The user should not be redirected to the configuration page
 
-	| Oauth Error                     | Outcome                           |
-	| Closes the pupup window         | Should be shown with error text   |
-	| Does not have a Hubspot account | Will not be redirected to Hubspot |
-	| Internal integration error      | Will not have the app installed   |
+	| Oauth Error                     | Outcome                                            |
+	| Closes the pupup window         | Should be shown error text                         |
+	| Does not have a Hubspot account | Will not be redirected to Hubspot app install page |
+	| Internal integration error      | Will not have the app installed                    |
 
 	Scenario: User tries to access confinuration page without being authenticated
 		Given The user is not authenticated
-		When The user tries to navigate the the configuration page
+		When The user tries to navigate to the configuration page
 		Then The integartion does not show any configuration data
-		And The user is redirected to the root page
+		And The user is redirected back to the login page
 
 	Scenario: The integration is able to obtain a new refresh token from Hubspot
 		Given The user has completed the integration's Hubspot oauth flow
@@ -33,8 +33,8 @@ Feature: Hubspot oauth flow
 		Then A new refrsh token should be returned from Hubspot
 
 	Scenario: The integration is not able to obtain a new refresh token from Hubspot
-		Given The user has completed the integration's Hubspot oauth flow
-		And The integration is disconnected on the users account
+		Given The user has completed the integration's Hubspot oauth flow before
+		And The integration app is disconnected on the users Hubspot account
 		When The integration needs a new refrsh token from Hubspot
 		Then A new refrsh token is not returned from Hubspot
 		And A 401 error response is returned
