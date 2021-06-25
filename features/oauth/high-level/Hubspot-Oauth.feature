@@ -17,7 +17,7 @@ Feature: Hubspot oauth flow
 		And The user should not be redirected to the configuration page
 
 	| Oauth Error                     | Outcome                                            |
-	| Closes the pupup window         | Should be shown error text                         |
+	| Closes the popup window         | Should be shown error text                         |
 	| Does not have a Hubspot account | Will not be redirected to Hubspot app install page |
 	| Internal integration error      | Will not have the app installed                    |
 
