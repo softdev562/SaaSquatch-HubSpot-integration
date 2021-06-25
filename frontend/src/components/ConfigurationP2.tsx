@@ -1,6 +1,4 @@
 import { useState } from 'react';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import styled from 'styled-components';
 import { ToggleSetting } from './ToggleSetting';
 import SaaSquatchLogo from '../assets/SaaSquatchLogo.png';
@@ -10,6 +8,7 @@ import AccordionSummary from '@material-ui/core/AccordionSummary';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { DataGrid } from '@material-ui/data-grid';
 import Checkbox from '@material-ui/core/Checkbox';
+import history from '../types/history';
 
 const PageWrapper = styled.div`
   min-height: 100vh;
@@ -127,13 +126,8 @@ export function Controller(){
   };
   
   const handleSubmit = () => {
-    // Here we will make the requests to the backend to store the config info and to notify the success
-    successToast()
+    history.push('/configuration/success');
   }
-
-  const successToast = () => toast.success("HubSpot Integration is Connected", {
-    position: toast.POSITION.BOTTOM_RIGHT
-  });
   return {config, expandAccordion, handleSubmit, handleToggles} as states
 }
 
@@ -141,7 +135,7 @@ export function View(states: states){
   return (
     <PageWrapper>
       <PageContent>
-        <TitleText>Configure your <Logo src={SaaSquatchLogo} /> Integration</TitleText>
+        <TitleText>Step 2: Configure your <Logo src={SaaSquatchLogo} /> Integration</TitleText>
         <UnpaddedAccordion expanded={states.expandAccordion} onChange={states.handleToggles.toggleExpandAccordion} >
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <ToggleSetting 
@@ -155,12 +149,10 @@ export function View(states: states){
               <InfoText>A participant will be created in SaaSquatch when a new contact is created in HubSpot with the selected fields</InfoText>
               <DataGrid 
                 rows={[
-                  { id: 1, fieldName: 'Participant Field'},
                   { id: 2, fieldName: 'First name',},
                   { id: 3, fieldName: 'Last name',},
                   { id: 4, fieldName: 'Email',},
                   { id: 5, fieldName: 'Referrable',},
-                  { id: 6, fieldName: 'other stuff',},
                   ]} 
                 columns={[
                   { field: 'fieldName', headerName: 'Fields to populate', width: 200 },
@@ -192,7 +184,6 @@ export function View(states: states){
           </SyncButton>
           <InfoText>By turning on this integration, we will import 420 participants from SaaSquatch into HubSpot</InfoText>
         </ItemContainer>
-        <ToastContainer/>
       </PageContent>
     </PageWrapper>
    );

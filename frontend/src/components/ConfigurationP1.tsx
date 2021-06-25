@@ -146,7 +146,7 @@ export function View(states: states){
   return (
     <PageWrapper>
       <PageContent>
-        <TitleText>Configure your <Logo src={HubspotLogo} /> Integration</TitleText>
+        <TitleText>Step 1: Configure your <Logo src={HubspotLogo} /> Integration</TitleText>
         <UnpaddedAccordion expanded={states.expandAccordion} onChange={states.handleToggles.toggleExpandAccordion}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <ToggleSetting 
@@ -163,7 +163,10 @@ export function View(states: states){
                   { id: 1, fieldName: 'First name',},
                   { id: 2, fieldName: 'Last name',},
                   { id: 3, fieldName: 'Email',},
-                  { id: 4, fieldName: 'other stuff',},
+                  { id: 4, fieldName: 'Contact Owner',},
+                  { id: 5, fieldName: 'Associated Company',},
+                  { id: 6, fieldName: 'Last Activity Date',},
+                  { id: 7, fieldName: 'Create Date',},
                   ]} 
                 columns={[
                   { field: 'fieldName', headerName: 'Fields to populate', width: 200 },

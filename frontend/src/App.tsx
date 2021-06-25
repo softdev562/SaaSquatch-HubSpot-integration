@@ -3,6 +3,7 @@ import {Login} from './components/Login';
 import {ConfigurationP1} from './components/ConfigurationP1';
 import {ConfigurationP2} from './components/ConfigurationP2';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core';
+import { ConfigurationSuccess } from './components/ConfigurationSuccess';
 
 const theme = createMuiTheme({
   palette: {
@@ -31,6 +32,10 @@ function App() {
           <Route path="/configuration" exact >
             <Redirect to="/configuration/1"/>
           </Route>
+          <Route 
+            path="/configuration/success" 
+            exact component={ConfigurationSuccess}
+          />
           <Route path="/login" exact component={Login} />
           <Route path="/" exact component={Login} />
         </div>
