@@ -10,9 +10,6 @@ const HubspotOauth = loadFeature('features/Oauth/High-Level/Hubspot-Oauth.featur
 });
 
 defineFeature(HubspotOauth, test => {
-	const configurationPageURL = 'http://localhost:3000/configuration';
-	const homePage = 'http://localhost:3000/'
-
 	// Selenium driver
 	let driver: WebDriver;
 
@@ -27,26 +24,53 @@ defineFeature(HubspotOauth, test => {
 		try {
 			//driver.quit();
 		} catch(e) {
+			console.log(e)
 		}
 	});
 
-	test('User tries to access configuration page without being authenticated', ({ given, when, then }) => {
+    test('User completes Hubspot oauth flow correctly', ({ given, when, and, then }) => {
+        given('The user has a Hubspot account', () => {
+
+        });
+
+        when('The user starts the Hubspot oauth flow from the integration', () => {
+
+        });
+
+        and('The user correctly login to Hubspot', () => {
+
+        });
+
+        and('The user is redirected to the integration\'s callback page', () => {
+
+        });
+
+        then('The user should be redirected to the configuration page', () => {
+
+        });
+
+        and('The pop up window should close', () => {
+
+        });
+    });
+
+	test('User tries to access configuration page without being authenticated', ({ given, when, then, and }) => {
         given('The user is not authenticated', () => {
-			// New window is unauthenticated
+
         });
 
         when('The user tries to navigate to the configuration page', () => {
-			driver.get(configurationPageURL);
+
         });
 
         then('The user is redirected back to the login page', () => {
-			driver.wait(until.urlIs(homePage), 2000);
-			expect(driver.getCurrentUrl()).toBe(homePage);
+
         });
     });
 
 	test('The integration is able to obtain a new refresh token from Hubspot', ({ given, when, then, and }) => {
 		given('The user has completed the integration\'s Hubspot oauth flow', () => {
+
         });
 
         when('The integration needs a new refresh token from Hubspot', () => {
@@ -75,8 +99,5 @@ defineFeature(HubspotOauth, test => {
 
         });
 
-        and('A 401 error response is returned', () => {
-
-        });
 	});
 });

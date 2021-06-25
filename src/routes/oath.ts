@@ -1,6 +1,7 @@
 import { Router } from 'express';
 require('dotenv').config();
 import axios from 'axios';
+axios.defaults.adapter = require('axios/lib/adapters/http') // use http adapter instead of JSDOM
 import querystring from 'querystring';
 import { env } from 'process';
 
@@ -38,7 +39,7 @@ export const isAuthorized = (userId: string) =>{
  * @param refreshToken Hubspot refresh token
  * @returns Hubspot access token object.
  */
-export const getHubspotAccessToken = async (refreshToken: string) => {
+export const getHubspotAccessToken = async (refreshToken: string | undefined) => {
 	if (!refreshToken) {
 		throw new Error(`Refresh token not provided to getHubspotAccessToken.`);
 	} else if (!HUBSPOT_CLIENT_ID) {
@@ -57,7 +58,7 @@ export const getHubspotAccessToken = async (refreshToken: string) => {
 		const resp = await axios.post(url, querystring.stringify(refreshTokenProof));
 		return resp.data;
 	} catch(e) {
-		throw new Error(`Request to '${e.config.url}' resulted in error ${e.response.status} ${e.response.statusText}.`);
+		throw new Error(e);
 	}
 }
 
@@ -83,7 +84,7 @@ export const getSaasquatchToken = async () =>  {
 		const resp = await axios.post(url, querystring.stringify(tokenProof));
 		return resp.data;
 	} catch(e) {
-		throw new Error(`Request to '${e.config.url}' resulted in error ${e.response.status} ${e.response.statusText}.`);
+		throw new Error(e);
 	}
 };
 

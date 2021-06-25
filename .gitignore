@@ -108,3 +108,8 @@ dist
 
 # TernJS port file
 .tern-port
+
+# Production Build
+build/*
+public/*
+frontend/build/*

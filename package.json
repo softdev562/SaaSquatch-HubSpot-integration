@@ -10,8 +10,8 @@
 		"watch": "concurrently \"npm run server\" \"npm run frontend\"",
 		"start": "node ./build",
 		"heroku-postbuild": "bash ./production-build.sh",
-		"test": "yarn run heroku-postbuild && (yarn run start & (tsc src/test/*.steps.ts && jest --detectOpenHandles ; rm src/test/*.steps.js ; kill -15 $!)) ",
-		"build-tests": "tsc **/test/*.ts",
+		"test": "yarn run start & jest --detectOpenHandles ; kill -15 $! ",
+		"build-tests": "npm run heroku-postbuild",
 		"run-tests": "jest",
 		"clean-tests": "rm **/test/*.js"
 	},
