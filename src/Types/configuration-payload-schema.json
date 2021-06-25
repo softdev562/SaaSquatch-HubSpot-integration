@@ -1,0 +1,11 @@
+{
+	"title": "Configuration Payload",
+    "description": "The payload of a Configuration POST/PUT",
+	"type": "object",
+	"properties": {
+		"hubspotToSaasquatch": { "type": "boolean" },
+		"saasquatchToHubspot": { "type": "boolean" }
+	},
+	"required": ["hubspotToSaasquatch", "saasquatchToHubspot"],
+	"additionalProperties": false
+}

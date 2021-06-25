@@ -64,3 +64,7 @@ export interface SaasquatchPayload{
     created: number,
     data: object
 }
+export interface Configuration {
+	hubspotToSaasquatch: boolean,
+	saasquatchToHubspot: boolean
+}

@@ -4,6 +4,7 @@ import path from 'path';
 import chalk from 'chalk';
 import routes from './routes';
 import oauthroutes from './routes/oath';
+import { configurationRoutes } from './routes/configuration'
 import webhooks from './routes/webhooks';
 import firebase from 'firebase/app'
 
@@ -21,14 +22,10 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 // constants
 const PORT = process.env.PORT || 8000;
-const {
-	HUBSPOT_API_KEY: HAPIKEY,
-	SAASQUATCH_API_KEY: SAPIKEY,
-	SAASQUATCH_TENANT_ALIAS: STENANTALIAS
-} = process.env;
 
 // configure
 const app = express();
+app.use(express.json());
 
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -37,6 +34,7 @@ app.use(bodyParser.json());
 // dynamic routes
 app.use(routes);
 app.use(oauthroutes);
+app.use(configurationRoutes);
 app.use(webhooks);
 
 // static routes
