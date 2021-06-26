@@ -3,7 +3,6 @@ import { Router } from 'express';
 import * as jwt from "jsonwebtoken";
 import jwksRsa = require("jwks-rsa");
 import { Base64 } from "js-base64";
-import crypto from "crypto";
 import { SubscriptionType, HubspotPayload, SaasquatchPayload, EventType } from '../Types/types';
 import saasquatchSchema from '../Types/saasquatch-payload-schema.json';
 import hubspotSchema from '../Types/hubspot-payload-schema.json';
@@ -48,7 +47,7 @@ const validateSaasquatchSchema = ajv.getSchema("saasquatch");
 const hubUpdatesController = new hubspotUpdatesController(process.env.HAPIKEY, process.env.SAPIKEY, process.env.STENANTALIAS);
 const saasUpdatesController = new saasquatchUpdatesController(process.env.HAPIKEY, process.env.SAPIKEY, process.env.STENANTALIAS);
 
-
+const crypto = require("crypto");
 
 /**
  * Endpoint for webhooks from SaaSquatch
