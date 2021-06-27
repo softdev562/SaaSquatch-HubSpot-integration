@@ -3,7 +3,7 @@ import ConfigurationPayloadSchema from '../Types/configuration-payload-schema.js
 
 import { Router } from 'express'
 import { Configuration } from '../Types/types'
-import { ConfigurationController } from '../integration/configuration-controller'
+import { ConfigurationController } from '../integration/ConfigurationController'
 
 const router = Router()
 const ajv = new Ajv()

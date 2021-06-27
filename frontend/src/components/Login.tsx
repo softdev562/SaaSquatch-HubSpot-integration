@@ -2,11 +2,6 @@ import {useState} from "react";
 import styled from 'styled-components';
 import HubspotLogo from '../assets/HubspotLogo.png';
 
-import { AddToDatabase } from '../database'
-import { EditDatabase } from '../database'
-import { DeleteFromDatabase } from '../database'
-import { PollDatabase } from '../database'
-
 const Wrapper = styled.div`
   min-height: 100vh;
   display: flex;

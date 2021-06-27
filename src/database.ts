@@ -2,7 +2,7 @@ import firebase from "firebase/app";
 import "firebase/database";
 const crypto = require('crypto')
 
-type blankPassObvect =  {
+type blankPassObject =  {
     ConnectToHubspot: boolean,
     CreateParticipant: boolean,
     Field: boolean,
@@ -35,7 +35,7 @@ function hashValue(stringValue: string){
 /**
  * Adds Values to Database
  */
-export function AddToDatabase(email: string, data: blankPassObvect) {
+export function AddToDatabase(email: string, data: blankPassObject) {
         data = {
             ConnectToHubspot: true,
             CreateParticipant: true,
@@ -107,7 +107,6 @@ export function EditDatabase() {//Not Done at all yet
 export function PollDatabase(email: string) {
     var key = hashValue(email);
     return firebase.database().ref('users/'+ key).on('value',function(snapshot){
-        console.log(snapshot.val());
         return snapshot.val();
     });
 }

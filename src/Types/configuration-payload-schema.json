@@ -3,9 +3,27 @@
     "description": "The payload of a Configuration POST/PUT",
 	"type": "object",
 	"properties": {
-		"hubspotToSaasquatch": { "type": "boolean" },
-		"saasquatchToHubspot": { "type": "boolean" }
+		"ConnectToHubspot": { "type": "boolean" },
+		"CreateParticipant": { "type": "boolean" },
+		"Field": { "type": "boolean" },
+		"First": { "type": "boolean" },
+		"Last": { "type": "boolean" },
+		"SEmail": { "type": "boolean" },
+		"Refferable": { "type": "boolean" },
+		"DeleteWhenDeleted": { "type": "boolean" },
+		"ConnectToSaasquach": { "type": "boolean" },
+		"CreateInHubspot": { "type": "boolean" },
+		"ContactField": { "type": "boolean" },
+		"Name": { "type": "boolean" },
+		"HEmail": { "type": "boolean" },
+		"ContactOwner": { "type": "boolean" },
+		"AssosiatedCompany": { "type": "boolean" },
+		"LastActivityDate": { "type": "boolean" },
+		"CreateDate": { "type": "boolean" },
+		"DeleteConnected": { "type": "boolean" },
+		"ConnectShareLinks": { "type": "boolean" },
+		"AddShareLinks": { "type": "boolean" }
 	},
-	"required": ["hubspotToSaasquatch", "saasquatchToHubspot"],
+	"required": ["ConnectToHubspot", "ConnectToSaasquach"],
 	"additionalProperties": false
 }

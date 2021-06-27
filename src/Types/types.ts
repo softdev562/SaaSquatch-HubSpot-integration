@@ -65,6 +65,52 @@ export interface SaasquatchPayload{
     data: object
 }
 export interface Configuration {
-	hubspotToSaasquatch: boolean,
-	saasquatchToHubspot: boolean
+    ConnectToHubspot: boolean,
+    CreateParticipant: boolean,
+    Field: boolean,
+    First: boolean,
+    Last: boolean,
+    SEmail: boolean,
+    Refferable: boolean,
+    DeleteWhenDeleted: boolean,
+    ConnectToSaasquach: boolean,
+    CreateInHubspot: boolean,
+    ContactField: boolean,
+    Name: boolean,
+    HEmail: boolean,
+    ContactOwner: boolean,
+    AssosiatedCompany: boolean,
+    LastActivityDate: boolean,
+    CreateDate: boolean,
+    DeleteConnected: boolean,
+    ConnectShareLinks: boolean,
+    AddShareLinks: boolean
+}
+
+export interface ReturnedConfiguration {
+    hubspot: {
+        AddShareLinks: true,
+        AssosiatedCompany: true,
+        ConnectShareLinks: true,
+        ConnectToSaasquach: true,
+        ContactField: true,
+        ContactOwner: true,
+        CreateDate: true,
+        CreateInHubspot: true,
+        DeleteConnected: true,
+        HEmail: true,
+        LastActivityDate: true,
+        Name: true
+        },
+    saasquach: {
+        ConnectToHubspot: true,
+        CreateParticipant: true,
+        DeleteWhenDeleted: true,
+        Field: true,
+        First: true,
+        Last: true,
+        Refferable: true,
+        SEmail: true
+        },
+    userinfo: { emailCredential: string }
 }

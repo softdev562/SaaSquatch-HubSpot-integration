@@ -1,5 +1,5 @@
 import { Configuration } from '../Types/types'
-import { ConfigurationModel } from './configuration-model'
+import { ConfigurationModel } from './ConfigurationModel'
 
 export class ConfigurationController {
 	static getConfiguration(): Configuration {
