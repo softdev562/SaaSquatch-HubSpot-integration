@@ -106,7 +106,17 @@ export function EditDatabase() {//Not Done at all yet
 
 export function PollDatabase(email: string) {
     var key = hashValue(email);
-    return firebase.database().ref('users/'+ key).on('value',function(snapshot){
-        return snapshot.val();
-    });
+    var databseRef = firebase.database().ref();
+    var temporaryHolder;
+    databseRef.child('users/' + key).get().then((snapshot) => {
+        if (snapshot.exists()) {
+            temporaryHolder = snapshot.val();
+        } else {
+          console.log("No data available");
+        }
+      }).catch((error) => {
+        console.error(error);
+      });
+    console.log(temporaryHolder);
+    return temporaryHolder;
 }
