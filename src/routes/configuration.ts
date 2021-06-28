@@ -12,15 +12,17 @@ const validate =  ajv.compile(ConfigurationPayloadSchema)
 
 const API_CONFIGURATION_URL = '/api/configuration'
 
-router.get(API_CONFIGURATION_URL, (req, res) => {
-	const configuration = ConfigurationController.getConfiguration()
+const configurationController = new ConfigurationController();
+
+router.get(API_CONFIGURATION_URL, async (req, res) => {
+	const configuration = await configurationController.getConfiguration()
 	res.json(configuration)
 	res.end();
 })
-router.post(API_CONFIGURATION_URL, (req, res) => {
+router.post(API_CONFIGURATION_URL, async (req, res) => {
 	if(validate(req.body)) {
 		const configuration: Configuration = req.body as Configuration
-		ConfigurationController.setConfiguration(configuration)
+		configurationController.setConfiguration(configuration)
 		res.sendStatus(200)
 		res.end()
 	} else {

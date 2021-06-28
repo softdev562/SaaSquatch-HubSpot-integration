@@ -2,10 +2,18 @@ import { Configuration } from '../Types/types'
 import { ConfigurationModel } from './ConfigurationModel'
 
 export class ConfigurationController {
-	static getConfiguration(): Configuration {
-		return ConfigurationModel.getConfiguration()
+
+	private configurationModel: ConfigurationModel;
+
+    constructor(){
+        this.configurationModel = new ConfigurationModel();
+    }
+	
+	public async getConfiguration() {
+		return this.configurationModel.getConfiguration()
 	}
-	static setConfiguration(configuration: Configuration) {
-		ConfigurationModel.setConfiguration(configuration)
+
+	public setConfiguration(configuration: Configuration) {
+		this.configurationModel.setConfiguration(configuration)
 	}
 }
