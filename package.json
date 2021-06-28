@@ -3,6 +3,7 @@
 	"version": "1.0.0",
 	"description": "Integration which allows synchronizing data between SaaSquatch and HubSpot services.",
 	"main": "index.js",
+	"proxy": "http://localhost:8000",
 	"scripts": {
 		"tsc": "tsc",
 		"server": "nodemon src/index.ts",
