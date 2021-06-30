@@ -6,7 +6,7 @@ import routes from './routes';
 import oauthroutes from './routes/oath';
 import { configurationRoutes } from './routes/configuration'
 import webhooks from './routes/webhooks';
-import firebase from 'firebase/app'
+import firebase from 'firebase/app';
 
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
