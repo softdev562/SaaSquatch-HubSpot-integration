@@ -1,7 +1,7 @@
 Feature: Saasquatch auth0
 
 	Scenario: Integration requests auth0 JWT from Saasquatch correctly
-		Given The integration is not enabled on the tennant's integrations page
+		Given The integration is enabled on the tennant's integrations page
 		And The integration needs a new JWT from Saasquatch
 		When The integration sends a post request to Saasquatch's auth0 sever
 		And Includes a 'grant_type' parameter that has a value of 'client_credentials'
@@ -10,6 +10,7 @@ Feature: Saasquatch auth0
 		And Includes a 'audience' parameter that has a value of 'https://staging.referralsaasquatch.com'
 		Then A new JWT should be included in the response
 
+	@manual
 	Scenario: Integration requests auth0 JWT from Saasquatch incorrectly
 		Given The integration is not enabled on the tennant's integrations page
 		And The integration needs a new JWT from Saasquatch
