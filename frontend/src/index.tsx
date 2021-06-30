@@ -1,12 +1,10 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
-import { Router } from 'react-router-dom'
-import App from './App'
-import reportWebVitals from './reportWebVitals'
-import firebase from 'firebase/app'
-import { createBrowserHistory } from "history";
-
-const history = createBrowserHistory();
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { Router } from 'react-router-dom';
+import App from './App';
+import reportWebVitals from './reportWebVitals';
+import firebase from 'firebase/app';
+import history from "./types/history";
 
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {

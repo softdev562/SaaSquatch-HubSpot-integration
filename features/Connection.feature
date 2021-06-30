@@ -22,6 +22,3 @@ Feature: Connection
         Then then the integration should be disabled
         And should only be re-enabled when the user connects the integration again
 
-    Scenario: Disconnecting Hubspot from integration 
-    	When I disconnect the integration from my Hubspot account
-    	Then the integration can no longer make any protected API calls to Hubspot 

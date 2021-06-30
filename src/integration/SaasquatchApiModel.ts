@@ -1,5 +1,4 @@
 import axios from "axios";
-import querystring from 'querystring';
 
 export class SaasquatchApiModel {
 
@@ -49,6 +48,22 @@ export class SaasquatchApiModel {
         } catch(e){
             console.error(e);
         }
+        }
+
+        public async createParticipant(email:string, createParticipantBody:object){
+            try{
+                //URL should be built using express URL class
+                const createParticipantURL = 'https://staging.referralsaasquatch.com/api/v1/' +this.TENANTALIAS+ '/open/account/' + email + '/user/' + email;
+                const response = await axios.post(createParticipantURL, createParticipantBody,{
+                    headers: {
+                      'Authorization':'token '+this.SAPIKEY
+                  }
+                  });
+                return response;
+            } catch (e) {
+                console.error("Was not able to create contact");
+                console.log(e);
+            }
         }
 
 

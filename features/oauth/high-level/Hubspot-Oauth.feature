@@ -17,7 +17,11 @@ Feature: Hubspot oauth flow
 		And The user should not be redirected to the configuration page
 
 	| Oauth Error                     | Outcome                                            |
+<<<<<<< HEAD
 	| Closes the pupup window         | Should be shown error text                         |
+=======
+	| Closes the popup window         | Should be shown error text                         |
+>>>>>>> origin/main
 	| Does not have a Hubspot account | Will not be redirected to Hubspot app install page |
 	| Internal integration error      | Will not have the app installed                    |
 
@@ -37,3 +41,7 @@ Feature: Hubspot oauth flow
 		And The integration app is disconnected on the users Hubspot account
 		When The integration needs a new refresh token from Hubspot
 		Then A new refresh token is not returned from Hubspot
+<<<<<<< HEAD
+=======
+		And A 401 error response is returned
+>>>>>>> origin/main

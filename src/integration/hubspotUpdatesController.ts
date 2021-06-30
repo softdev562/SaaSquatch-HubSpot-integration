@@ -13,6 +13,8 @@ export class hubspotUpdatesController{
         this.hubApiModel = new HubspotApiModel(hApiKey);
     }
 
+    
+   
     /**
      * Received webhook of subscription type 'contact.created'
      * @param hubspotPayload Payload of Hubspot webhook
@@ -26,18 +28,29 @@ export class hubspotUpdatesController{
         // Hubspot does not include email in contact.created
         // Get new contact's email
         let params ='';
-        this.hubApiModel.getContact(contactObjectId, 'email')
+        this.hubApiModel.getContact(contactObjectId)
         .then(data =>{
             console.log("response");
             console.log(data);
+            const participant = data;
             params = `email:${encodeURIComponent(data.properties.email)}`;
+            console.log("PARAMS");
             console.log(params);
             // 1. Check if contact exists as user in SaaSquatch (match by email)
             this.saasApiModel.getUsers(params)
             .then( data =>{
-                // 2. TODO: If it does not exist, create new user in SaaSquatch
+                //If it does not exist, create new user in SaaSquatch
                 if(data.count == 0){
                     console.log("User does not exist in SaaSquatch");
+                    const createParticipantBody = {
+                            "email": participant.properties.email,
+                            "firstName": participant.properties.firstname,
+                            "lastName": participant.properties.lastname,
+                            "id": participant.properties.email,
+						    "accountId": participant.properties.email,
+            
+                    };
+                    this.saasApiModel.createParticipant(participant.properties.email, createParticipantBody);
                 }
                 // 3. TODO: If it does exist, get share link and other relevant data
                 else{

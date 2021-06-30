@@ -26,11 +26,10 @@ export function ToggleSetting(props: {settingText: string, isChecked: boolean, h
 }
 
 export function View(states: states){
-
   return (
-    <ItemContainer>
-      <Switch checked={states.isChecked} onChange={states.handleChange} disabled={states.disabled} />
-      <InfoText>{states.settingText}</InfoText>
-    </ItemContainer>
+      <ItemContainer onClick={(event) => event.stopPropagation()} onFocus={(event) => event.stopPropagation()}>
+        <Switch checked={states.isChecked} onChange={states.handleChange} disabled={states.disabled} />
+        <InfoText >{states.settingText}</InfoText>
+      </ItemContainer>
   );
 }
