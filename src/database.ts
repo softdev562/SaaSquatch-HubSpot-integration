@@ -1,32 +1,8 @@
 import firebase from "firebase/app";
 import "firebase/database";
+import { Configuration } from './Types/types'
 const crypto = require('crypto')
 
-type blankPassObject =  {
-    ConnectToHubspot: boolean,
-    CreateParticipant: boolean,
-    Field: boolean,
-    First: boolean,
-    Last: boolean,
-    SEmail: boolean,
-    Refferable: boolean,
-    DeleteWhenDeleted: boolean,
-    ConnectToSaasquach: boolean,
-    CreateInHubspot: boolean,
-    ContactField: boolean,
-    Name: boolean,
-    HEmail: boolean,
-    ContactOwner: boolean,
-    AssosiatedCompany: boolean,
-    LastActivityDate: boolean,
-    CreateDate: boolean,
-    DeleteConnected: boolean,
-    ConnectShareLinks: boolean,
-    AddShareLinks: boolean,
-};
-
-//import { AddToDatabase } from "../database"//How to use
-//abc();
 function hashValue(stringValue: string){
     stringValue.toLowerCase()
     return crypto.createHash('sha1').update(stringValue).digest('hex');
@@ -35,7 +11,7 @@ function hashValue(stringValue: string){
 /**
  * Adds Values to Database
  */
-export function AddToDatabase(email: string, data: blankPassObject) {
+export function AddToDatabase(email: string, data: Configuration) {
         var key = hashValue(email);
         firebase.database().ref('users/'+ key + '/saasquach' ).set({
             ConnectToHubspot: data.ConnectToHubspot,
