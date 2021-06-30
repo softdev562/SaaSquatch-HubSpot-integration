@@ -15,10 +15,8 @@ defineFeature(HubspotOauth, test => {
 
         when('The integration needs a new refresh token from Hubspot', async () => {
 			try {
-				console.log(connectedRefreshToken)
 				data = await getHubspotAccessToken(connectedRefreshToken);
 			} catch (e) {
-				console.log(e.message);
 				expect(e).toBeUndefined();
 			}
         });
