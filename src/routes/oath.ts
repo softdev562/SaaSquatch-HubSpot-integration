@@ -1,13 +1,7 @@
 import { Router } from 'express';
 require('dotenv').config();
 import axios from 'axios';
-<<<<<<< HEAD
-axios.defaults.adapter = require('axios/lib/adapters/http') // use http adapter instead of JSDOM
-import querystring from 'querystring';
-import { env } from 'process';
-=======
 const querystring = require('query-string');
->>>>>>> origin/main
 
 const router = Router();
 
@@ -208,12 +202,7 @@ export const HubApiCall:any = async function (myapifunc:Function,refresh_token:s
 		catch(e)
 		{
 			//something went wrong?
-<<<<<<< HEAD
-			return Promise.reject(e);
-
-=======
 			return Promise.reject(400 /*or Error*/ );
->>>>>>> origin/main
 		}
 	}
 }

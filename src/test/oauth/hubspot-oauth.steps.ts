@@ -8,15 +8,17 @@ const HubspotOauth = loadFeature('features/Oauth/High-Level/Hubspot-Oauth.featur
 
 defineFeature(HubspotOauth, test => {
 	test('The integration is able to obtain a new refresh token from Hubspot', ({ given, when, then, and }) => {
-		const connectedRefreshToken = process.env.HUBSPOT_REFRESH_TOKEN_CONNECTED;
+		const connectedRefreshToken = process.env.HUBSPOT_REFRESH_TOKEN_CONNECTED; // TODO: remove and connect to firebase if we want to set test accounts
 		let data: any;
 
 		given('The user has completed the integration\'s Hubspot oauth flow', () => {});
 
         when('The integration needs a new refresh token from Hubspot', async () => {
 			try {
+				console.log(connectedRefreshToken)
 				data = await getHubspotAccessToken(connectedRefreshToken);
 			} catch (e) {
+				console.log(e.message);
 				expect(e).toBeUndefined();
 			}
         });
@@ -30,7 +32,6 @@ defineFeature(HubspotOauth, test => {
 	test('The integration is not able to obtain a new refresh token from Hubspot', ({ given, when, then, and }) => {
 		const disconnectedRefreshToken = process.env.HUBSPOT_REFRESH_TOKEN_DISCONNECTED;
 		let data: Map<string, any>;
-		let error: any;
        
 		given('The user has completed the integration\'s Hubspot oauth flow before', () => {});
 
@@ -40,7 +41,6 @@ defineFeature(HubspotOauth, test => {
 			try {
 				data = await getHubspotAccessToken(disconnectedRefreshToken);
 			} catch (e) {
-				error = e;
 				expect(e).toBeDefined();
 			}
         });
