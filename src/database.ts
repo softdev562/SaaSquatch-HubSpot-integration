@@ -38,7 +38,9 @@ export function AddToDatabase(email: string, data: Configuration) {
             AddShareLinks: data.AddShareLinks
         });
         firebase.database().ref('users/' + key + '/userinfo').set({
-            emailCredential: email
+            emailCredential: email,
+            accessToken: "",
+            refreshToken: ""
         });
     }
 
@@ -104,6 +106,35 @@ export async function PollDatabase(email: string) {
             data.DeleteConnected =      snapshot.child("hubspot/DeleteConnected").val();
             data.ConnectShareLinks =    snapshot.child("hubspot/ConnectShareLinks").val();
             data.AddShareLinks =        snapshot.child("hubspot/AddShareLinks").val();
+        } else {
+          console.log("No data available");
+        }
+      }).catch((error) => {
+        console.error(error);
+      });
+    return data;
+}
+
+export function AddTokensToDatabase(email: string,  accessToken: string, refreshToken: string) {
+    var key = hashValue(email);
+    firebase.database().ref('users/' + key + '/userinfo').set({
+        emailCredential: email,
+        accessToken: accessToken,
+        refreshToken: refreshToken
+    });
+}
+
+export async function PollTokensFromDatabase(email: string) {
+    var key = hashValue(email);
+    var databseRef = firebase.database().ref();
+    var data = {
+        accessToken: false,
+        refreshToken: false,
+    };
+    await databseRef.child('users/' + key + 'userinfo').get().then((snapshot) => {
+        if (snapshot.exists()) {
+            data.accessToken =     snapshot.child("accessToken").val();
+            data.refreshToken =    snapshot.child("refreshToken").val();
         } else {
           console.log("No data available");
         }
