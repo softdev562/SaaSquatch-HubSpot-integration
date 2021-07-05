@@ -31,10 +31,20 @@ export const isAuthorized = (userId: string) =>{
     return tokenStore[userId] ? true : false;
 };
 
-// Gets a new access token from Hubspot
-// Input: Hubspot account refresh token.
-// Return: {"refresh_token", "access_token", "expires_in"}, else if error {"status", "statusText"}
-export const getHubspotAccessToken = async (refreshToken: string) => {
+/**
+ * Gets a new access token from Hubspot
+ * 
+ * @param refreshToken Hubspot refresh token
+ * @returns Hubspot access token object.
+ */
+export const getHubspotAccessToken = async (refreshToken: string | undefined) => {
+	if (!refreshToken) {
+		throw new Error(`Refresh token not provided to getHubspotAccessToken.`);
+	} else if (!HUBSPOT_CLIENT_ID) {
+		throw new Error(`No Hubspot Client ID.`);
+	} else if (!HUBSPOT_CLIENT_SECRET) {
+		throw new Error(`No Hubspot Client Secret.`);
+	}
 	try {
 		const url = 'https://api.hubapi.com/oauth/v1/token';
         const refreshTokenProof = {
@@ -46,15 +56,21 @@ export const getHubspotAccessToken = async (refreshToken: string) => {
 		const resp = await axios.post(url, querystring.stringify(refreshTokenProof));
 		return resp.data;
 	} catch(e) {
-		console.error(`Request to '${e.config.url}' resulted in error ${e.response.status} ${e.response.statusText}.`);
-		return {status: e.response.status, statusText: e.response.statusText};
+		throw new Error(e);
 	}
 }
 
-// Gets a new JWT from saasquatch
-// Input: None.
-// Return: {"access_token", "expires_in", "token_type"}, else if error {"status", "statusText"}
+/**
+ * Gets a new API JWT from Saasquatch
+ * 
+ * @returns Saasquatch JWT object.
+ */
 export const getSaasquatchToken = async () =>  {
+	if (!SAASQUATCH_CLIENT_ID) {
+		throw new Error(`No Saasquatch Client ID.`);
+	} else if (!SAASQUATCH_CLIENT_SECRET) {
+		throw new Error(`No Saasquatch Client Secret.`);
+	}
 	try {
 		const url = "https://squatch-dev.auth0.com/oauth/token";
 		const tokenProof = {
@@ -66,8 +82,7 @@ export const getSaasquatchToken = async () =>  {
 		const resp = await axios.post(url, querystring.stringify(tokenProof));
 		return resp.data;
 	} catch(e) {
-		console.error(`Request to '${e.config.url}' resulted in error ${e.response.status} ${e.response.statusText}.`);
-		return {status: e.response.status, statusText: e.response.statusText};
+		throw new Error(e);
 	}
 };
 
@@ -130,6 +145,7 @@ router.get("/saasquatch_token", async (req, res) => {
 		res.send(token);
 	} catch(e) {
 		console.log(e);
+		res.send(e);
 	}
 });
 
@@ -140,6 +156,7 @@ router.get("/hubspot_refresh_token", async (req, res) => {
 		res.send(token);
 	} catch(e) {
 		console.log(e);
+		res.send(e);
 	}
 });
 
