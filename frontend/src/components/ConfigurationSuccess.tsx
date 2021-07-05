@@ -69,8 +69,8 @@ export function View(states: states){
       <PageContent>
         <TitleText>HubSpot Integration is Connected</TitleText>
         <InfoText>Select a step below to reconfigure your integration</InfoText>
-        <TitleLinkText onClick={states.handleRedirectP1}>Step 1: Configure your <Logo src={SaaSquatchLogo} /> Integration</TitleLinkText>
-        <TitleLinkText onClick={states.handleRedirectP2}>Step 2: Configure your <Logo src={HubspotLogo} /> Integration</TitleLinkText>
+        <TitleLinkText onClick={states.handleRedirectP1}>Step 1: Configure your <Logo src={HubspotLogo} /> Integration</TitleLinkText>
+        <TitleLinkText onClick={states.handleRedirectP2}>Step 2: Configure your <Logo src={SaaSquatchLogo} /> Integration</TitleLinkText>
         <InfoText>Last Sync was at 18:10 PDT</InfoText>
       </PageContent>
     </PageWrapper>

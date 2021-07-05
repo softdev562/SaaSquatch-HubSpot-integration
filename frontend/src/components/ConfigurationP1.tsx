@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { ToggleSetting } from './ToggleSetting';
 import HubspotLogo from '../assets/HubspotLogo.png';
@@ -9,6 +9,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { DataGrid } from '@material-ui/data-grid';
 import Checkbox from '@material-ui/core/Checkbox';
 import history from '../types/history';
+import axios from 'axios';
 
 const PageWrapper = styled.div`
   min-height: 100vh;
@@ -76,6 +77,8 @@ const SyncButton = styled.button`
   margin-right: 10px;
 `;
 
+const API_CONFIGURATION_URL = '/api/configuration'
+
 interface HubConfig {
   createContact: boolean,
   importHistoricalContacts: boolean,
@@ -113,6 +116,18 @@ export function Controller(){
   const [config, setConfig] = useState<HubConfig>(emptyConfig)
   const [expandAccordion, setExpandAccordion] = useState<boolean>(false)
 
+  // Gets config data on page load
+  useEffect(() => {
+    const getConfigData = () => {
+      axios.get(API_CONFIGURATION_URL)
+      .then((response) => {
+        setConfig(config => ({...config, createContact: response.data.ConnectToHubspot}));
+      })
+      .catch(error => console.error('Error: Unable to retrieve Configuration Data'))
+    };
+    getConfigData();
+  },[]);
+
   // Need a handler for each toggle because Switches are kinda weird
   const toggleHubCreate = () => {
     if (!expandAccordion && !config.createContact) {
@@ -137,6 +152,35 @@ export function Controller(){
   
   const handleSubmit = () => {
     // Here we will make the requests to the backend to store the config info and to begin the integration and redirect to second config screen
+    const postConfigData = async () => {
+      return await fetch(API_CONFIGURATION_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          ConnectToHubspot: config.createContact,
+          CreateParticipant: true,
+          Field: true,
+          First: true,
+          Last: true,
+          SEmail: true,
+          Refferable: true,
+          DeleteWhenDeleted: true,
+          ConnectToSaasquach: false, 
+          CreateInHubspot: true,
+          ContactField: true,
+          Name: true,
+          HEmail: true,
+          ContactOwner: true,
+          AssosiatedCompany: true,
+          LastActivityDate: true,
+          CreateDate: true,
+          DeleteConnected: true,
+          ConnectShareLinks: true,
+          AddShareLinks: true
+        })
+      })
+    }
+    postConfigData().then().catch( e => console.error(e) )
     history.push('/configuration/2');
   }
   return {config, expandAccordion, handleSubmit, handleToggles} as states

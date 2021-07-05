@@ -4,8 +4,9 @@ import path from 'path';
 import chalk from 'chalk';
 import routes from './routes';
 import oauthroutes from './routes/oath';
+import { configurationRoutes } from './routes/configuration'
 import webhooks from './routes/webhooks';
-import firebase from 'firebase/app'
+import firebase from 'firebase/app';
 
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
@@ -29,6 +30,7 @@ const {
 
 // configure
 const app = express();
+app.use(express.json());
 
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -37,6 +39,7 @@ app.use(bodyParser.json());
 // dynamic routes
 app.use(routes);
 app.use(oauthroutes);
+app.use(configurationRoutes);
 app.use(webhooks);
 
 // static routes
