@@ -50,6 +50,7 @@ ajv.addSchema(saasquatchSchema, "saasquatch");
 
 const validateHubspotSchema = ajv.getSchema("hubspot");
 const validateSaasquatchSchema = ajv.getSchema("saasquatch");
+
 const hubUpdatesController = new hubspotUpdatesController(tokenStore[current_user]["access_token"], process.env.SAPIKEY, process.env.STENANTALIAS);
 const saasUpdatesController = new saasquatchUpdatesController(process.env.HAPIKEY, process.env.SAPIKEY, process.env.STENANTALIAS);
 
