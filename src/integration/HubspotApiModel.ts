@@ -21,8 +21,12 @@ export class HubspotApiModel {
         const headers = { accept: 'application/json',authorization:`Bearer ${this.hub_access_token}` };
         const url = `https://api.hubapi.com/crm/v3/objects/contacts/${encodeURIComponent(objectId)}`;
         let qs;
+        console.log("this is header",headers)
+        console.log("this is auth",this.hub_access_token)
         if (paramToGet){
-            qs = {"properties": 'email', "archived": 'false'}
+            qs = {archived: 'false'}
+
+            //qs = {"properties": 'email', "archived": 'false'}
         }
         else{
             qs = {archived: 'false'}
@@ -38,7 +42,7 @@ export class HubspotApiModel {
             }
         }catch(e){
             // this causes a promise rejection to be sent (necessary for integration with hubapicallfun)
-            return JSON.parse(e.response.body);
+          //  return JSON.parse(e.response.body);
             console.error(e);
         }
     }
