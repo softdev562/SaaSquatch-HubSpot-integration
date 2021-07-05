@@ -1,3 +1,7 @@
+/**
+ * Integration tests for testing the interaction between the integration and Saasquatch's API JWT.
+ */
+
 import { loadFeature, defineFeature, DefineStepFunction } from 'jest-cucumber';
 import { getSaasquatchToken } from '../../routes/oath';
 

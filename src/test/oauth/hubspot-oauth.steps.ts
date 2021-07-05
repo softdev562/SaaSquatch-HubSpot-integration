@@ -1,3 +1,7 @@
+/**
+ * Integration tests for testing the interaction between the integration and Hubspot's refresh token API.
+ */
+
 import { loadFeature, defineFeature, DefineStepFunction } from 'jest-cucumber';
 import { getHubspotAccessToken } from '../../routes/oath';
 require('dotenv').config();
