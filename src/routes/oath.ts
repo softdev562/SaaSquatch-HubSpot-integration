@@ -111,6 +111,8 @@ router.get('/oauth-callback', async (req, res) => {
                 throw Error("POST to get access and refresh tokens from HubSpot failed. Error:" + resp.data["error"]);
             }
             current_user = req.sessionID;
+            console.log("acc", resp.data.access_token);
+            console.log("ref",resp.data.refresh_token);
             tokenStore[req.sessionID] = {"access_token": resp.data.access_token, "refresh_token": resp.data.refresh_token};
             res.redirect('/hubspot');
         } catch(e){
