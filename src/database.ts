@@ -8,104 +8,116 @@ function hashValue(stringValue: string){
     return crypto.createHash('sha1').update(stringValue).digest('hex');
 }
 
+
 /**
  * Adds Values to Database
+ * The default values for this function's parameters are false. Tennant alias is the
+ * database key value, so passing it is nessesary. Other parameters can be set in the objet, 
+ * and if not set will default to false or the empty string.
+ * Function call should look like AddToDatabase(tenantAllias,{parameter:value,...})
+ * as many or as few of the parameters should be filled out as needed, but if non still include the {}
+ * possible paramters include: 
+ * PushPartixipantsAsContacts bool, PullParticipantsIntoContacts bool, DeleteContactwhenParticipantDeleted bool
+ * PushContactsAsParticipants bool, PullContactsIntoParticipants bool, DeleteParticipantWhenContactDeleted bool
+ * accessToken string, refreshToken string
  */
-export function AddToDatabase(email: string, data: Configuration) {
-        var key = hashValue(email);
-        firebase.database().ref('users/'+ key + '/saasquach' ).set({
-            ConnectToHubspot: data.ConnectToHubspot,
-            CreateParticipant: data.CreateParticipant,
-            Field: data.Field,
-            First: data.First,
-            Last: data.Last,
-            SEmail: data.SEmail,
-            Refferable: data.Refferable,
-            DeleteWhenDeleted: data.DeleteWhenDeleted
-        });
-        firebase.database().ref('users/' + key + '/hubspot').set({
-            ConnectToSaasquach: data.ConnectToSaasquach,
-            CreateInHubspot: data.CreateInHubspot,
-            ContactField: data.ContactField,
-            Name: data.Name,
-            HEmail: data.HEmail,
-            ContactOwner: data.ContactOwner,
-            AssosiatedCompany: data.AssosiatedCompany,
-            LastActivityDate: data.LastActivityDate,
-            CreateDate: data.CreateDate,
-            DeleteConnected: data.DeleteConnected,
-            ConnectShareLinks: data.ConnectShareLinks,
-            AddShareLinks: data.AddShareLinks
-        });
-        firebase.database().ref('users/' + key + '/userinfo').set({
-            emailCredential: email,
-            accessToken: "",
-            refreshToken: ""
-        });
-    }
-
-export function DeleteFromDatabase(email: string) {
-    var key = hashValue(email);
-    firebase.database().ref('users/' + key).remove();
-}
-
-export function EditDatabase() {//Not Done at all yet
-    var userkey = "name";
-    firebase.database().ref('users/' + userkey + 'userinfo').set({
-        email: 'email@example.com', //We need to remove any feild here that we don't want to change, so this one might be aa bit complex
-        hcreate: false,
-        hupdate: false,
-        hsync: false
+export function AddToDatabase(tenantAllias: string, {PushPartixipantsAsContacts = false, PullParticipantsIntoContacts = false,
+                                                     DeleteContactwhenParticipantDeleted = false,PushContactsAsParticipants = false,
+                                                     PullContactsIntoParticipants = false, DeleteParticipantWhenContactDeleted = false,
+                                                     accessToken = "", refreshToken = ""}) {
+    var key = hashValue(tenantAllias);
+    firebase.database().ref('users/'+ key + '/saasquach' ).set({
+        PushPartixipantsAsContacts: PushPartixipantsAsContacts,
+        PullParticipantsIntoContacts : PullParticipantsIntoContacts,
+        DeleteContactwhenParticipantDeleted : DeleteContactwhenParticipantDeleted
+    });
+    firebase.database().ref('users/' + key + '/hubspot').set({
+        PushContactsAsParticipants : PushContactsAsParticipants,
+        PullContactsIntoParticipants : PullContactsIntoParticipants,
+        DeleteParticipantWhenContactDeleted : DeleteParticipantWhenContactDeleted
+    });
+    firebase.database().ref('users/' + key + '/userinfo').set({
+        tenantAllias: tenantAllias,
+        accessToken: accessToken,
+        refreshToken: refreshToken
     });
 }
 
-export async function PollDatabase(email: string) {
-    var key = hashValue(email);
+/**
+ * Given a tenant alliase, deletes the coresponding db entry.
+ * @param tenantAllias 
+ */
+export function DeleteFromDatabase(tenantAllias: string) {
+    var key = hashValue(tenantAllias);
+    firebase.database().ref('users/' + key).remove();
+}
+
+export function EditDatabase(tenantAllias: string, params : {PushPartixipantsAsContacts:Boolean, 
+    PullParticipantsIntoContacts:Boolean, DeleteContactwhenParticipantDeleted:Boolean, PushContactsAsParticipants:Boolean,
+    PullContactsIntoParticipants:Boolean, DeleteParticipantWhenContactDeleted:Boolean, accessToken:String, refreshToken:String}) {
+    var key = hashValue(tenantAllias);
+    if(!params.PushPartixipantsAsContacts === undefined){
+        firebase.database().ref('users/'+ key + '/saasquach' ).set({
+            PushPartixipantsAsContacts: params.PushPartixipantsAsContacts
+        });
+    }
+    if(!params.PullParticipantsIntoContacts === undefined){
+        firebase.database().ref('users/'+ key + '/saasquach' ).set({
+            PullParticipantsIntoContacts : params.PullParticipantsIntoContacts
+        });
+    }
+    if(!params.DeleteContactwhenParticipantDeleted === undefined){
+        firebase.database().ref('users/'+ key + '/saasquach' ).set({
+            DeleteContactwhenParticipantDeleted : params.DeleteContactwhenParticipantDeleted
+        });
+    }
+    if(!params.PushContactsAsParticipants === undefined){
+        firebase.database().ref('users/' + key + '/hubspot').set({
+            PushContactsAsParticipants : params.PushContactsAsParticipants
+        });
+    }
+    if(!params.PullContactsIntoParticipants === undefined){  
+        firebase.database().ref('users/' + key + '/hubspot').set({
+            PullContactsIntoParticipants : params.PullContactsIntoParticipants
+        });
+    }
+    if(!params.DeleteParticipantWhenContactDeleted === undefined){
+        firebase.database().ref('users/' + key + '/hubspot').set({
+            DeleteParticipantWhenContactDeleted : params.DeleteParticipantWhenContactDeleted
+        });
+    }
+    if(!params.accessToken === undefined){
+        firebase.database().ref('users/' + key + '/userinfo').set({
+            accessToken: params.accessToken
+        });
+    }
+    if(!params.refreshToken === undefined){
+        firebase.database().ref('users/' + key + '/userinfo').set({
+            refreshToken: params.refreshToken
+        });
+    }
+    firebase.database().ref('users/' + key + '/userinfo').set({
+        tenantAllias: tenantAllias
+    });
+}
+
+export async function PollDatabase(tenantAllias: string) {
+    var key = hashValue(tenantAllias);
     var databseRef = firebase.database().ref();
-    var data = {
-        ConnectToHubspot: false,
-        CreateParticipant: false,
-        Field: false,
-        First: false,
-        Last: false,
-        SEmail: false,
-        Refferable: false,
-        DeleteWhenDeleted: false,
-        ConnectToSaasquach: false,
-        CreateInHubspot: false,
-        ContactField: false,
-        Name: false,
-        HEmail: false,
-        ContactOwner: false,
-        AssosiatedCompany: false,
-        LastActivityDate: false,
-        CreateDate: false,
-        DeleteConnected: false,
-        ConnectShareLinks: false,
-        AddShareLinks: false,
-    };
+    var data = {PushPartixipantsAsContacts = false, PullParticipantsIntoContacts = false,
+        DeleteContactwhenParticipantDeleted = false,PushContactsAsParticipants = false,
+        PullContactsIntoParticipants = false, DeleteParticipantWhenContactDeleted = false,
+        accessToken = "", refreshToken = ""};
     await databseRef.child('users/' + key).get().then((snapshot) => {
         if (snapshot.exists()) {
-            data.ConnectToHubspot =     snapshot.child("saasquach/ConnectToHubspot").val();
-            data.CreateParticipant =    snapshot.child("saasquach/CreateParticipant").val();
-            data.Field =                snapshot.child("saasquach/Field").val();
-            data.First =                snapshot.child("saasquach/First").val();
-            data.Last =                 snapshot.child("saasquach/Last").val();
-            data.SEmail =               snapshot.child("saasquach/SEmail").val();
-            data.Refferable =           snapshot.child("saasquach/Refferable").val();
-            data.DeleteWhenDeleted =    snapshot.child("saasquach/DeleteWhenDeleted").val();
-            data.ConnectToSaasquach =   snapshot.child("hubspot/ConnectToSaasquach").val();
-            data.CreateInHubspot =      snapshot.child("hubspot/CreateInHubspot").val();
-            data.ContactField =         snapshot.child("hubspot/ContactField").val();
-            data.Name =                 snapshot.child("hubspot/Name").val();
-            data.HEmail =               snapshot.child("hubspot/HEmail").val();
-            data.ContactOwner =         snapshot.child("hubspot/ContactOwner").val();
-            data.AssosiatedCompany =    snapshot.child("hubspot/AssosiatedCompany").val();
-            data.LastActivityDate =     snapshot.child("hubspot/LastActivityDate").val();
-            data.CreateDate =           snapshot.child("hubspot/CreateDate").val();
-            data.DeleteConnected =      snapshot.child("hubspot/DeleteConnected").val();
-            data.ConnectShareLinks =    snapshot.child("hubspot/ConnectShareLinks").val();
-            data.AddShareLinks =        snapshot.child("hubspot/AddShareLinks").val();
+            data.PushPartixipantsAsContacts =           snapshot.child("saasquach/PushPartixipantsAsContacts").val();
+            data.PullParticipantsIntoContacts =         snapshot.child("saasquach/PullParticipantsIntoContacts").val();
+            data.DeleteContactwhenParticipantDeleted =  snapshot.child("saasquach/DeleteContactwhenParticipantDeleted").val();
+            data.PushContactsAsParticipants =           snapshot.child("hubspot/PushContactsAsParticipants").val();
+            data.PullContactsIntoParticipants =         snapshot.child("hubspot/PullContactsIntoParticipants").val();
+            data.DeleteParticipantWhenContactDeleted =  snapshot.child("hubspot/DeleteParticipantWhenContactDeleted").val();
+            data.accessToken =      snapshot.child("userinfo/accessToken").val();
+            data.refreshToken =     snapshot.child("userinfo/refreshToken").val();
         } else {
           console.log("No data available");
         }
@@ -115,21 +127,29 @@ export async function PollDatabase(email: string) {
     return data;
 }
 
-export function AddTokensToDatabase(email: string,  accessToken: string, refreshToken: string) {
-    var key = hashValue(email);
+/**
+ * Passing in a tenant alias as well as the access token and refresh token should update both, thoough the most
+ * up to date version of both must be passed in. If only 1 needs to be changed, use the update fnction
+ */
+export function AddTokensToDatabase(tenantAllias: string,  accessToken: string, refreshToken: string) {
+    var key = hashValue(tenantAllias);
     firebase.database().ref('users/' + key + '/userinfo').set({
-        emailCredential: email,
+        tenantAllias: tenantAllias,
         accessToken: accessToken,
         refreshToken: refreshToken
     });
 }
 
-export async function PollTokensFromDatabase(email: string) {
-    var key = hashValue(email);
+/**
+ * Retreives the stored access and refresh tokens for a given tenant allias. returns an object of the form
+ * { accessToken, refreshToken } if the entry is available. If no entry is available, it will return two empty strings
+ */ 
+export async function PollTokensFromDatabase(tenantAllias: string) {
+    var key = hashValue(tenantAllias);
     var databseRef = firebase.database().ref();
     var data = {
-        accessToken: false,
-        refreshToken: false,
+        accessToken: "",
+        refreshToken: "",
     };
     await databseRef.child('users/' + key + 'userinfo').get().then((snapshot) => {
         if (snapshot.exists()) {
