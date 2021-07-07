@@ -21,11 +21,15 @@ function hashValue(stringValue: string){
  * PushContactsAsParticipants bool, PullContactsIntoParticipants bool, DeleteParticipantWhenContactDeleted bool
  * accessToken string, refreshToken string
  */
-export function AddToDatabase(tenantAllias: string, {PushPartixipantsAsContacts = false, PullParticipantsIntoContacts = false,
+export function AddToDatabase(tenantAllias: string, hubspotID: string, {PushPartixipantsAsContacts = false, PullParticipantsIntoContacts = false,
                                                      DeleteContactwhenParticipantDeleted = false,PushContactsAsParticipants = false,
                                                      PullContactsIntoParticipants = false, DeleteParticipantWhenContactDeleted = false,
                                                      accessToken = "", refreshToken = ""}) {
     var key = hashValue(tenantAllias);
+    var id =  hashValue(hubspotID);
+    firebase.database().ref('keyTable/' + id + "/SasID").set({
+        ID: tenantAllias
+    });
     firebase.database().ref('users/'+ key + '/saasquach' ).set({
         PushPartixipantsAsContacts: PushPartixipantsAsContacts,
         PullParticipantsIntoContacts : PullParticipantsIntoContacts,
@@ -126,6 +130,23 @@ export async function PollDatabase(tenantAllias: string) {
       });
     return data;
 }
+
+export async function LookupAllias(hubspotID: string) {
+    var key = hashValue(hubspotID);
+    var data = "";
+    var databseRef = firebase.database().ref();
+    await databseRef.child('keyTable/' + key).get().then((snapshot) => {
+        if (snapshot.exists()) {
+            data =  snapshot.child("SasID").val();
+        } else {
+          console.log("No data available");
+        }
+      }).catch((error) => {
+        console.error(error);
+      });
+    return data;
+}
+
 
 /**
  * Passing in a tenant alias as well as the access token and refresh token should update both, thoough the most
