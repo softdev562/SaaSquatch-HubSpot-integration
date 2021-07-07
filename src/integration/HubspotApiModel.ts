@@ -1,5 +1,5 @@
 import axios from "axios";
-import querystring from 'querystring';
+const querystring = require('query-string');
 
 
 export class HubspotApiModel {
@@ -18,26 +18,35 @@ export class HubspotApiModel {
 
     //#todo: suggestion renaming objectID to contactObjectID
     public async getContact(objectId: number, paramToGet?: string){
-        const headers = { accept: 'application/json',authorization:`Bearer ${this.hub_access_token}` };
+        ///const header = { accept: 'application/json',authorization:`Bearer ${this.hub_access_token}` };
         const url = `https://api.hubapi.com/crm/v3/objects/contacts/${encodeURIComponent(objectId)}`;
-        let qs;
-        console.log("this is header",headers)
-        console.log("this is auth",this.hub_access_token)
-        if (paramToGet){
-            qs = {archived: 'false'}
+        //const url = `https://api.hubapi.com/crm/v3/objects/contacts/${objectId}`;
 
-            //qs = {"properties": 'email', "archived": 'false'}
+        const options = {
+            qs: {"properties": 'email', "archived": 'false'},
+            headers: { accept: 'application/json',authorization:`Bearer ${this.hub_access_token}`}
+        };
+
+        if (paramToGet){
+          const options = {
+               qs: {"properties": 'email', "archived": 'false'},
+               headers:{ accept: 'application/json',authorization:`Bearer ${this.hub_access_token}`}
+           };
         }
         else{
-            qs = {archived: 'false'}
+           // qs = {archived: 'false'}
+           const options = {
+                qs: {"properties": 'email', "archived": 'false'},
+                headers:{ accept: 'application/json',authorization:`Bearer ${this.hub_access_token}`}
+            };
+
         }
         try{
-            const resp = await axios.get( url, { params: qs } );
+            const resp = await axios.get( url, querystring.stringify(options));
             if (resp.status != 200) {
                 throw Error("Error getting a contact from HubSpot." + resp.data["error"]);
             }
             else{
-                //console.log(resp);
                 return resp.data;
             }
         }catch(e){
