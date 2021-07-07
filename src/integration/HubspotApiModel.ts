@@ -42,7 +42,7 @@ export class HubspotApiModel {
 
         }
         try{
-            const resp = await axios.get( url, querystring.stringify(options));
+            const resp = await axios.get( url, options);
             if (resp.status != 200) {
                 throw Error("Error getting a contact from HubSpot." + resp.data["error"]);
             }
