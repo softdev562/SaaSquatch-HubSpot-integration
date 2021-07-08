@@ -16,4 +16,8 @@ export class ConfigurationController {
 	public setConfiguration(configuration: Configuration) {
 		this.configurationModel.setConfiguration(configuration)
 	}
+
+	public updateConfiguration(configuration: Configuration) {
+		this.configurationModel.updateConfiguration(configuration)
+	}
 }

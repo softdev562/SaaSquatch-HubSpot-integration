@@ -2,14 +2,9 @@ import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { ToggleSetting } from './ToggleSetting';
 import HubspotLogo from '../assets/HubspotLogo.png';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { DataGrid } from '@material-ui/data-grid';
-import Checkbox from '@material-ui/core/Checkbox';
 import history from '../types/history';
 import axios from 'axios';
+import Modal from '@material-ui/core/Modal';
 
 const PageWrapper = styled.div`
   min-height: 100vh;
@@ -27,38 +22,37 @@ const PageContent = styled.div`
 `;
 const TitleText = styled.h1`
   color: #33475B;
-  text-align: left;
+  text-align: center;
   margin: 0px;
   font-size: 48px;
   font-weight: bold;
-  display: flex;
-`;
-const Logo = styled.img`
-  height: 60px;
+  display: block;
+  padding: 20px;
 `;
 const InfoText = styled.p`
   color: #000000;
-  font-size: 20px;
+  font-size: 16px;
   display: flex;
-  margin-right: 5px;
+  margin-left: 60px;
+  width: 680px;
 `;
-const AccordionDetailsContainer = styled.div`
+const AlertText = styled.p`
+  color: #FC3308;
+  font-size: 16px;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: start;
-  height: 500px;
-  width: '100%';
+  margin: 0px;
+  margin-left: 10px;
+  width: 520px;
+`;
+const Logo = styled.img`
+  height: 60px;
+  vertical-align: top;
 `;
 const ItemContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-`;
-const UnpaddedAccordion = styled(Accordion)`
-  .MuiAccordionSummary-root {
-    padding-left: 0;
-  }
+  padding: 20px;
 `;
 const SyncButton = styled.button`
   &:hover {
@@ -76,29 +70,41 @@ const SyncButton = styled.button`
   height: 50px;
   margin-right: 10px;
 `;
+const ModalContainer = styled.div`
+  align-items: center;
+  justify-content: center;
+  background-color: #FFFFFF;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 18px;
+  padding: 10px;
+  width: 500px;
+`;
+const ModalBody = styled.div`
+  align-items: center;
+  justify-content: center;
+  background-color: #FFFFFF;
+  font-size: 14px;
+`;
 
 const API_CONFIGURATION_URL = '/api/configuration'
 
 interface HubConfig {
-  createContact: boolean,
-  importHistoricalContacts: boolean,
-  deleteContact: boolean,
-  syncRefLinks: boolean,
-  importHistoricalRefLinks: boolean,
+  pushIntoContacts: boolean,
+  pullIntoContacts: boolean,
 }
 
 interface states {
   config: HubConfig;
-  expandAccordion: boolean;
   handleSubmit: ()=>void;
   handleToggles: {
-    toggleHubCreate: ()=>void;
-    toggleHubHistoricalImport: ()=>void;
-    toggleHubDelete: ()=>void;
-    toggleHubRefLinks: ()=>void;
-    toggleHubHitoricalRefLinksImport: ()=>void;
-    toggleExpandAccordion: ()=>void;
+    toggleHubPush: ()=>void;
+    toggleHubPull: ()=>void;
   }
+  open: boolean;
+  handleClose: ()=>void;
+  imported: boolean;
+  oneway: boolean;
 }
 
 export function ConfigurationP1() {
@@ -107,147 +113,135 @@ export function ConfigurationP1() {
 
 export function Controller(){
   const emptyConfig: HubConfig = {
-    createContact: false,
-    importHistoricalContacts: false,
-    deleteContact: false,
-    syncRefLinks: false,
-    importHistoricalRefLinks: false,
+    pushIntoContacts: false,
+    pullIntoContacts: false,
   }
   const [config, setConfig] = useState<HubConfig>(emptyConfig)
-  const [expandAccordion, setExpandAccordion] = useState<boolean>(false)
+  const [open, setOpen] = useState(false);
+  const [imported, setImported] = useState(false);
+  const [oneway, setOneway] = useState(true);
 
   // Gets config data on page load
   useEffect(() => {
     const getConfigData = () => {
       axios.get(API_CONFIGURATION_URL)
       .then((response) => {
-        setConfig(config => ({...config, createContact: response.data.ConnectToHubspot}));
+        setConfig(config => ({...config, pushIntoContacts: response.data.PushPartixipantsAsContacts, pullIntoContacts: response.data.PullParticipantsIntoContacts}));
+        // Disable import toggle if previously imported
+        if (response.data.PullParticipantsIntoContacts){
+          setImported(true);
+        }
+        // Show oneway message if no options previously selected on page
+        if (response.data.PushPartixipantsAsContacts || response.data.PullParticipantsIntoContacts){
+          setOneway(false);
+        }
       })
+      // TODO: Need to POST config data if user doesn't exist
       .catch(error => console.error('Error: Unable to retrieve Configuration Data'))
     };
     getConfigData();
   },[]);
 
   // Need a handler for each toggle because Switches are kinda weird
-  const toggleHubCreate = () => {
-    if (!expandAccordion && !config.createContact) {
-      setExpandAccordion(true)
+  const toggleHubPush = () => {
+    // Show oneway message if no options are selected on page
+    if (config.pushIntoContacts === false || config.pullIntoContacts === true){
+      setOneway(false);
+    } else {
+      setOneway(true);
     }
-    setConfig({...config, createContact: !config.createContact});
+    setConfig({...config, pushIntoContacts: !config.pushIntoContacts});
   }
-  const toggleHubHistoricalImport = () => setConfig({...config, importHistoricalContacts: !config.importHistoricalContacts});
-  const toggleHubDelete = () => setConfig({...config, deleteContact: !config.deleteContact});
-  const toggleHubRefLinks = () => setConfig({...config, syncRefLinks: !config.syncRefLinks});
-  const toggleHubHitoricalRefLinksImport = () => setConfig({...config, importHistoricalRefLinks: !config.importHistoricalRefLinks});
-  const toggleExpandAccordion = () => setExpandAccordion(!expandAccordion);
+  const toggleHubPull = () => {
+    // Show modal if import toggle is selected
+    if (config.pullIntoContacts === false){
+      setOpen(true);
+    }
+    // Show oneway message if no options are selected on page
+    if (config.pullIntoContacts === false || config.pushIntoContacts === true){
+      setOneway(false);
+    } else {
+      setOneway(true);
+    }
+    setConfig({...config, pullIntoContacts: !config.pullIntoContacts});
+  }
 
   const handleToggles = {
-    toggleHubCreate,
-    toggleHubHistoricalImport,
-    toggleHubDelete,
-    toggleHubRefLinks,
-    toggleHubHitoricalRefLinksImport,
-    toggleExpandAccordion,
+    toggleHubPush,
+    toggleHubPull,
+  };
+
+  const handleClose = () => {
+    setOpen(false);
   };
   
+  // On submit we make a request to the backend to store the config data and redirect to second config screen
   const handleSubmit = () => {
-    // Here we will make the requests to the backend to store the config info and to begin the integration and redirect to second config screen
-    const postConfigData = async () => {
-      return await fetch(API_CONFIGURATION_URL, {
-        method: 'POST',
+    const putConfigData = async () => {
+        return await fetch(API_CONFIGURATION_URL, {
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          ConnectToHubspot: config.createContact,
-          CreateParticipant: true,
-          Field: true,
-          First: true,
-          Last: true,
-          SEmail: true,
-          Refferable: true,
-          DeleteWhenDeleted: true,
-          ConnectToSaasquach: false, 
-          CreateInHubspot: true,
-          ContactField: true,
-          Name: true,
-          HEmail: true,
-          ContactOwner: true,
-          AssosiatedCompany: true,
-          LastActivityDate: true,
-          CreateDate: true,
-          DeleteConnected: true,
-          ConnectShareLinks: true,
-          AddShareLinks: true
+          PushPartixipantsAsContacts: config.pushIntoContacts,
+          PullParticipantsIntoContacts: config.pullIntoContacts,
         })
       })
     }
-    postConfigData().then().catch( e => console.error(e) )
+    putConfigData().then().catch( e => console.error(e) )
     history.push('/configuration/2');
   }
-  return {config, expandAccordion, handleSubmit, handleToggles} as states
+  return {config, handleSubmit, handleToggles, open, handleClose, imported, oneway} as states
 }
 
 export function View(states: states){
   return (
     <PageWrapper>
       <PageContent>
-        <TitleText>Step 1: Configure your <Logo src={HubspotLogo} /> Integration</TitleText>
-        <UnpaddedAccordion expanded={states.expandAccordion} onChange={states.handleToggles.toggleExpandAccordion}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <ToggleSetting 
-              settingText={"Create a Contact in HubSpot when a new user is added to SaaSquatch"} 
-              isChecked={states.config.createContact} 
-              handleChange={states.handleToggles.toggleHubCreate} 
-            />
-          </AccordionSummary>
-          <AccordionDetails>
-            <AccordionDetailsContainer>
-              <InfoText>A contact will be created in Hubspot when a new participant is created in SaaSquatch with the selected fields</InfoText>
-              <DataGrid 
-                rows={[
-                  { id: 1, fieldName: 'First name',},
-                  { id: 2, fieldName: 'Last name',},
-                  { id: 3, fieldName: 'Email',},
-                  { id: 4, fieldName: 'Contact Owner',},
-                  { id: 5, fieldName: 'Associated Company',},
-                  { id: 6, fieldName: 'Last Activity Date',},
-                  { id: 7, fieldName: 'Create Date',},
-                  ]} 
-                columns={[
-                  { field: 'fieldName', headerName: 'Fields to populate', width: 200 },
-                ]} 
-                checkboxSelection
-              />
-              <ItemContainer>
-                <Checkbox checked={states.config.importHistoricalContacts} onChange={states.handleToggles.toggleHubHistoricalImport} color={"primary"} />
-                <InfoText>Import 420 existing participants from SaaSquatch into HubSpot with the selected fields</InfoText>
-              </ItemContainer>
-            </AccordionDetailsContainer>
-          </AccordionDetails>
-        </UnpaddedAccordion>
-        <ToggleSetting 
-          settingText={"Delete contact in HubSpot when participant is deleted in SaaSquatch"} 
-          isChecked={states.config.deleteContact} 
-          handleChange={states.handleToggles.toggleHubDelete} 
-        />
-        <ToggleSetting 
-          settingText={"Add share link to contact in HubSpot when new share link is created for particpant in SaaSquatch"} 
-          isChecked={states.config.syncRefLinks} 
-          handleChange={states.handleToggles.toggleHubRefLinks} 
-        />
-        <ToggleSetting 
-          settingText={"Import existing share links from participants in SaaSquatch to contacts in HubSpot"} 
-          isChecked={states.config.importHistoricalRefLinks} 
-          handleChange={states.handleToggles.toggleHubHitoricalRefLinksImport} 
-        />
-        <ItemContainer>
-          <SyncButton 
-            onClick={states.handleSubmit}
-            type= "button"
+        <TitleText>Step 1: Configure your <Logo src={HubspotLogo}/> Integration</TitleText>
+          <ToggleSetting 
+            settingText={"Create new Contacts"} 
+            isChecked={states.config.pushIntoContacts} 
+            handleChange={states.handleToggles.toggleHubPush} 
+          />
+          <InfoText>
+            {"When a new participant is created in your SaaSquatch account, a new contact with the same Name, Email, Sharelink, and Referrals will be created in your connected Hubspot account."}
+          </InfoText>
+          <ToggleSetting 
+            settingText={"Import existing Participants as Contacts"} 
+            isChecked={states.config.pullIntoContacts} 
+            handleChange={states.handleToggles.toggleHubPull} 
+            disabled={states.imported}
+          />
+          <InfoText>
+            {"All existing participants in your SaaSquatch account will be imported as contacts with the same Name, Email, Sharelink, and Referrals in your connected Hubspot account."}
+          </InfoText>
+          <Modal
+            open={states.open}
+            onClose={states.handleClose}
           >
-            {"Next"}
-          </SyncButton>
-          <InfoText>By turning on this integration, we will import 420 contacts from HubSpot into SaaSquatch</InfoText>
-        </ItemContainer>
+          <ModalContainer>
+            <h1>
+              Are you sure?
+            </h1>
+          <ModalBody>
+            <p>
+              By selecting Next you will be importing all of your existing particpants in SaaSquatch as contacts in Hubspot.
+              This action is irreversible.
+            </p>
+          </ModalBody>
+          </ModalContainer>
+          </Modal>
+          <ItemContainer>
+            <SyncButton 
+              onClick={states.handleSubmit}
+              type= "button"
+            >
+              {"Next"}
+            </SyncButton>
+            <AlertText>
+              {states.oneway ? "Integration is not currently configured for Hubspot, click Next to continue with a one-way sync" : ""}
+            </AlertText>
+          </ItemContainer>
       </PageContent>
     </PageWrapper>
    );

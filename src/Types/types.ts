@@ -64,25 +64,18 @@ export interface SaasquatchPayload{
     created: number,
     data: object
 }
+
+/**
+ * Configuration interface
+ */
+
 export interface Configuration {
-    ConnectToHubspot: boolean,
-    CreateParticipant: boolean,
-    Field: boolean,
-    First: boolean,
-    Last: boolean,
-    SEmail: boolean,
-    Refferable: boolean,
-    DeleteWhenDeleted: boolean,
-    ConnectToSaasquach: boolean,
-    CreateInHubspot: boolean,
-    ContactField: boolean,
-    Name: boolean,
-    HEmail: boolean,
-    ContactOwner: boolean,
-    AssosiatedCompany: boolean,
-    LastActivityDate: boolean,
-    CreateDate: boolean,
-    DeleteConnected: boolean,
-    ConnectShareLinks: boolean,
-    AddShareLinks: boolean
+    PushPartixipantsAsContacts: boolean, 
+    PullParticipantsIntoContacts: boolean,
+    DeleteContactwhenParticipantDeleted: boolean,
+    PushContactsAsParticipants: boolean,
+    PullContactsIntoParticipants: boolean, 
+    DeleteParticipantWhenContactDeleted: boolean,
+    accessToken: string, 
+    refreshToken: string
 }

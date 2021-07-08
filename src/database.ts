@@ -1,6 +1,5 @@
 import firebase from "firebase/app";
 import "firebase/database";
-import { Configuration } from './Types/types'
 const crypto = require('crypto')
 
 function hashValue(stringValue: string){
@@ -22,7 +21,7 @@ function hashValue(stringValue: string){
  * accessToken string, refreshToken string
  */
 export function AddToDatabase(tenantAllias: string, hubspotID: string, {PushPartixipantsAsContacts = false, PullParticipantsIntoContacts = false,
-                                                     DeleteContactwhenParticipantDeleted = false,PushContactsAsParticipants = false,
+                                                     DeleteContactwhenParticipantDeleted = false, PushContactsAsParticipants = false,
                                                      PullContactsIntoParticipants = false, DeleteParticipantWhenContactDeleted = false,
                                                      accessToken = "", refreshToken = ""}) {
     var key = hashValue(tenantAllias);
@@ -108,10 +107,10 @@ export function EditDatabase(tenantAllias: string, params : {PushPartixipantsAsC
 export async function PollDatabase(tenantAllias: string) {
     var key = hashValue(tenantAllias);
     var databseRef = firebase.database().ref();
-    var data = {PushPartixipantsAsContacts = false, PullParticipantsIntoContacts = false,
-        DeleteContactwhenParticipantDeleted = false,PushContactsAsParticipants = false,
-        PullContactsIntoParticipants = false, DeleteParticipantWhenContactDeleted = false,
-        accessToken = "", refreshToken = ""};
+    var data = {PushPartixipantsAsContacts: false, PullParticipantsIntoContacts: false,
+        DeleteContactwhenParticipantDeleted: false,PushContactsAsParticipants: false,
+        PullContactsIntoParticipants: false, DeleteParticipantWhenContactDeleted: false,
+        accessToken: "", refreshToken: ""};
     await databseRef.child('users/' + key).get().then((snapshot) => {
         if (snapshot.exists()) {
             data.PushPartixipantsAsContacts =           snapshot.child("saasquach/PushPartixipantsAsContacts").val();
