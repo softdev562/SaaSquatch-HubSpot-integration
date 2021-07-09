@@ -46,7 +46,7 @@ const AlertText = styled.p`
 `;
 const Logo = styled.img`
   height: 60px;
-  vertical-align: top;
+  vertical-align: bottom;
 `;
 const ItemContainer = styled.div`
   display: flex;
@@ -242,7 +242,7 @@ export function View(states: states){
           handleChange={states.handleToggles.toggleSaasPush}
         />
         <InfoText>
-          {"When a new contact is created in your Hubspot account, a new participant with the same First Name, Last Name, Email, and a new generated Sharelink will be created in your connected SaaSquatch account."}
+          {"When a new contact is created in your Hubspot account, a matching participant with the same First Name, Last Name, Email, and a new generated Sharelink will be created in your connected SaaSquatch account."}
         </InfoText>
         <ToggleSetting 
           settingText={"Import existing Contacts as Participants"} 
@@ -251,7 +251,7 @@ export function View(states: states){
           disabled={states.imported}
         />
         <InfoText>
-          {"All existing contacts in your Hubspot account will be imported as participants with the same First Name, Last Name, Email, and a new generated Sharelink in your connected SaaSquatch account."}
+          {"All existing contacts in your Hubspot account will be imported as matching participants with the same First Name, Last Name, Email, and a new generated Sharelink in your connected SaaSquatch account."}
         </InfoText>
         <Modal
           open={states.open}

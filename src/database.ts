@@ -59,47 +59,47 @@ export function EditDatabase(tenantAllias: string, params : {PushPartixipantsAsC
     PullParticipantsIntoContacts:Boolean, DeleteContactwhenParticipantDeleted:Boolean, PushContactsAsParticipants:Boolean,
     PullContactsIntoParticipants:Boolean, DeleteParticipantWhenContactDeleted:Boolean, accessToken:String, refreshToken:String}) {
     var key = hashValue(tenantAllias);
-    if(!params.PushPartixipantsAsContacts === undefined){
-        firebase.database().ref('users/'+ key + '/saasquach' ).set({
+    if(params.PushPartixipantsAsContacts != undefined){
+        firebase.database().ref('users/'+ key + '/saasquach' ).update({
             PushPartixipantsAsContacts: params.PushPartixipantsAsContacts
         });
     }
-    if(!params.PullParticipantsIntoContacts === undefined){
-        firebase.database().ref('users/'+ key + '/saasquach' ).set({
+    if(params.PullParticipantsIntoContacts != undefined){
+        firebase.database().ref('users/'+ key + '/saasquach' ).update({
             PullParticipantsIntoContacts : params.PullParticipantsIntoContacts
         });
     }
-    if(!params.DeleteContactwhenParticipantDeleted === undefined){
-        firebase.database().ref('users/'+ key + '/saasquach' ).set({
+    if(params.DeleteContactwhenParticipantDeleted != undefined){
+        firebase.database().ref('users/'+ key + '/saasquach' ).update({
             DeleteContactwhenParticipantDeleted : params.DeleteContactwhenParticipantDeleted
         });
     }
-    if(!params.PushContactsAsParticipants === undefined){
-        firebase.database().ref('users/' + key + '/hubspot').set({
+    if(params.PushContactsAsParticipants != undefined){
+        firebase.database().ref('users/' + key + '/hubspot').update({
             PushContactsAsParticipants : params.PushContactsAsParticipants
         });
     }
-    if(!params.PullContactsIntoParticipants === undefined){  
-        firebase.database().ref('users/' + key + '/hubspot').set({
+    if(params.PullContactsIntoParticipants != undefined){  
+        firebase.database().ref('users/' + key + '/hubspot').update({
             PullContactsIntoParticipants : params.PullContactsIntoParticipants
         });
     }
-    if(!params.DeleteParticipantWhenContactDeleted === undefined){
-        firebase.database().ref('users/' + key + '/hubspot').set({
+    if(params.DeleteParticipantWhenContactDeleted != undefined){
+        firebase.database().ref('users/' + key + '/hubspot').update({
             DeleteParticipantWhenContactDeleted : params.DeleteParticipantWhenContactDeleted
         });
     }
-    if(!params.accessToken === undefined){
-        firebase.database().ref('users/' + key + '/userinfo').set({
+    if(params.accessToken != undefined){
+        firebase.database().ref('users/' + key + '/userinfo').update({
             accessToken: params.accessToken
         });
     }
-    if(!params.refreshToken === undefined){
-        firebase.database().ref('users/' + key + '/userinfo').set({
+    if(params.refreshToken != undefined){
+        firebase.database().ref('users/' + key + '/userinfo').update({
             refreshToken: params.refreshToken
         });
     }
-    firebase.database().ref('users/' + key + '/userinfo').set({
+    firebase.database().ref('users/' + key + '/userinfo').update({
         tenantAllias: tenantAllias
     });
 }

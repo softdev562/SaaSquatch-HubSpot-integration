@@ -46,7 +46,7 @@ const AlertText = styled.p`
 `;
 const Logo = styled.img`
   height: 60px;
-  vertical-align: top;
+  vertical-align: bottom;
 `;
 const ItemContainer = styled.div`
   display: flex;
@@ -121,22 +121,47 @@ export function Controller(){
   const [imported, setImported] = useState(false);
   const [oneway, setOneway] = useState(true);
 
+  const postConfigData = async () => {
+      return await fetch(API_CONFIGURATION_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        PushPartixipantsAsContacts: false,
+        PullParticipantsIntoContacts: false,
+      })
+    })
+  }
+
   // Gets config data on page load
   useEffect(() => {
     const getConfigData = () => {
       axios.get(API_CONFIGURATION_URL)
       .then((response) => {
-        setConfig(config => ({...config, pushIntoContacts: response.data.PushPartixipantsAsContacts, pullIntoContacts: response.data.PullParticipantsIntoContacts}));
-        // Disable import toggle if previously imported
-        if (response.data.PullParticipantsIntoContacts){
-          setImported(true);
-        }
-        // Show oneway message if no options previously selected on page
-        if (response.data.PushPartixipantsAsContacts || response.data.PullParticipantsIntoContacts){
-          setOneway(false);
+        // A blank config object is returned if the user doesn't exist yet in the database
+        if (
+          response.data.PushPartixipantsAsContacts === false && 
+          response.data.PullParticipantsIntoContacts === false && 
+          response.data.DeleteContactwhenParticipantDeleted === false &&
+          response.data.PushContactsAsParticipants === false &&
+          response.data.PullContactsIntoParticipants === false &&
+          response.data.DeleteParticipantWhenContactDeleted === false &&
+          response.data.accessToken === "" && 
+          response.data.refreshToken === "") {
+            // Post request to create new user entry in configuration database
+            postConfigData().then().catch( e => console.error(e) )
+        } else {
+          // Display config data for user from database
+          setConfig(config => ({...config, pushIntoContacts: response.data.PushPartixipantsAsContacts, pullIntoContacts: response.data.PullParticipantsIntoContacts}));
+          // Disable import toggle if previously imported
+          if (response.data.PullParticipantsIntoContacts){
+            setImported(true);
+          }
+          // Show oneway message if no options previously selected on page
+          if (response.data.PushPartixipantsAsContacts || response.data.PullParticipantsIntoContacts){
+            setOneway(false);
+          }
         }
       })
-      // TODO: Need to POST config data if user doesn't exist
       .catch(error => console.error('Error: Unable to retrieve Configuration Data'))
     };
     getConfigData();
@@ -204,7 +229,7 @@ export function View(states: states){
             handleChange={states.handleToggles.toggleHubPush} 
           />
           <InfoText>
-            {"When a new participant is created in your SaaSquatch account, a new contact with the same Name, Email, Sharelink, and Referrals will be created in your connected Hubspot account."}
+            {"When a new participant is created in your SaaSquatch account, a matching contact with the same Name, Email, Sharelink, and Referrals will be created in your connected Hubspot account."}
           </InfoText>
           <ToggleSetting 
             settingText={"Import existing Participants as Contacts"} 
@@ -213,7 +238,7 @@ export function View(states: states){
             disabled={states.imported}
           />
           <InfoText>
-            {"All existing participants in your SaaSquatch account will be imported as contacts with the same Name, Email, Sharelink, and Referrals in your connected Hubspot account."}
+            {"All existing participants in your SaaSquatch account will be imported as matching contacts with the same Name, Email, Sharelink, and Referrals in your connected Hubspot account."}
           </InfoText>
           <Modal
             open={states.open}
