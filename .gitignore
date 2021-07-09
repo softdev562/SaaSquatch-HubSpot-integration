@@ -1,3 +1,5 @@
+#.js file s
+src/**/*.js
 # Logs
 logs
 *.log
@@ -53,6 +55,9 @@ typings/
 # Optional npm cache directory
 .npm
 
+# Built JS
+src/*/*.js
+
 # Optional eslint cache
 .eslintcache
 
@@ -105,3 +110,12 @@ dist
 
 # TernJS port file
 .tern-port
+
+# Production Build
+build/*
+public/*
+frontend/build/*
+
+# Yarn lock
+yarn.lock
+frontend/yarn.lock

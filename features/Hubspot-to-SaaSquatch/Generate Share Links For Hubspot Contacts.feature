@@ -6,10 +6,14 @@ Feature: Generate Share Links For Hubspot Contacts
     Background:
         Given the integration is active
 
-    Scenario: Contacts get share links
-        When a Contact is created in Hubspot
+    
+    Scenario: New HubSpot Contacts that already exist in SaaSquatch get share links
+        When A Contact is created in Hubspot
+        And they exist in SaaSquatch
+        Then their share link shows up back in Hubspot
+    
+    Scenario: New HubSpot Contacts that do not yet exist in SaaSquatch get share links
+        When A Contact is created in Hubspot
         But they don't exist in SaaSquatch
         Then they are created in SaaSquatch
-        And generated a share link
-        And that link shows up in Hubspot
-    
+        And their generated share link shows up back in Hubspot

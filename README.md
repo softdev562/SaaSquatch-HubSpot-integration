@@ -42,7 +42,7 @@ To use this Integration app with a HubSpot app:
 
 1. Create an app in a HubSpot dev account. More information on how to do this can be found in HubSpot's dev docs: https://developers.hubspot.com/docs/api/working-with-oauth.
 2. Get your client ID and client secret and save them in your `.env` file.
-3. Set your redirect_uri in the HubSpot app. For running the app locally, this is `http:localhost:8000/oauth-callback`. Add this to your `.env` file.
+3. Set your redirect_uri in the HubSpot app. For running the app locally, this is `http://localhost:8000/oauth-callback`. Add this to your `.env` file.
 
 ## Tests with jest-cucumber
 A sample test has been prepared in both the root directory and the frontend directory. `jest-cucumber` works by building test cases around `.feature` files.
