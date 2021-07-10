@@ -74,7 +74,7 @@ export function OAuthFunction(){
     // Check Server for Hubspot Authorization
     axios.get(HUBSPOT_OAUTH_CHECK_URL)
     .then(response => {
-      if (response.data == "Unauthorized"){
+      if (response.data === "Unauthorized"){
         // Redirect User to Hubspot OAuth URL Popup
         axios.get(HUBSPOT_OAUTH_URL)
         .then(response => {
