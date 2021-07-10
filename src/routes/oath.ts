@@ -91,7 +91,7 @@ export const getSaasquatchToken = async () =>  {
 router.get('/hubspot', async (req, res) => {
     if(isAuthorized(req.sessionID)) {
         try {
-            res.status(200).send("<script>window.opener.location = 'http://localhost:3000/configuration'; window.close();</script>");
+			res.status(200).send("<script>window.close();</script>");
         }
         catch(e){
             console.error(e);
@@ -99,7 +99,7 @@ router.get('/hubspot', async (req, res) => {
     } else{
         // If not authorized, send to auth url
         if(HUBSPOT_AUTH_URL){
-            res.redirect(HUBSPOT_AUTH_URL);
+			res.redirect(HUBSPOT_AUTH_URL);
         }else{
             console.error("env AUTH_URL is undefined.");
         }
@@ -135,6 +135,47 @@ router.get('/oauth-callback', async (req, res) => {
     // Log error if no code received
     else{
         console.error("HubSpot OAuth callback did not receive temp access code.");
+    }
+});
+
+// Check whether user has authenticated with Hubspot
+router.get('/hubspot_authorized', async (req, res) => {
+    if(isAuthorized(req.sessionID)) {
+        try {
+			res.json("Authorized");
+			res.end();
+        }
+        catch(e){
+            console.error(e);
+        }
+    } else{
+        // If not authorized, return Unauthorized
+        if(HUBSPOT_AUTH_URL){
+			res.json("Unauthorized");
+			res.end();
+        }else{
+            console.error("env AUTH_URL is undefined.");
+        }
+    }
+});
+
+// Pass frontend the Hubspot OAuth URL or close popup
+router.get('/hubspot_url', async (req, res) => {
+    if(isAuthorized(req.sessionID)) {
+        try {
+			res.status(200).send("<script>window.close();</script>");
+        }
+        catch(e){
+            console.error(e);
+        }
+    } else{
+        // If not authorized, send to auth url
+        if(HUBSPOT_AUTH_URL){
+			res.json(HUBSPOT_AUTH_URL);
+			res.end();
+        }else{
+            console.error("env AUTH_URL is undefined.");
+        }
     }
 });
 
