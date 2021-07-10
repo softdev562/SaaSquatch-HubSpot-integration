@@ -159,24 +159,14 @@ router.get('/hubspot_authorized', async (req, res) => {
     }
 });
 
-// Pass frontend the Hubspot OAuth URL or close popup
+// Pass frontend the Hubspot OAuth URL
 router.get('/hubspot_url', async (req, res) => {
-    if(isAuthorized(req.sessionID)) {
-        try {
-			res.status(200).send("<script>window.close();</script>");
-        }
-        catch(e){
-            console.error(e);
-        }
-    } else{
-        // If not authorized, send to auth url
-        if(HUBSPOT_AUTH_URL){
-			res.json(HUBSPOT_AUTH_URL);
-			res.end();
-        }else{
-            console.error("env AUTH_URL is undefined.");
-        }
-    }
+	if(HUBSPOT_AUTH_URL){
+		res.json(HUBSPOT_AUTH_URL);
+		res.end();
+	}else{
+		console.error("env AUTH_URL is undefined.");
+	}
 });
 
 // Test route, delete later
