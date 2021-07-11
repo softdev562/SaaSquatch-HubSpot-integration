@@ -9,7 +9,7 @@ npx tsc
 # build frontend
 cd frontend
 yarn install
-npm run build
+yarn run build
 cd ..
 
 # add frontend to static server
