@@ -156,7 +156,7 @@ export function Controller(){
           if (response.data.PullParticipantsIntoContacts){
             setImported(true);
           }
-          // Show oneway message if no options previously selected on page
+          // Don't show oneway message if an option is previously selected on page
           if (response.data.PushPartixipantsAsContacts || response.data.PullParticipantsIntoContacts){
             setOneway(false);
           }
