@@ -153,13 +153,14 @@ export function Controller(){
         if (response.data.PullContactsIntoParticipants){
           setImported(true);
         }
-        // Show oneway message if no options previously selected on page
-        if (!response.data.PushContactsAsParticipants && !response.data.PullContactsIntoParticipants){
-          setOneway(true);
-          // Show noway message if no options previously selected on previous configuration page
-          if (response.data.PushPartixipantsAsContacts || response.data.pullIntoParticipantsIntoContacts){
-            setNoway(false);
-          }
+        // Show noway message if no options previously selected on previous configuration page
+        if (!response.data.PushPartixipantsAsContacts && !response.data.PullParticipantsIntoContacts){
+          setNoway(true);
+        }
+        // Don't show oneway or noway message if an option is previously selected on page
+        if (response.data.PushContactsAsParticipants || response.data.PullContactsIntoParticipants){
+          setOneway(false);
+          setNoway(false);
         }
       })
       .catch(error => console.error('Error: Unable to retrieve Configuration Data'))

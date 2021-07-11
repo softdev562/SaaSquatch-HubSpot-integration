@@ -1,6 +1,8 @@
 import {useState} from "react";
 import styled from 'styled-components';
 import HubspotLogo from '../assets/HubspotLogo.png';
+import axios from 'axios';
+import history from '../types/history';
 
 const Wrapper = styled.div`
   min-height: 100vh;
@@ -51,6 +53,9 @@ const ErrorText = styled.p`
     display: flex;
 `;
 
+const HUBSPOT_OAUTH_URL = '/hubspot_url'
+const HUBSPOT_OAUTH_CHECK_URL = '/hubspot_authorized'
+
 interface states {
   showError: boolean;
   OAuth: ()=>void;
@@ -63,27 +68,53 @@ export function Login() {
 export function OAuthFunction(){
   const [showError, setError] = useState(false);
   
-  const OAuth = () => {
+  const OAuth = async () => {
     setError(false);
-    // Size of popup window
-    const h = 800;
-    const w = 500;
-    // Center popup window on screen
-    const y = window.top.outerHeight / 2 + window.top.screenY - ( h / 2);
-    const x = window.top.outerWidth / 2 + window.top.screenX - ( w / 2);
-    const myWindow = window.open("http://localhost:8000/hubspot", "OAuth Popup",`toolbar=no, location=no, statusbar=no, menubar=no, scrollbars=1, resizable=0, width=${w}, height=${h}, top=${y}, left=${x}`);
 
-    // Show error message when popup window is closed
-    var timer = setInterval(function() { 
-      if(myWindow && myWindow.closed) {
-        clearInterval(timer);
-        setTimeout(function(){ 
-          if(window.location.href !== "http://app.hubspot.com"){
-            setError(true)
-          }
-          }, 600);
+    // Check Server for Hubspot Authorization
+    axios.get(HUBSPOT_OAUTH_CHECK_URL)
+    .then(response => {
+      if (response.data === "Unauthorized"){
+        // Redirect User to Hubspot OAuth URL Popup
+        axios.get(HUBSPOT_OAUTH_URL)
+        .then(response => {
+          const h = 800;
+          const w = 500;
+          const popup = window.open(response.data, "OAuth Popup",`toolbar=no, location=no, statusbar=no, menubar=no, scrollbars=1, resizable=0, width=${w}, height=${h}, top=150, left=650`);
+        
+          var timer = setInterval(function() { 
+            if(popup && popup.closed) {
+              // Check Server for HubsPot Authorization
+              axios.get(HUBSPOT_OAUTH_CHECK_URL)
+              .then(response => {
+                if (response.data === "Authorized"){
+                  clearInterval(timer);
+                  history.push('/configuration');
+                }
+                // Show error message when popup window is closed without Authorization
+                if (response.data === "Unauthorized") {
+                  clearInterval(timer);
+                  setTimeout(function(){ 
+                  setError(true)
+                  }, 600);
+                }
+              })
+              .catch(function(err) {
+                console.error(err + "Error getting Hubspot OAuth Authorization from: " + HUBSPOT_OAUTH_CHECK_URL);
+              });
+            }
+          }, 200);
+        })
+        .catch(function(err) {
+          console.error(err + "Error getting Hubspot OAuth URL from: " + HUBSPOT_OAUTH_URL);
+        });
+      } else {
+        history.push('/configuration');
       }
-    }, 200);
+    })
+    .catch(function(err) {
+      console.error(err + "Error getting Hubspot OAuth Authorization from: " + HUBSPOT_OAUTH_CHECK_URL);
+    });
   }
   return {showError, OAuth} as states
 }
