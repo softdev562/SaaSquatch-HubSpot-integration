@@ -3,12 +3,15 @@ import { Router } from 'express';
 import * as jwt from "jsonwebtoken";
 import jwksRsa = require("jwks-rsa");
 import { Base64 } from "js-base64";
-import { SubscriptionType, HubspotPayload, SaasquatchPayload, EventType } from '../Types/types';
+import { SubscriptionType, HubspotPayload, SaasquatchPayload, EventType, Configuration } from '../Types/types';
 import saasquatchSchema from '../Types/saasquatch-payload-schema.json';
 import hubspotSchema from '../Types/hubspot-payload-schema.json';
 import Ajv from "ajv";
 import { hubspotUpdatesController } from '../integration/hubspotUpdatesController';
 import { saasquatchUpdatesController } from '../integration/saasquatchUpdatesController';
+
+import { MOCK_SESSION_USER_EMAIL } from '../mock';
+import { ConfigurationModel } from '../integration/ConfigurationModel';
 
 /**
  * Handles Webhooks from SaaSquatch and Hubspot by validating they actually came from SaaSquatch
@@ -122,37 +125,45 @@ router.post("/hubspot-webhook", async (req, res) => {
     
 });
 
-function processSaasquatchPayload(saasquatchPayload: SaasquatchPayload) {  
-    switch(saasquatchPayload.type){
-        case EventType.UserCreated:
-            saasUpdatesController.NewUser(saasquatchPayload);
-            break;
-        case EventType.Test:
-            saasUpdatesController.Test(saasquatchPayload);
-            break;
-        default:
-            console.error("No matching EventType. May not yet be implemented.\
-             Received type: "+saasquatchPayload.type);
-
-    }
+async function processSaasquatchPayload(saasquatchPayload: SaasquatchPayload) {
+	//  TODO: Change to use information from webhook
+	const userIdentifier: string = MOCK_SESSION_USER_EMAIL
+	const configuration: Configuration = await ConfigurationModel.getConfiguration(userIdentifier)
+	if(configuration.ConnectToSaasquach) 
+		switch(saasquatchPayload.type){
+			case EventType.UserCreated:
+				saasUpdatesController.NewUser(saasquatchPayload);
+				break;
+			case EventType.Test:
+				saasUpdatesController.Test(saasquatchPayload);
+				break;
+			default:
+				console.error("No matching EventType. May not yet be implemented.\
+				Received type: "+saasquatchPayload.type);
+		}
+	else console.log(`Ignored SaaSquatch WebHook:\t${saasquatchPayload.type}`)
 }
 
 
-function processHubspotPayload(hubspotPayload: HubspotPayload) {  
-    switch (hubspotPayload.subscriptionType){
-        case SubscriptionType.ContactCreation:
-            hubUpdatesController.NewContact(hubspotPayload);
-            break;
-        case SubscriptionType.ContactDeletion:
-            hubUpdatesController.DeletedContact(hubspotPayload);
-            break;
-        case SubscriptionType.ContactPropertyChange:
-            hubUpdatesController.ChangedContact(hubspotPayload);
-            break;
-        default:
-            console.error("No matching subscriptionType. May not yet be implemented.\
-             Received subscriptionType: "+hubspotPayload.subscriptionType);
-    }
+async function processHubspotPayload(hubspotPayload: HubspotPayload) {
+	const userIdentifier: string = MOCK_SESSION_USER_EMAIL
+	const configuration: Configuration = await ConfigurationModel.getConfiguration(userIdentifier)
+	if(configuration.ConnectToHubspot)
+		switch (hubspotPayload.subscriptionType){
+			case SubscriptionType.ContactCreation:
+				hubUpdatesController.NewContact(hubspotPayload);
+				break;
+			case SubscriptionType.ContactDeletion:
+				hubUpdatesController.DeletedContact(hubspotPayload);
+				break;
+			case SubscriptionType.ContactPropertyChange:
+				hubUpdatesController.ChangedContact(hubspotPayload);
+				break;
+			default:
+				console.error("No matching subscriptionType. May not yet be implemented.\
+				Received subscriptionType: "+hubspotPayload.subscriptionType);
+		}
+	else console.log(`Ignored HubSpot WebHook:\t${hubspotPayload.subscriptionType}`)
 }
 
 
