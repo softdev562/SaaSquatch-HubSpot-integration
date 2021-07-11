@@ -37,7 +37,7 @@ export const TogglesSelected = () => (
     oneway={false}
   />
 )
-export const PrevousImport = () => (
+export const PreviousImport = () => (
   <View 
     {...defaultProps} 
     config={{

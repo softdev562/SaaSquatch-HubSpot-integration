@@ -157,10 +157,9 @@ export function Controller(){
         if (!response.data.PushPartixipantsAsContacts && !response.data.PullParticipantsIntoContacts){
           setNoway(true);
         }
-        // Don't show oneway or noway message if an option is previously selected on page
+        // Don't show oneway message if an option is previously selected on page
         if (response.data.PushContactsAsParticipants || response.data.PullContactsIntoParticipants){
           setOneway(false);
-          setNoway(false);
         }
       })
       .catch(error => console.error('Error: Unable to retrieve Configuration Data'))
@@ -299,6 +298,7 @@ export function View(states: states){
             {"Turn on Integration"}
           </SyncButton>
           <AlertText>
+            {!states.oneway && states.noway ? "Integration is not currently configured for Hubspot, click Turn on Integration to continue with a one-way sync" : ""}
             {states.oneway && !states.noway ? "Integration is not currently configured for SaaSquatch, click Turn on Integration to continue with a one-way sync" : ""}
             {states.oneway && states.noway ? "Integration is not currently configured for Hubspot or SaaSquatch, clicking Turn on Integration will not create configuration" : ""}
           </AlertText>

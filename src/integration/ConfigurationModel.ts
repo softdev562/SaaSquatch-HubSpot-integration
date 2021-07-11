@@ -16,14 +16,14 @@ export class ConfigurationModel {
 	}
 
 	public async getConfiguration() {
-		return PollDatabase("testTenantAlias");
+		return PollDatabase("test_abmacfbsumae1");
 	}
 
 	public async setConfiguration(configuration: Configuration) {
-		AddToDatabase("testTenantAlias", "testHubspotID", configuration);
+		AddToDatabase("test_abmacfbsumae1", "308099", configuration);
 	}
 
 	public async updateConfiguration(configuration: Configuration) {
-		EditDatabase("testTenantAlias", configuration);
+		EditDatabase("test_abmacfbsumae1", configuration);
 	}
 }
