@@ -84,7 +84,7 @@ export function OAuthFunction(){
         
           var timer = setInterval(function() { 
             if(popup && popup.closed) {
-              // Check Server for HubsPot Authorization
+              // Check Server for Hubspot Authorization
               axios.get(HUBSPOT_OAUTH_CHECK_URL)
               .then(response => {
                 if (response.data === "Authorized"){
