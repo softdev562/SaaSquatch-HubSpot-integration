@@ -78,7 +78,6 @@ export class HubspotApiModel {
              }
          });
             if (response.status==200 ){
-                console.log("=== PROPERTY EXIST IN OBJECT TYPE " + objectType + " ===")
                 return true; 
             } else {
                 console.error("======== WAS NOT ABLE TO READ PROPERTY ========");
@@ -86,7 +85,6 @@ export class HubspotApiModel {
             }
         } catch (e) {
             if(e.response.status==404){
-                console.log("=== PROPERTY DOES NOT EXIST IN OBJECT TYPE " + objectType + " ===")
                 return false;
             } else{
                 console.error("======== WAS NOT ABLE TO MAKE CALL: STATUS CODE: "+ e.response.status+" ========");
