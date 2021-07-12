@@ -1,3 +1,4 @@
+import {PollTokensFromDatabase} from "../database";
 require('dotenv').config();
 import { Router } from 'express';
 import * as jwt from "jsonwebtoken";
@@ -9,10 +10,11 @@ import hubspotSchema from '../Types/hubspot-payload-schema.json';
 import Ajv from "ajv";
 import { hubspotUpdatesController } from '../integration/hubspotUpdatesController';
 import { saasquatchUpdatesController } from '../integration/saasquatchUpdatesController';
-
-//#TODO REPLACE WITH CALL TO DB ONCE ACCESS TOKENS ARE STORED IN DB
+import {isAuthorized} from "../routes/oath"
 import {tokenStore} from "../routes/oath";
 import {current_user} from "../routes/oath"
+
+
 
 /**
  * Handles Webhooks from SaaSquatch and Hubspot by validating they actually came from SaaSquatch
@@ -49,9 +51,25 @@ ajv.addSchema(saasquatchSchema, "saasquatch");
 
 const validateHubspotSchema = ajv.getSchema("hubspot");
 const validateSaasquatchSchema = ajv.getSchema("saasquatch");
-let access_token:any ="NULL";
- access_token = process.env.access_token;
-// const hubUpdatesController = new hubspotUpdatesController(tokenStore[current_user]["access_token"], process.env.SAPIKEY, process.env.STENANTALIAS);
+
+let access_token:any;
+
+if(isAuthorized(current_user))
+{
+    (async function(){
+        try{
+            let access_token:any = await PollTokensFromDatabase(current_user);
+
+        }
+        catch(e)
+        {
+            console.log(e);
+        }
+    })();
+}
+
+
+
 const hubUpdatesController = new hubspotUpdatesController(access_token, process.env.SAPIKEY, process.env.STENANTALIAS);
 
 const saasUpdatesController = new saasquatchUpdatesController(process.env.HAPIKEY, process.env.SAPIKEY, process.env.STENANTALIAS);
