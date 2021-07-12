@@ -123,6 +123,7 @@ export function View( states: states ){
   return (
     <Wrapper className= "wrapper">
     <LoginBox className= "login">
+      <TitleText className= "title-text"> This is not main! This is a branch I'm testing penpal stuff on, so don't worry if it isn't working. Dm Chris if you want it running properly</TitleText>
       <TitleText className= "title-text"> Log in to <Logo src={HubspotLogo} /></TitleText>
       <InfoText className= "info-text">Your contacts will be synced using the HubSpot data from this user’s permissions.</InfoText>
       <InfoText className= "info-text">For more information read our&nbsp;<a href={`https://example.com`} >HubSpot Quickstart Guide.</a></InfoText>

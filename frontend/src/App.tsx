@@ -5,7 +5,6 @@ import {ConfigurationP2} from './components/ConfigurationP2';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core';
 import { ConfigurationSuccess } from './components/ConfigurationSuccess';
 import { OrderConfirmation } from './components/OrderConfirmation';
-import { usePenpal } from '@saasquatch/integration-boilerplate-react';
 
 const theme = createMuiTheme({
   palette: {
@@ -19,13 +18,6 @@ const theme = createMuiTheme({
 });
 
 function App() {
-  const penpal = usePenpal()
-
-  console.log('mode', penpal.mode)
-  console.log('tenantScopedToken', penpal.tenantScopedToken)
-  console.log('integrationConfig', penpal.integrationConfig)
-  console.log('formConfig', penpal.formConfig)
-
   return (
     <ThemeProvider theme={theme}>
       <div className="App">
