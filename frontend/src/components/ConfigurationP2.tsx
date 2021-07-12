@@ -5,6 +5,7 @@ import SaaSquatchLogo from '../assets/SaaSquatchLogo.png';
 import history from '../types/history';
 import axios from 'axios';
 import Modal from '@material-ui/core/Modal';
+import { usePenpal } from '@saasquatch/integration-boilerplate-react';
 
 const PageWrapper = styled.div`
   min-height: 100vh;
@@ -106,6 +107,7 @@ const ModalBodyContainer = styled.div`
 const API_CONFIGURATION_URL = '/api/configuration'
 
 interface SaasConfig {
+  saasquatchTenantAlias: string,
   pushIntoParticipants: boolean,
   pullIntoParticipants: boolean,
 }
@@ -132,7 +134,9 @@ export function ConfigurationP2() {
 }
 
 export function Controller(){
+  const penpal = usePenpal()
   const emptyConfig: SaasConfig = {
+    saasquatchTenantAlias: penpal.tenantScopedToken,
     pushIntoParticipants: false,
     pullIntoParticipants: false, 
   }
@@ -146,7 +150,9 @@ export function Controller(){
   // Gets config data on page load
   useEffect(() => {
     const getConfigData = () => {
-      axios.get(API_CONFIGURATION_URL)
+      axios.get(API_CONFIGURATION_URL,
+        { params: {token: document.cookie, SaaSquatchTenantAlias: config.saasquatchTenantAlias} }
+      )
       .then((response) => {
         setConfig(config => ({...config, pushIntoParticipants: response.data.PushContactsAsParticipants, pullIntoParticipants: response.data.PullContactsIntoParticipants}));
         // Disable import toggle if previously imported
@@ -218,6 +224,7 @@ export function Controller(){
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
+          SaaSquatchTenantAlias : config.saasquatchTenantAlias,
           PushContactsAsParticipants: config.pushIntoParticipants,
           PullContactsIntoParticipants: config.pullIntoParticipants, 
         })

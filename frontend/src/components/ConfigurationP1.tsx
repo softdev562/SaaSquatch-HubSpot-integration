@@ -5,6 +5,7 @@ import HubspotLogo from '../assets/HubspotLogo.png';
 import history from '../types/history';
 import axios from 'axios';
 import Modal from '@material-ui/core/Modal';
+import { usePenpal } from '@saasquatch/integration-boilerplate-react';
 
 const PageWrapper = styled.div`
   min-height: 100vh;
@@ -90,6 +91,7 @@ const ModalBody = styled.div`
 const API_CONFIGURATION_URL = '/api/configuration'
 
 interface HubConfig {
+  saasquatchTenantAlias: string,
   pushIntoContacts: boolean,
   pullIntoContacts: boolean,
 }
@@ -112,7 +114,9 @@ export function ConfigurationP1() {
 }
 
 export function Controller(){
+  const penpal = usePenpal()
   const emptyConfig: HubConfig = {
+    saasquatchTenantAlias: penpal.tenantScopedToken,
     pushIntoContacts: false,
     pullIntoContacts: false,
   }
@@ -135,7 +139,9 @@ export function Controller(){
   // Gets config data on page load
   useEffect(() => {
     const getConfigData = () => {
-      axios.get(API_CONFIGURATION_URL)
+      axios.get(API_CONFIGURATION_URL,
+        { params: {token: document.cookie, SaaSquatchTenantAlias: config.saasquatchTenantAlias} }
+      )
       .then((response) => {
         // A blank config object is returned if the user doesn't exist yet in the database
         if (
@@ -210,6 +216,7 @@ export function Controller(){
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
+          SaaSquatchTenantAlias: config.saasquatchTenantAlias,
           PushPartixipantsAsContacts: config.pushIntoContacts,
           PullParticipantsIntoContacts: config.pullIntoContacts,
         })
