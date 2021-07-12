@@ -75,6 +75,7 @@
 	"dependencies": {
 		"@material-ui/data-grid": "^4.0.0-alpha.32",
 		"@material-ui/icons": "^4.11.2",
+		"@saasquatch/integration-boilerplate-react": "^1.0.0-0",
 		"ajv": "^8.6.0",
 		"axios": "^0.21.1",
 		"body-parser": "^1.19.0",
