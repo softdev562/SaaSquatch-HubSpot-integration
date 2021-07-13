@@ -43,7 +43,7 @@ export class saasquatchUpdatesController{
          if (contactsSearchResponse?.data.total == 0){
             var programShareLinks: { [key: string]: any } = {};
             for (const key in saasquatchPayloadData.programShareLinks){
-                let newProgramShareLink = key.replace(/\W/g, '');
+                let newProgramShareLink = key.replace(/\W/g, '') + "saasquatch";
                 if(!await this.hubApiModel.objectHasProperty("contacts", newProgramShareLink)){
                     await this.hubApiModel.createObjectProperty("contacts", newProgramShareLink, newProgramShareLink, "string", "textarea", "contactinformation");
                 }
