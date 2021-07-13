@@ -10,9 +10,11 @@ import {hubspotUpdatesController} from "../integration/hubspotUpdatesController"
 
 
 const router = Router();
-export let current_user:any =''; // current_user = req.SessionID
+ let current_user:string; // current_user = req.SessionID
 // Constants
 // Hubspot
+
+
 const HUBSPOT_CLIENT_ID = process.env.HUBSPOT_CLIENT_ID;
 const HUBSPOT_CLIENT_SECRET = process.env.HUBSPOT_CLIENT_SECRET;
 const HUBSPOT_REDIRECT_URI = process.env.HUBSPOT_REDIRECT_URI;
@@ -31,7 +33,15 @@ const SAASQUATCH_CLIENT_SECRET = process.env.SAASQUATCH_CLIENT_SECRET;
 export const tokenStore: any = {};
 
 export const isAuthorized = (userID: string) =>{
-    return tokenStore["userID"] == userID ? true : false;
+	console.log(userID)
+	if(userID == undefined)
+	{
+		return false
+	}
+else {
+		return tokenStore["userID"] == userID ? true : false;
+
+	}
 };
 
 
@@ -240,7 +250,10 @@ export const HubApiCall:any = async function (myapifunc:Function,refresh_token:s
 		}
 	}
 }
-
+export function get_current_user()
+{
+	return current_user;
+}
 
 
 

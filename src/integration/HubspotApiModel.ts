@@ -1,12 +1,16 @@
 import axios from "axios";
+import {get_current_user} from "../routes/oath";
+import {isAuthorized} from "../routes/oath";
+import {PollTokensFromDatabase} from "../database";
 const querystring = require('query-string');
+import {tokenStore} from "../routes/oath";
+
 
 
 export class HubspotApiModel {
-    private hub_access_token: string;
 
-    constructor(hub_access_token: string){
-        this.hub_access_token = hub_access_token;
+    constructor(){
+
     }
 
     /**
@@ -18,26 +22,30 @@ export class HubspotApiModel {
 
     //#todo: suggestion renaming objectID to contactObjectID
     public async getContact(objectId: number, paramToGet?: string){
-        ///const header = { accept: 'application/json',authorization:`Bearer ${this.hub_access_token}` };
+
+        console.log("this is current user ", get_current_user());
+        let token:any = await PollTokensFromDatabase(get_current_user());
+        let access_token = token.accessToken;
+
+
         const url = `https://api.hubapi.com/crm/v3/objects/contacts/${encodeURIComponent(objectId)}`;
-        //const url = `https://api.hubapi.com/crm/v3/objects/contacts/${objectId}`;
 
         const options = {
             qs: {"properties": 'email', "archived": 'false'},
-            headers: { accept: 'application/json',authorization:`Bearer ${this.hub_access_token}`}
+            headers: { accept: 'application/json',authorization:`Bearer ${access_token}`}
         };
 
         if (paramToGet){
           const options = {
                qs: {"properties": 'email', "archived": 'false'},
-               headers:{ accept: 'application/json',authorization:`Bearer ${this.hub_access_token}`}
+               headers:{ accept: 'application/json',authorization:`Bearer ${access_token}`}
            };
         }
         else{
            // qs = {archived: 'false'}
            const options = {
                 qs: {"properties": 'email', "archived": 'false'},
-                headers:{ accept: 'application/json',authorization:`Bearer ${this.hub_access_token}`}
+                headers:{ accept: 'application/json',authorization:`Bearer ${access_token}`}
             };
 
         }
@@ -58,19 +66,35 @@ export class HubspotApiModel {
 
     /**
      * Creates an object in Hubspot
-     * 
+     *
      * @param objectType object type to be created. e.g. deals, contacts, company
      * @param createObjectBody body specifiying the create properties of the object
      * @returns axios response
      */
     public async createObject(objectType:string, createObjectBody:object){
+        let access_token;
+        if(isAuthorized(get_current_user()))
+        {
+            (async function(){
+                try
+                {
+                    let access_token:any = await PollTokensFromDatabase(get_current_user());
+                    console.log(access_token)
+                }
+                catch(e)
+                {
+                    console.log(e);
+                }
+            })();
+        }
+
         try{
             const createObjectURL = 'https://api.hubapi.com/crm/v3/objects/' + objectType;
             const response = await axios.post(createObjectURL, createObjectBody,{
 
                 // #TODO update later
                 params: {
-                    hapikey: this.hub_access_token
+                    hapikey: access_token
                 }
             });
             return response;
@@ -80,21 +104,38 @@ export class HubspotApiModel {
             return JSON.parse(e.response.body);
         }
     }
-   
+
 
     /**
-     * 
+     *
      * @param objectType object to search for. e.g. deals, contacts, company
      * @param body body specifiying the search properties of the object
      * @returns axios response
      */
     public async searchObject(objectType:string, body:object){
         const searchObjectURL = 'https://api.hubapi.com/crm/v3/objects/' + objectType + '/search';
+        let access_token;
+
+        if(isAuthorized(get_current_user()))
+        {
+            (async function(){
+                try
+                {
+                    let access_token:any = await PollTokensFromDatabase(get_current_user());
+                    console.log(access_token)
+                }
+                catch(e)
+                {
+                    console.log(e);
+                }
+            })();
+        }
+
         try {
             const response = await axios.post(searchObjectURL,body, {
                 params: {
                     // #TODO update later
-                    hapikey: this.hub_access_token,
+                    hapikey: access_token,
                 }
             });
             return response;

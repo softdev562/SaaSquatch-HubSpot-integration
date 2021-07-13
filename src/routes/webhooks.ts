@@ -10,9 +10,6 @@ import hubspotSchema from '../Types/hubspot-payload-schema.json';
 import Ajv from "ajv";
 import { hubspotUpdatesController } from '../integration/hubspotUpdatesController';
 import { saasquatchUpdatesController } from '../integration/saasquatchUpdatesController';
-import {isAuthorized} from "../routes/oath"
-import {tokenStore} from "../routes/oath";
-import {current_user} from "../routes/oath"
 
 
 
@@ -52,25 +49,11 @@ ajv.addSchema(saasquatchSchema, "saasquatch");
 const validateHubspotSchema = ajv.getSchema("hubspot");
 const validateSaasquatchSchema = ajv.getSchema("saasquatch");
 
-let access_token:any;
-
-if(isAuthorized(current_user))
-{
-    (async function(){
-        try{
-            let access_token:any = await PollTokensFromDatabase(current_user);
-
-        }
-        catch(e)
-        {
-            console.log(e);
-        }
-    })();
-}
 
 
 
-const hubUpdatesController = new hubspotUpdatesController(access_token, process.env.SAPIKEY, process.env.STENANTALIAS);
+
+const hubUpdatesController = new hubspotUpdatesController(process.env.SAPIKEY, process.env.STENANTALIAS);
 
 const saasUpdatesController = new saasquatchUpdatesController(process.env.HAPIKEY, process.env.SAPIKEY, process.env.STENANTALIAS);
 

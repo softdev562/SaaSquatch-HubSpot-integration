@@ -176,7 +176,7 @@ export async function PollTokensFromDatabase(tenantAllias: string) {
         accessToken: "",
         refreshToken: "",
     };
-    await databseRef.child('users/' + 'b7112bdc47bb9cf30082933cf048a876d68352ab/' + 'userinfo').get().then((snapshot) => {
+    await databseRef.child('users/' + key + '/userinfo').get().then((snapshot) => {
         if (snapshot.exists()) {
             data.accessToken =     snapshot.child("accessToken").val();
             data.refreshToken =    snapshot.child("refreshToken").val();
