@@ -25,9 +25,10 @@ function hashValue(stringValue: string){
  * accessToken string, refreshToken string
  */
 export function AddToDatabase(tenantAllias: string, hubspotID: string, {PushPartixipantsAsContacts = false, PullParticipantsIntoContacts = false,
-    DeleteContactwhenParticipantDeleted = false, PushContactsAsParticipants = false,
-    PullContactsIntoParticipants = false, DeleteParticipantWhenContactDeleted = false,
-    accessToken = "", refreshToken = ""}) {
+
+                                                     DeleteContactwhenParticipantDeleted = false, PushContactsAsParticipants = false,
+                                                     PullContactsIntoParticipants = false, DeleteParticipantWhenContactDeleted = false,
+                                                     accessToken = "", refreshToken = ""}) {
     var key = hashValue(tenantAllias);
     var id =  hashValue(hubspotID);
     firebase.database().ref('keyTable/' + id + "/SasID").set({
@@ -83,7 +84,8 @@ export function EditDatabase(tenantAllias: string, params : {PushPartixipantsAsC
             PushContactsAsParticipants : params.PushContactsAsParticipants
         });
     }
-    if(params.PullContactsIntoParticipants != undefined){
+
+    if(params.PullContactsIntoParticipants != undefined){  
         firebase.database().ref('users/' + key + '/hubspot').update({
             PullContactsIntoParticipants : params.PullContactsIntoParticipants
         });

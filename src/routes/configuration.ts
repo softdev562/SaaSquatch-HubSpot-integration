@@ -31,5 +31,17 @@ router.post(API_CONFIGURATION_URL, async (req, res) => {
 		res.end();
 	}
 })
+router.put(API_CONFIGURATION_URL, async (req, res) => {
+	if(validate(req.body)) {
+		const configuration: Configuration = req.body as Configuration
+		configurationController.updateConfiguration(configuration)
+		res.sendStatus(200)
+		res.end()
+	} else {
+		console.error(`POST ${API_CONFIGURATION_URL} -> Failed to validate response body`)
+		res.sendStatus(400);
+		res.end();
+	}
+})
 
 export { router as configurationRoutes }

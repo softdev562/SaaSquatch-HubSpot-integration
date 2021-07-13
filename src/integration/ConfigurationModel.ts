@@ -5,13 +5,14 @@ import { EditDatabase } from '../database'
 
 export class ConfigurationModel {
 	static configuration: Configuration = {
-		PushPartixipantsAsContacts: false,
+
+		PushPartixipantsAsContacts: false, 
 		PullParticipantsIntoContacts: false,
 		DeleteContactwhenParticipantDeleted: false,
 		PushContactsAsParticipants: false,
-		PullContactsIntoParticipants: false,
+		PullContactsIntoParticipants: false, 
 		DeleteParticipantWhenContactDeleted: false,
-		accessToken: "",
+		accessToken: "", 
 		refreshToken: ""
 	}
 

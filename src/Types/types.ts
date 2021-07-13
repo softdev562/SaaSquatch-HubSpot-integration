@@ -69,12 +69,13 @@ export interface SaasquatchPayload{
  */
 
 export interface Configuration {
-    PushPartixipantsAsContacts: boolean,
+
+    PushPartixipantsAsContacts: boolean, 
     PullParticipantsIntoContacts: boolean,
     DeleteContactwhenParticipantDeleted: boolean,
     PushContactsAsParticipants: boolean,
-    PullContactsIntoParticipants: boolean,
+    PullContactsIntoParticipants: boolean, 
     DeleteParticipantWhenContactDeleted: boolean,
-    accessToken: string,
+    accessToken: string, 
     refreshToken: string
 }

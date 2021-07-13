@@ -3,22 +3,18 @@ import { View } from '../components/ConfigurationP1';
 
 const defaultProps = {
   config: {
-    createContact: false,
-    importHistoricalContacts: false,
-    deleteContact: false,
-    syncRefLinks: false,
-    importHistoricalRefLinks: false,
+    pushIntoContacts: false,
+    pullIntoContacts: false,
   },
-  expandAccordion: false,
   handleSubmit: ()=>{},
   handleToggles: {
-    toggleHubCreate: ()=>{},
-    toggleHubHistoricalImport: ()=>{},
-    toggleHubDelete: ()=>{},
-    toggleHubRefLinks: ()=>{},
-    toggleHubHitoricalRefLinksImport: ()=>{},
-    toggleExpandAccordion: ()=>{},
-  }
+    toggleHubPush: ()=>{},
+    toggleHubPull: ()=>{},
+  },
+  open: false,
+  handleClose: ()=>{},
+  imported: false,
+  oneway: true,
 };
 
 export default {
@@ -27,17 +23,35 @@ export default {
 } as Meta;
 
 export const Default = () => <View {...defaultProps} />
-export const AccordionExtended = () => <View {...defaultProps} expandAccordion={true} />
 export const TogglesSelected = () => (
   <View 
     {...defaultProps} 
-    expandAccordion={true}
     config={{
-      createContact: true,
-      importHistoricalContacts: true,
-      deleteContact: true,
-      syncRefLinks: true,
-      importHistoricalRefLinks: true,
+      pushIntoContacts: true,
+      pullIntoContacts: true,
     }} 
+    oneway={false}
+  />
+)
+export const PreviousImport = () => (
+  <View 
+    {...defaultProps} 
+    config={{
+      pushIntoContacts: true,
+      pullIntoContacts: true,
+    }}
+    oneway={false}
+    imported={true}
+  />
+)
+export const ImportModal = () => (
+  <View 
+    {...defaultProps} 
+    config={{
+      pushIntoContacts: true,
+      pullIntoContacts: true,
+    }}
+    oneway={false}
+    open={true}
   />
 )

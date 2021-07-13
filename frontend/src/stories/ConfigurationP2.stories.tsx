@@ -3,18 +3,22 @@ import { View } from '../components/ConfigurationP2';
 
 const defaultProps = {
   config: {
-    createParticipant: false,
-    importHistoricalParticipants: false,
-    deleteParticipant: false,
+    pushIntoParticipants: false,
+    pullIntoParticipants: false,
   },
-  expandAccordion: false,
+  handleBack: ()=>{},
   handleSubmit: ()=>{},
   handleToggles: {
-    toggleSaasCreate: ()=>{},
-    toggleSaasHistoricalParticipantImport: ()=>{},
-    toggleSaasDelete: ()=>{},
-    toggleExpandAccordion: ()=>{},
-  }
+    toggleSaasPush: ()=>{},
+    toggleSaasPull: ()=>{},
+  },
+  open: false,
+  handleClose: ()=>{},
+  openError: false,
+  handleErrorClose: ()=>{},
+  imported: false,
+  oneway: true,
+  noway: false,
 };
 
 export default {
@@ -23,15 +27,50 @@ export default {
 } as Meta;
 
 export const Default = () => <View {...defaultProps} />
-export const AccordionExtended = () => <View {...defaultProps} expandAccordion={true} />
 export const TogglesSelected = () => (
   <View 
     {...defaultProps} 
-    expandAccordion={true}
     config={{
-      createParticipant: true,
-      importHistoricalParticipants: true,
-      deleteParticipant: true,
+      pushIntoParticipants: true,
+      pullIntoParticipants: true,
     }} 
+    oneway={false}
+  />
+)
+export const PreviousImport = () => (
+  <View 
+    {...defaultProps} 
+    config={{
+      pushIntoParticipants: true,
+      pullIntoParticipants: true,
+    }}
+    oneway={false}
+    imported={true}
+  />
+)
+export const ImportModal = () => (
+  <View 
+    {...defaultProps} 
+    config={{
+      pushIntoParticipants: true,
+      pullIntoParticipants: true,
+    }}
+    oneway={false}
+    open={true}
+  />
+)
+export const NowayError = () => (
+  <View 
+    {...defaultProps} 
+    oneway={true}
+    noway={true}
+  />
+)
+export const NowayModal = () => (
+  <View 
+    {...defaultProps} 
+    oneway={true}
+    noway={true}
+    openError={true}
   />
 )
