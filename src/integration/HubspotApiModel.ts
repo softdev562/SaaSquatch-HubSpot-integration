@@ -42,9 +42,8 @@ export class HubspotApiModel {
            };
         }
         else{
-           // qs = {archived: 'false'}
            const options = {
-                qs: {"properties": 'email', "archived": 'false'},
+                qs: { "archived": 'false'},
                 headers:{ accept: 'application/json',authorization:`Bearer ${access_token}`}
             };
 
@@ -58,8 +57,7 @@ export class HubspotApiModel {
                 return resp.data;
             }
         }catch(e){
-            // this causes a promise rejection to be sent (necessary for integration with hubapicallfun)
-          //  return JSON.parse(e.response.body);
+
             console.error(e);
         }
     }
@@ -72,29 +70,15 @@ export class HubspotApiModel {
      * @returns axios response
      */
     public async createObject(objectType:string, createObjectBody:object){
-        let access_token;
-        if(isAuthorized(get_current_user()))
-        {
-            (async function(){
-                try
-                {
-                    let access_token:any = await PollTokensFromDatabase(get_current_user());
-                    console.log(access_token)
-                }
-                catch(e)
-                {
-                    console.log(e);
-                }
-            })();
-        }
+
+        let token:any = await PollTokensFromDatabase(get_current_user());
+        let access_token = token.accessToken;
 
         try{
             const createObjectURL = 'https://api.hubapi.com/crm/v3/objects/' + objectType;
             const response = await axios.post(createObjectURL, createObjectBody,{
-
-                // #TODO update later
                 params: {
-                    hapikey: access_token
+                    headers:{ accept: 'application/json',authorization:`Bearer ${access_token}`}
                 }
             });
             return response;
@@ -113,31 +97,17 @@ export class HubspotApiModel {
      * @returns axios response
      */
     public async searchObject(objectType:string, body:object){
-        const searchObjectURL = 'https://api.hubapi.com/crm/v3/objects/' + objectType + '/search';
-        let access_token;
 
-        if(isAuthorized(get_current_user()))
-        {
-            (async function(){
-                try
-                {
-                    let access_token:any = await PollTokensFromDatabase(get_current_user());
-                    console.log(access_token)
-                }
-                catch(e)
-                {
-                    console.log(e);
-                }
-            })();
-        }
+        const searchObjectURL = 'https://api.hubapi.com/crm/v3/objects/' + objectType + '/search';
+        console.log("this is current user ", get_current_user());
+        let token:any = await PollTokensFromDatabase(get_current_user());
+        let access_token = token.accessToken;
 
         try {
             const response = await axios.post(searchObjectURL,body, {
                 params: {
-                    // #TODO update later
-                    hapikey: access_token,
-                }
-            });
+                    headers:{ accept: 'application/json',authorization:`Bearer ${access_token}`}
+            }});
             return response;
         } catch (e) {
             console.error("===== WAS NOT ABLE TO SEARCH FOR PROPERTIES OF OBJECT: " + objectType);

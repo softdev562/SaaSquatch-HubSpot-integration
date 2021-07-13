@@ -4,17 +4,13 @@ import { SaasquatchApiModel } from "./SaasquatchApiModel";
 
 
 export class hubspotUpdatesController{
-
     private hubApiModel: HubspotApiModel;
     private saasApiModel: SaasquatchApiModel;
-
     constructor( sApiKey: string, sTenantAlias: string){
         this.saasApiModel = new SaasquatchApiModel(sApiKey, sTenantAlias);
         this.hubApiModel = new HubspotApiModel();
     }
 
-    
-   
     /**
      * Received webhook of subscription type 'contact.created'
      * @param hubspotPayload Payload of Hubspot webhook
@@ -57,7 +53,6 @@ export class hubspotUpdatesController{
                     console.log("SAAS USER "+data.users[0].email);
                     console.log("user share links: "+data.users[0].shareLinks);
                 }
-
                 // 4. TODO: send referral link back to hubspot to add to contact
             
                 }

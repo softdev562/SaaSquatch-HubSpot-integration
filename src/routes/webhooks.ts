@@ -12,7 +12,6 @@ import { hubspotUpdatesController } from '../integration/hubspotUpdatesControlle
 import { saasquatchUpdatesController } from '../integration/saasquatchUpdatesController';
 
 
-
 /**
  * Handles Webhooks from SaaSquatch and Hubspot by validating they actually came from SaaSquatch
  * or HubSpot
@@ -48,9 +47,6 @@ ajv.addSchema(saasquatchSchema, "saasquatch");
 
 const validateHubspotSchema = ajv.getSchema("hubspot");
 const validateSaasquatchSchema = ajv.getSchema("saasquatch");
-
-
-
 
 
 const hubUpdatesController = new hubspotUpdatesController(process.env.SAPIKEY, process.env.STENANTALIAS);
