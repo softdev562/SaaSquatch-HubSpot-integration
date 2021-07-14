@@ -14,9 +14,16 @@ const OpenPopup = () => {
 export default {
   title: 'Integration/Login',
   component: View,
+  parameters: {
+    Gherkin: {
+      data: 'FeatureTextFile.txt',
+    },
+  },
 } as Meta;
 
 export const Default = ()=> <View {...props} />
 export const Error = ()=> <View {...props} showError={true} />
 export const ClickForPopup = ()=> <View {...props} OAuth={OpenPopup} />
+
+
   
