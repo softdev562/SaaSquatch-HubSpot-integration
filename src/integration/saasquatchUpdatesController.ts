@@ -9,7 +9,7 @@ export class saasquatchUpdatesController{
 
 
      constructor(hApiKey: string, sApiKey: string, sTenantAlias: string){
-        this.saasApiModel = new SaasquatchApiModel(sApiKey, sTenantAlias);
+        this.saasApiModel = new SaasquatchApiModel();
         this.hubApiModel = new HubspotApiModel(hApiKey);
      }
 

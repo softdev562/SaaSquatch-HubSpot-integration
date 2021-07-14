@@ -24,8 +24,6 @@ firebase.initializeApp(firebaseConfig);
 const PORT = process.env.PORT || 8000;
 const {
 	HUBSPOT_API_KEY: HAPIKEY,
-	SAASQUATCH_API_KEY: SAPIKEY,
-	SAASQUATCH_TENANT_ALIAS: STENANTALIAS
 } = process.env;
 
 // configure

@@ -130,7 +130,7 @@ export async function PollDatabase(tenantAllias: string) {
     return data;
 }
 
-export async function LookupAllias(hubspotID: string) {
+export async function LookupAlias(hubspotID: string) {
     var key = hashValue(hubspotID);
     var data = "";
     var databseRef = firebase.database().ref();
@@ -142,6 +142,7 @@ export async function LookupAllias(hubspotID: string) {
         }
       }).catch((error) => {
         console.error(error);
+		throw new Error(error);
       });
     return data;
 }
@@ -151,7 +152,7 @@ export async function LookupAllias(hubspotID: string) {
  * Passing in a tenant alias as well as the access token and refresh token should update both, thoough the most
  * up to date version of both must be passed in. If only 1 needs to be changed, use the update fnction
  */
-export function AddTokensToDatabase(tenantAllias: string,  accessToken: string, refreshToken: string) {
+export function AddTokensToDatabase(tenantAllias: string, accessToken: string, refreshToken: string) {
     var key = hashValue(tenantAllias);
     firebase.database().ref('users/' + key + '/userinfo').set({
         tenantAllias: tenantAllias,
