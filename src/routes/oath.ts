@@ -151,6 +151,7 @@ router.get('/oauth-callback', async (req, res) => {
 			// store user id in local tokenStore for knowledge of current user
 			// and for knowing which user to poll the DB
             tokenStore["userID"] = current_user;
+
 			res.redirect('/hubspot');
 
         }

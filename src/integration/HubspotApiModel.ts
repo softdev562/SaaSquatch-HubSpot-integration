@@ -9,10 +9,6 @@ import {tokenStore} from "../routes/oath";
 
 export class HubspotApiModel {
 
-    constructor(){
-
-    }
-
     /**
      * Gets contact from HubSpot.
      * 
