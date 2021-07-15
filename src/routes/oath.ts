@@ -2,9 +2,7 @@ import { Router } from 'express';
 require('dotenv').config();
 import axios from 'axios';
 const querystring = require('query-string');
-
 import {AddTokensToDatabase} from "../database"
-
 import {PollTokensFromDatabase} from "../database";
 import {hubspotUpdatesController} from "../integration/hubspotUpdatesController";
 
