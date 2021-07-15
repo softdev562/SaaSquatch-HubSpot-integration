@@ -30,7 +30,6 @@ export function AddToDatabase(
     {
         PushPartixipantsAsContacts = false,
         PullParticipantsIntoContacts = false,
-
         DeleteContactwhenParticipantDeleted = false,
         PushContactsAsParticipants = false,
         PullContactsIntoParticipants = false,
@@ -38,7 +37,7 @@ export function AddToDatabase(
         accessToken = '',
         refreshToken = '',
     },
-) {
+): void {
     const key = hashValue(tenantAllias);
     const id = hashValue(hubspotID);
     firebase
