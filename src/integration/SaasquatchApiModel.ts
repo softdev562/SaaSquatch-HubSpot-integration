@@ -17,6 +17,8 @@ export class SaasquatchApiModel {
 	 * @param req_headers Header object for the request.
 	 * @param req_body Body of the request.
 	 * @param tries Number of tries to get send request. Max 5.
+	 * 
+	 * @return Expected data from request.
 	 */
 	public saasquatchApiRequest = async (req_method: Method, req_url: string, req_header: HeaderObject, req_params = undefined, req_body = undefined, tries = 5) => {
 		req_header.Authorization = `Bearer {SaasquatchToken}`;
@@ -34,6 +36,7 @@ export class SaasquatchApiModel {
 			if (e.status === 401) {
 				try {
 					this.SaasquatchToken = await getSaasquatchToken();
+					// prevent infinite loops of invalid tokens, etc.
 					if (tries === undefined || tries > 5) {
 						tries = 5;
 					} else if (tries <= 0) {
