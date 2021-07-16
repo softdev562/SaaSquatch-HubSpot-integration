@@ -9,37 +9,32 @@
  */
 
 import { Configuration } from '../Types/types'
-import { AddToDatabase } from '../database'
 import { PollDatabase } from '../database'
+import { AddToDatabase } from '../database'
+import { EditDatabase } from '../database'
+
 export class ConfigurationModel {
+	/*
 	static configuration: Configuration = {
-		ConnectToHubspot: true,
-		CreateParticipant: true,
-		Field: true,
-		First: true,
-		Last: true,
-		SEmail: true,
-		Refferable: true,
-		DeleteWhenDeleted: true,
-		ConnectToSaasquach: true,
-		CreateInHubspot: true,
-		ContactField: true,
-		Name: true,
-		HEmail: true,
-		ContactOwner: true,
-		AssosiatedCompany: true,
-		LastActivityDate: true,
-		CreateDate: true,
-		DeleteConnected: true,
-		ConnectShareLinks: true,
-		AddShareLinks: true
+		PushPartixipantsAsContacts: false, 
+		PullParticipantsIntoContacts: false,
+		DeleteContactwhenParticipantDeleted: false,
+		PushContactsAsParticipants: false,
+		PullContactsIntoParticipants: false, 
+		DeleteParticipantWhenContactDeleted: false,
+		accessToken: "", 
+		refreshToken: ""
+	}*/
+
+	public static async getConfiguration(userId: string): Promise<Configuration> {
+		return PollDatabase(userId);
 	}
 
-	public static async getConfiguration(userIdentifier: string) {
-		return PollDatabase(userIdentifier);
+	public static async createConfiguration(userId: string, hubspotId: string, configuration: Configuration): Promise<void> {
+		return AddToDatabase(userId, hubspotId, configuration);
 	}
 
-	public static async setConfiguration(userIdentifier: string, configuration: Configuration) {
-		AddToDatabase(userIdentifier, configuration);
+	public static async updateConfiguration(userId: string, configuration: Configuration): Promise<void> {
+		return EditDatabase(userId, configuration);
 	}
 }

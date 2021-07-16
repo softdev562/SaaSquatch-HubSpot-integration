@@ -129,7 +129,7 @@ async function processSaasquatchPayload(saasquatchPayload: SaasquatchPayload) {
 	//  TODO: Change to use information from webhook
 	const userIdentifier: string = MOCK_SESSION_USER_EMAIL
 	const configuration: Configuration = await ConfigurationModel.getConfiguration(userIdentifier)
-	if(configuration.ConnectToSaasquach) 
+	if(configuration.PushPartixipantsAsContacts) 
 		switch(saasquatchPayload.type){
 			case EventType.UserCreated:
 				saasUpdatesController.NewUser(saasquatchPayload);
@@ -148,7 +148,7 @@ async function processSaasquatchPayload(saasquatchPayload: SaasquatchPayload) {
 async function processHubspotPayload(hubspotPayload: HubspotPayload) {
 	const userIdentifier: string = MOCK_SESSION_USER_EMAIL
 	const configuration: Configuration = await ConfigurationModel.getConfiguration(userIdentifier)
-	if(configuration.ConnectToHubspot)
+	if(configuration.PushContactsAsParticipants)
 		switch (hubspotPayload.subscriptionType){
 			case SubscriptionType.ContactCreation:
 				hubUpdatesController.NewContact(hubspotPayload);

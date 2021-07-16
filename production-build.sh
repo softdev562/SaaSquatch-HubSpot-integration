@@ -3,13 +3,13 @@
 # Do NOT run this script in your development directory.
 
 # build backend
-npm i
+yarn install
 npx tsc
 
 # build frontend
 cd frontend
-npm i
-npm run build
+yarn install
+yarn run build
 cd ..
 
 # add frontend to static server
