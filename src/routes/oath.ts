@@ -2,12 +2,14 @@ import { Router } from 'express';
 require('dotenv').config();
 import axios from 'axios';
 const querystring = require('query-string');
+import {AddTokensToDatabase} from "../database"
+import {PollTokensFromDatabase} from "../database";
+import {hubspotUpdatesController} from "../integration/hubspotUpdatesController";
+
 
 const router = Router();
+ let current_user:string;
 
-let current_user:any ='VALUE_ASSIGNED_IN_HUBSPOT_ENDPOINT'; // current_user = req.SessionID
-// Constants
-// Hubspot
 const HUBSPOT_CLIENT_ID = process.env.HUBSPOT_CLIENT_ID;
 const HUBSPOT_CLIENT_SECRET = process.env.HUBSPOT_CLIENT_SECRET;
 const HUBSPOT_REDIRECT_URI = process.env.HUBSPOT_REDIRECT_URI;
@@ -23,13 +25,20 @@ if(HUBSPOT_CLIENT_ID && HUBSPOT_REDIRECT_URI){
 const SAASQUATCH_CLIENT_ID = process.env.SAASQUATCH_CLIENT_ID;
 const SAASQUATCH_CLIENT_SECRET = process.env.SAASQUATCH_CLIENT_SECRET;
 
-// Temp token store, 
-// TODO: move to Firebase DB
 export const tokenStore: any = {};
 
-export const isAuthorized = (userId: string) =>{
-    return tokenStore[userId] ? true : false;
+export const isAuthorized = (userID: string) =>{
+	if(userID == undefined)
+	{
+		return false
+	}
+	else
+	{
+		return tokenStore["userID"] == userID ? true : false;
+
+	}
 };
+
 
 /**
  * Gets a new access token from Hubspot
@@ -89,7 +98,7 @@ export const getSaasquatchToken = async () =>  {
 // Start HubSpot OAuth flow
 // 1. Send user to authorization page
 router.get('/hubspot', async (req, res) => {
-    if(isAuthorized(req.sessionID)) {
+    if(isAuthorized(current_user)) {
         try {
 			res.status(200).send("<script>window.close();</script>");
         }
@@ -122,20 +131,38 @@ router.get('/oauth-callback', async (req, res) => {
         try {
             // 4.Get access and refresh tokens
             const resp = await axios.post('https://api.hubapi.com/oauth/v1/token', querystring.stringify(authCodeProof));
-            if (resp.status != 200) {
+            if (resp.status != 200)
+            {
                 throw Error("POST to get access and refresh tokens from HubSpot failed. Error:" + resp.data["error"]);
             }
-            current_user = req.sessionID;
-            tokenStore[req.sessionID] = {"access_token": resp.data.access_token, "refresh_token": resp.data.refresh_token};
-            res.redirect('/hubspot');
-        } catch(e){
+			// this api call is to retrieve the user id of the current user
+			// the post api call above does not contain user_id
+			const get_options = {
+				headers: {accept: 'application/json'}
+			};
+            const get_user_id = await axios.get('https://api.hubapi.com/oauth/v1/refresh-tokens/'+resp.data.refresh_token,get_options);
+			//#todo temporarily using user email for tenant alias rather than id
+			// as the db does not support number tenant alias currently
+			current_user = get_user_id.data.user;
+			// #todo in a seperate ticket check first whether the user already exists in DB
+            AddTokensToDatabase(current_user,resp.data.access_token, resp.data.refresh_token)
+			// store user id in local tokenStore for knowledge of current user
+			// and for knowing which user to poll the DB
+            tokenStore["userID"] = current_user;
+
+			res.redirect('/hubspot');
+
+        }
+        catch(e)
+		{
             console.error(e);
         }
     }
     // Log error if no code received
-    else{
+    else
+    	{
         console.error("HubSpot OAuth callback did not receive temp access code.");
-    }
+    	}
 });
 
 // Check whether user has authenticated with Hubspot
@@ -183,7 +210,9 @@ router.get("/saasquatch_token", async (req, res) => {
 // Test route, delete later
 router.get("/hubspot_refresh_token", async (req, res) => {
 	try {
-		const token = await getHubspotAccessToken(tokenStore[req.sessionID]["refresh_token"]);
+		let tokens = await PollTokensFromDatabase(current_user);
+		console.log(tokens)
+		const token = await getHubspotAccessToken(tokens.refreshToken);
 		res.send(token);
 	} catch(e) {
 		console.log(e);
@@ -237,8 +266,9 @@ export const HubApiCall:any = async function (myapifunc:Function,refresh_token:s
 		}
 	}
 }
-
-
-
+export function get_current_user()
+{
+	return current_user;
+}
 
 export default router

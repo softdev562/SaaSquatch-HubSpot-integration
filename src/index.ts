@@ -5,7 +5,6 @@ import chalk from 'chalk';
 import routes from './routes';
 import oauthroutes from './routes/oath';
 import { configurationRoutes } from './routes/configuration'
-import webhooks from './routes/webhooks';
 import firebase from 'firebase/app';
 
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -20,6 +19,9 @@ const firebaseConfig = {
   measurementId: "G-VDBF663K1R"
 };
 firebase.initializeApp(firebaseConfig);
+
+import webhooks from './routes/webhooks';
+
 // constants
 const PORT = process.env.PORT || 8000;
 const {

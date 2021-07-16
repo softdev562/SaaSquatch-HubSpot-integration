@@ -2,8 +2,12 @@ import firebase from "firebase/app";
 import "firebase/database";
 const crypto = require('crypto')
 
+
+//#todo: The tenant alias is a number event after converting it to string
+//      the has function requires "data" argument must be of type
+//      string or an instance of Buffer, TypedArray, or DataView.
 function hashValue(stringValue: string){
-    stringValue.toLowerCase()
+    stringValue.toString().toLowerCase()
     return crypto.createHash('sha1').update(stringValue).digest('hex');
 }
 
@@ -79,6 +83,7 @@ export function EditDatabase(tenantAlias: string, params : {PushPartixipantsAsCo
             PushContactsAsParticipants : params.PushContactsAsParticipants
         });
     }
+
     if(params.PullContactsIntoParticipants != undefined){  
         firebase.database().ref('users/' + key + '/hubspot').update({
             PullContactsIntoParticipants : params.PullContactsIntoParticipants
@@ -126,9 +131,9 @@ export async function PollDatabase(tenantAlias: string) {
         } else {
           console.log("No user data with this tenant alias.");
         }
-      }).catch((error) => {
+    }).catch((error) => {
         console.error(error);
-      });
+    });
     return data;
 }
 
@@ -142,7 +147,7 @@ export async function LookupAlias(hubspotID: string) {
         } else {
           console.log("No tenant alias with that hubspot id.");
         }
-      }).catch((error) => {
+    }).catch((error) => {
         console.error(error);
 		throw new Error(error);
       });
@@ -176,15 +181,15 @@ export async function PollTokensFromDatabase(tenantAlias: string) {
         accessToken: "",
         refreshToken: "",
     };
-    await databseRef.child('users/' + key + 'userinfo').get().then((snapshot) => {
+    await databseRef.child('users/' + key + '/userinfo').get().then((snapshot) => {
         if (snapshot.exists()) {
             data.accessToken =     snapshot.child("accessToken").val();
             data.refreshToken =    snapshot.child("refreshToken").val();
         } else {
           console.log("No token with that tenant alias.");
         }
-      }).catch((error) => {
+    }).catch((error) => {
         console.error(error);
-      });
+    });
     return data;
 }

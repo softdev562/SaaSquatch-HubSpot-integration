@@ -5,17 +5,13 @@ import { LookupAlias as LookupAlias } from "../database";
 
 
 export class hubspotUpdatesController{
-
     private hubApiModel: HubspotApiModel;
     private saasApiModel: SaasquatchApiModel;
-
-    constructor(hApiKey: string, sApiKey: string, sTenantAlias: string){
+    constructor( sApiKey: string, sTenantAlias: string){
         this.saasApiModel = new SaasquatchApiModel();
-        this.hubApiModel = new HubspotApiModel(hApiKey);
+        this.hubApiModel = new HubspotApiModel();
     }
 
-    
-   
     /**
      * Received webhook of subscription type 'contact.created'. Create a new contact in Saasquatch.
 	 * 
@@ -39,30 +35,33 @@ export class hubspotUpdatesController{
 			}
 
             // 1. Check if contact exists as user in SaaSquatch (match by email)
-            const data = await this.saasApiModel.getUsers(params);
-
-			// 2. If it does not exist, create new user in SaaSquatch
-			if(data.count == 0){
-				const createParticipantBody = {
-						"email": participant.properties.email,
-						"firstName": participant.properties.firstname,
-						"lastName": participant.properties.lastname,
-						"id": participant.properties.email,
-						"accountId": participant.properties.email,
-				};
-				await this.saasApiModel.createParticipant(tenantAlias, participant.properties.email, createParticipantBody);
-			}
-
-			// 3. TODO: If it does exist, get share link and other relevant data
-			else{
-				console.log("SAAS USER "+data.users[0].email);
-				console.log("user share links: "+data.users[0].shareLinks);
-			}
-
-			// 4. TODO: send referral link back to hubspot to add to contact
-			
-		} catch (e) {
-			console.error(e)
+            this.saasApiModel.getUsers(params)
+            .then( data =>{
+                //If it does not exist, create new user in SaaSquatch
+                if(data.count == 0){
+                    console.log("User does not exist in SaaSquatch");
+                    const createParticipantBody = {
+                            "email": participant.properties.email,
+                            "firstName": participant.properties.firstname,
+                            "lastName": participant.properties.lastname,
+                            "id": participant.properties.email,
+						    "accountId": participant.properties.email,
+            
+                    };
+                    this.saasApiModel.createParticipant(tenantAlias, participant.properties.email, createParticipantBody);
+                }
+                // 3. TODO: If it does exist, get share link and other relevant data
+                else{
+                    console.log("SAAS USER "+data.users[0].email);
+                    console.log("user share links: "+data.users[0].shareLinks);
+                }
+                // 4. TODO: send referral link back to hubspot to add to contact
+            
+                }
+    
+            );
+        } catch (e) {
+			throw new Error(e);
 		}
         //console.log("contact email: "+ contactEmail);
         // const params = `email:${contactEmail}`;
