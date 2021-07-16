@@ -30,7 +30,9 @@ const apiCallWithExpiredAccessToken = async () => {
         const data = response.data;
         return data;
     } catch (e) {
-        console.log('  > Unable to retrieve contact');
+		if (process.env.NODE_ENV !== 'test') {
+			console.log('  > Unable to retrieve contact');
+		}
         return JSON.parse(e.response.body);
     }
 
@@ -85,8 +87,12 @@ defineFeature(Disconnect, test => {
         });
 
         then('a bad request error is returned', async () => {
-            const res = await HubApiCall(apiCallWithExpiredAccessToken,refresh_token);
-            expect(res.statusText).toBe('Bad Request');
+			try {
+				const res = await HubApiCall(apiCallWithExpiredAccessToken,refresh_token);
+				expect(res).toBeUndefined();
+			} catch(e) {
+				expect(e).toBe(400);
+			}
 
         });
 

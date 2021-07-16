@@ -37,4 +37,3 @@ Feature: Hubspot oauth flow
 		And The integration app is disconnected on the users Hubspot account
 		When The integration needs a new refresh token from Hubspot
 		Then A new refresh token is not returned from Hubspot
-		And A 401 error response is returned

@@ -44,6 +44,7 @@ Feature: Hubspot low level actions
 		Then An access token and refresh token should be apart of the response from Hubspot to access the accounts data
 		And The user is redirected to the configuration page
 
+	@manual
 	Scenario: Requesting a new access token from Hubspot
 		Given The integration needs a new refresh token from Hubspot
 		When The integration sends a post request to Hubspot
@@ -53,6 +54,7 @@ Feature: Hubspot low level actions
 		And Includes a 'refresh_token' parameter that has the value of the refresh token
 		Then The original refresh token and a new access token are returned
 
+	@manual
 	Scenario: Requesting a new access token from Hubspot with errors
 		Given The integration needs a new refresh token from Hubspot
 		When The integration sends a post request to Hubspot
