@@ -16,6 +16,7 @@ import { EditDatabase } from '../database'
 export class ConfigurationModel {
 	/*
 	static configuration: Configuration = {
+
 		PushPartixipantsAsContacts: false, 
 		PullParticipantsIntoContacts: false,
 		DeleteContactwhenParticipantDeleted: false,

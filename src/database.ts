@@ -4,8 +4,12 @@ import "firebase/database";
 import { Configuration } from "./Types/types";
 const crypto = require('crypto')
 
+
+//#todo: The tenant alias is a number event after converting it to string
+//      the has function requires "data" argument must be of type
+//      string or an instance of Buffer, TypedArray, or DataView.
 function hashValue(stringValue: string){
-    stringValue.toLowerCase()
+    stringValue.toString().toLowerCase()
     return crypto.createHash('sha1').update(stringValue).digest('hex');
 }
 
@@ -13,16 +17,17 @@ function hashValue(stringValue: string){
 /**
  * Adds Values to Database
  * The default values for this function's parameters are false. Tennant alias is the
- * database key value, so passing it is nessesary. Other parameters can be set in the objet, 
+ * database key value, so passing it is nessesary. Other parameters can be set in the objet,
  * and if not set will default to false or the empty string.
  * Function call should look like AddToDatabase(tenantAllias,{parameter:value,...})
  * as many or as few of the parameters should be filled out as needed, but if non still include the {}
- * possible paramters include: 
+ * possible paramters include:
  * PushPartixipantsAsContacts bool, PullParticipantsIntoContacts bool, DeleteContactwhenParticipantDeleted bool
  * PushContactsAsParticipants bool, PullContactsIntoParticipants bool, DeleteParticipantWhenContactDeleted bool
  * accessToken string, refreshToken string
  */
 export function AddToDatabase(tenantAllias: string, hubspotID: string, {PushPartixipantsAsContacts = false, PullParticipantsIntoContacts = false,
+
                                                      DeleteContactwhenParticipantDeleted = false, PushContactsAsParticipants = false,
                                                      PullContactsIntoParticipants = false, DeleteParticipantWhenContactDeleted = false,
                                                      accessToken = "", refreshToken = ""}) {
@@ -50,14 +55,14 @@ export function AddToDatabase(tenantAllias: string, hubspotID: string, {PushPart
 
 /**
  * Given a tenant alliase, deletes the coresponding db entry.
- * @param tenantAllias 
+ * @param tenantAllias
  */
 export function DeleteFromDatabase(tenantAllias: string) {
     var key = hashValue(tenantAllias);
     firebase.database().ref('users/' + key).remove();
 }
 
-export function EditDatabase(tenantAllias: string, params : {PushPartixipantsAsContacts:Boolean, 
+export function EditDatabase(tenantAllias: string, params : {PushPartixipantsAsContacts:Boolean,
     PullParticipantsIntoContacts:Boolean, DeleteContactwhenParticipantDeleted:Boolean, PushContactsAsParticipants:Boolean,
     PullContactsIntoParticipants:Boolean, DeleteParticipantWhenContactDeleted:Boolean, accessToken:String, refreshToken:String}) {
     var key = hashValue(tenantAllias);
@@ -81,6 +86,7 @@ export function EditDatabase(tenantAllias: string, params : {PushPartixipantsAsC
             PushContactsAsParticipants : params.PushContactsAsParticipants
         });
     }
+
     if(params.PullContactsIntoParticipants != undefined){  
         firebase.database().ref('users/' + key + '/hubspot').update({
             PullContactsIntoParticipants : params.PullContactsIntoParticipants
@@ -147,11 +153,11 @@ export async function LookupAllias(hubspotID: string) {
         if (snapshot.exists()) {
             data =  snapshot.child("SasID").val();
         } else {
-          console.log("No data available");
+            console.log("No data available");
         }
-      }).catch((error) => {
+    }).catch((error) => {
         console.error(error);
-      });
+    });
     return data;
 }
 
@@ -172,23 +178,24 @@ export function AddTokensToDatabase(tenantAllias: string,  accessToken: string, 
 /**
  * Retreives the stored access and refresh tokens for a given tenant allias. returns an object of the form
  * { accessToken, refreshToken } if the entry is available. If no entry is available, it will return two empty strings
- */ 
+ */
 export async function PollTokensFromDatabase(tenantAllias: string) {
     var key = hashValue(tenantAllias);
+
     var databseRef = firebase.database().ref();
     var data = {
         accessToken: "",
         refreshToken: "",
     };
-    await databseRef.child('users/' + key + 'userinfo').get().then((snapshot) => {
+    await databseRef.child('users/' + key + '/userinfo').get().then((snapshot) => {
         if (snapshot.exists()) {
             data.accessToken =     snapshot.child("accessToken").val();
             data.refreshToken =    snapshot.child("refreshToken").val();
         } else {
-          console.log("No data available");
+            console.log("No data available");
         }
-      }).catch((error) => {
+    }).catch((error) => {
         console.error(error);
-      });
+    });
     return data;
 }
