@@ -20,22 +20,23 @@ const PageContent = styled.div`
 const TitleLinkText = styled.h1`
   cursor: pointer;
   color: #33475B;
-  text-align: left;
+  text-align: center;
   margin: 20px;
   font-size: 44px;
   font-weight: bold;
-  display: flex;
+  display: block;
 `;
 const TitleText = styled.h1`
   color: #33475B;
-  text-align: left;
+  text-align: center;
   margin: 20px;
   font-size: 48px;
   font-weight: bold;
-  display: flex;
+  display: block;
 `;
 const Logo = styled.img`
   height: 60px;
+  vertical-align: top;
 `;
 const InfoText = styled.p`
   color: #000000;
@@ -71,7 +72,6 @@ export function View(states: states){
         <InfoText>Select a step below to reconfigure your integration</InfoText>
         <TitleLinkText onClick={states.handleRedirectP1}>Step 1: Configure your <Logo src={HubspotLogo} /> Integration</TitleLinkText>
         <TitleLinkText onClick={states.handleRedirectP2}>Step 2: Configure your <Logo src={SaaSquatchLogo} /> Integration</TitleLinkText>
-        <InfoText>Last Sync was at 18:10 PDT</InfoText>
       </PageContent>
     </PageWrapper>
    );
