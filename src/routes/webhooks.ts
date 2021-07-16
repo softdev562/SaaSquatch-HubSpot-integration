@@ -11,7 +11,7 @@ import Ajv from "ajv";
 import { hubspotUpdatesController } from '../integration/hubspotUpdatesController';
 import { saasquatchUpdatesController } from '../integration/saasquatchUpdatesController';
 
-import { MOCK_SESSION_USER_EMAIL } from '../mock';
+import { MOCK_SESSION_USER_ID } from '../mock';
 import { ConfigurationModel } from '../integration/ConfigurationModel';
 
 /**
@@ -132,7 +132,7 @@ router.post("/hubspot-webhook", async (req, res) => {
 
 async function processSaasquatchPayload(saasquatchPayload: SaasquatchPayload) {
 	//  TODO: Change to use information from webhook
-	const userIdentifier: string = MOCK_SESSION_USER_EMAIL
+	const userIdentifier: string = MOCK_SESSION_USER_ID
 	const configuration: Configuration = await ConfigurationModel.getConfiguration(userIdentifier)
 	if(configuration.PushPartixipantsAsContacts) 
 		switch(saasquatchPayload.type){
@@ -151,7 +151,7 @@ async function processSaasquatchPayload(saasquatchPayload: SaasquatchPayload) {
 
 
 async function processHubspotPayload(hubspotPayload: HubspotPayload) {
-	const userIdentifier: string = MOCK_SESSION_USER_EMAIL
+	const userIdentifier: string = MOCK_SESSION_USER_ID
 	const configuration: Configuration = await ConfigurationModel.getConfiguration(userIdentifier)
 	if(configuration.PushContactsAsParticipants)
 		switch (hubspotPayload.subscriptionType){
