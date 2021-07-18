@@ -50,8 +50,8 @@ export class saasquatchUpdatesController{
                 }
                 programShareLinks[newProgramShareLinkName] = saasquatchPayloadData.programShareLinks[key].cleanShareLink;
                };
-              
-               
+
+
                const basicContactInfo = {
                 "email": saasquatchPayloadData.email,
                 "firstname": saasquatchPayloadData.firstName,
@@ -62,8 +62,8 @@ export class saasquatchUpdatesController{
                 "properties": basicInfoAndProgramShareLinks
             }
             await this.hubApiModel.createObject("contacts", createContactBody);
-               
-            
+
+
          }
     }
 

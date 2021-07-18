@@ -59,8 +59,8 @@ export class hubspotUpdatesController{
     
             );
         });
-        //console.log("contact email: "+ contactEmail);
-        // const params = `email:${contactEmail}`;
+        console.log("contact email: "+ contactEmail);
+        const params = `email:${contactEmail}`;
         console.log(params);
     }
     

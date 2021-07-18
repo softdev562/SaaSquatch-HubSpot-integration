@@ -86,13 +86,13 @@ export class HubspotApiModel {
     }
 
     /**
-     * 
-     * @param objectType object to create property to check property for 
+     *
+     * @param objectType object to create property to check property for
      * @param propertyName the name of the property, not the label
      * @returns true if the property exists, otherwise false
      */
     public async objectHasProperty(objectType: string, propertyName: string){
-        const readPropertyURL = 'https://api.hubapi.com/crm/v3/properties/' + objectType + '/' + propertyName; 
+        const readPropertyURL = 'https://api.hubapi.com/crm/v3/properties/' + objectType + '/' + propertyName;
         try {
          const response = await axios.get(readPropertyURL, {
              params: {
@@ -100,7 +100,7 @@ export class HubspotApiModel {
              }
          });
             if (response.status==200 ){
-                return true; 
+                return true;
             } else {
                 console.error("======== WAS NOT ABLE TO READ PROPERTY ========");
                 console.error(response);
@@ -137,7 +137,7 @@ export class HubspotApiModel {
             "fieldType": propertyFieldType,
             "groupName": propertyGroupName,
             "formField": true
-    
+
         };
         try {
             await axios.post(contactCreatePropertyURL, body, {
