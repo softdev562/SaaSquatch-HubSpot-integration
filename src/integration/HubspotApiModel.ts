@@ -1,11 +1,10 @@
 import axios from "axios";
 import {get_current_user} from "../routes/oath";
-import {isAuthorized} from "../routes/oath";
 import {PollTokensFromDatabase} from "../database";
-const querystring = require('query-string');
-import {tokenStore} from "../routes/oath";
 
-
+/**
+ * This is the model between the HubSpot API and our controller.
+ */
 
 export class HubspotApiModel {
 
@@ -15,37 +14,30 @@ export class HubspotApiModel {
      * @param objectId objectID of contact to query
      * @param paramToGet query parameters to filter by. eg. 'email'.
      */
-
-    //#todo: suggestion renaming objectID to contactObjectID
-    public async getContact(objectId: number, paramToGet?: string){
-
+    public async getContact(contactObjectID: number, paramToGet?: string){
         console.log("this is current user ", get_current_user());
         let token:any = await PollTokensFromDatabase(get_current_user());
         let access_token = token.accessToken;
+        const url = `https://api.hubapi.com/crm/v3/objects/contacts/${encodeURIComponent(contactObjectID)}`;
 
-
-        const url = `https://api.hubapi.com/crm/v3/objects/contacts/${encodeURIComponent(objectId)}`;
-
-        const options = {
+        let options:any = {
             qs: {"properties": 'email', "archived": 'false'},
-            headers: { accept: 'application/json',authorization:`Bearer ${access_token}`}
+            headers: {accept: 'application/json',authorization:`Bearer ${access_token}`}
         };
-
         if (paramToGet){
-          const options = {
+            options = {
                qs: {"properties": 'email', "archived": 'false'},
                headers:{ accept: 'application/json',authorization:`Bearer ${access_token}`}
-           };
+            };
         }
         else{
-           const options = {
-                qs: { "archived": 'false'},
-                headers:{ accept: 'application/json',authorization:`Bearer ${access_token}`}
+            options = {
+                qs: {"archived": 'false'},
+                headers:{accept: 'application/json',authorization:`Bearer ${access_token}`}
             };
-
         }
         try{
-            const resp = await axios.get( url, options);
+            const resp = await axios.get(url, options);
             if (resp.status != 200) {
                 throw Error("Error getting a contact from HubSpot." + resp.data["error"]);
             }
@@ -53,7 +45,6 @@ export class HubspotApiModel {
                 return resp.data;
             }
         }catch(e){
-
             console.error(e);
         }
     }
@@ -66,7 +57,6 @@ export class HubspotApiModel {
      * @returns axios response
      */
     public async createObject(objectType:string, createObjectBody:object){
-
         let token:any = await PollTokensFromDatabase(get_current_user());
         let access_token = token.accessToken;
 
@@ -92,12 +82,15 @@ export class HubspotApiModel {
      * @returns true if the property exists, otherwise false
      */
     public async objectHasProperty(objectType: string, propertyName: string){
-        const readPropertyURL = 'https://api.hubapi.com/crm/v3/properties/' + objectType + '/' + propertyName;
+        let token:any = await PollTokensFromDatabase(get_current_user());
+        let access_token = token.accessToken;
+
+        const readPropertyURL = 'https://api.hubapi.com/crm/v3/properties/' + objectType + '/' + propertyName; 
         try {
          const response = await axios.get(readPropertyURL, {
              params: {
-                 hapikey: this.HAPIKEY
-             }
+                headers:{ accept: 'application/json',authorization:`Bearer ${access_token}`}
+            }
          });
             if (response.status==200 ){
                 return true;
@@ -116,7 +109,6 @@ export class HubspotApiModel {
         }
     }
 
-
     /**
      * Create a hubspot property for an object
      * 
@@ -129,6 +121,9 @@ export class HubspotApiModel {
      * https://developers.hubspot.com/docs/api/crm/properties
      */
     public async createObjectProperty(objectType:string, propertyName: string, propertyLabel:string, propertyType:string, propertyFieldType:string, propertyGroupName: string){
+        let token:any = await PollTokensFromDatabase(get_current_user());
+        let access_token = token.accessToken;
+
         const contactCreatePropertyURL = 'https://api.hubapi.com/crm/v3/properties/' + objectType;
         const body = {
             "name": propertyName,
@@ -137,12 +132,11 @@ export class HubspotApiModel {
             "fieldType": propertyFieldType,
             "groupName": propertyGroupName,
             "formField": true
-
         };
         try {
             await axios.post(contactCreatePropertyURL, body, {
                 params: {
-                    hapikey:this.HAPIKEY
+                    headers:{ accept: 'application/json',authorization:`Bearer ${access_token}`}
                 }
             })
         } catch (e) {
@@ -151,7 +145,6 @@ export class HubspotApiModel {
             return JSON.parse(e.response.body);
         }
     }
-   
 
     /**
      *
@@ -178,8 +171,5 @@ export class HubspotApiModel {
             return JSON.parse(e.response.body);
         }
     }
-
-
    
-
 }
