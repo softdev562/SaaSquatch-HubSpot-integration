@@ -53,8 +53,8 @@ const ErrorText = styled.p`
     display: flex;
 `;
 
+const HUBSPOT_AUTHORIZATION= '/hubspot_authorization'
 const HUBSPOT_OAUTH_URL = '/hubspot_url'
-const HUBSPOT_OAUTH_CHECK_URL = '/hubspot_authorized'
 
 interface states {
   showError: boolean;
@@ -72,21 +72,25 @@ export function OAuthFunction(){
     setError(false);
 
     // Check Server for Hubspot Authorization
-    axios.get(HUBSPOT_OAUTH_CHECK_URL)
+    await axios.get(HUBSPOT_AUTHORIZATION,
+      { params: {token: document.cookie} }
+    )
     .then(response => {
       if (response.data === "Unauthorized"){
-        // Redirect User to Hubspot OAuth URL Popup
+        // Get Hubspot OAuth URL from server
         axios.get(HUBSPOT_OAUTH_URL)
-        .then(response => {
-          const h = 800;
-          const w = 500;
-          const popup = window.open(response.data, "OAuth Popup",`toolbar=no, location=no, statusbar=no, menubar=no, scrollbars=1, resizable=0, width=${w}, height=${h}, top=150, left=650`);
-        
+        .then( response => {
+          // Open popup for Hubspot OAuth URL
+          const popup = window.open(response.data, "OAuth Popup",`toolbar=no, location=no, statusbar=no, menubar=no, scrollbars=1, resizable=0, width=${500}, height=${800}, top=150, left=650`);
+          // Check for when popup closes
           var timer = setInterval(function() { 
             if(popup && popup.closed) {
               // Check Server for Hubspot Authorization
-              axios.get(HUBSPOT_OAUTH_CHECK_URL)
+              axios.get(HUBSPOT_AUTHORIZATION,
+                { params: {token: document.cookie} }
+              )
               .then(response => {
+                // Send user to configuration page if authorized
                 if (response.data === "Authorized"){
                   clearInterval(timer);
                   history.push('/configuration');
@@ -100,20 +104,20 @@ export function OAuthFunction(){
                 }
               })
               .catch(function(err) {
-                console.error(err + "Error getting Hubspot OAuth Authorization from: " + HUBSPOT_OAUTH_CHECK_URL);
+                console.error(err + "Error getting Hubspot Authorization from: " + HUBSPOT_AUTHORIZATION);
               });
             }
           }, 200);
         })
         .catch(function(err) {
-          console.error(err + "Error getting Hubspot OAuth URL from: " + HUBSPOT_OAUTH_URL);
+          console.error(err + "Error getting Hubspot URL from: " + HUBSPOT_OAUTH_URL);
         });
       } else {
         history.push('/configuration');
       }
     })
     .catch(function(err) {
-      console.error(err + "Error getting Hubspot OAuth Authorization from: " + HUBSPOT_OAUTH_CHECK_URL);
+      console.error(err + "Error getting Hubspot Authorization from: " + HUBSPOT_AUTHORIZATION);
     });
   }
   return {showError, OAuth} as states
