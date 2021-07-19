@@ -8,7 +8,6 @@ import Modal from '@material-ui/core/Modal';
 import { usePenpal } from '@saasquatch/integration-boilerplate-react';
 
 const PageWrapper = styled.div`
-  min-height: 100vh;
   display: flex;
   flex-direction: row;
   align-items: center;

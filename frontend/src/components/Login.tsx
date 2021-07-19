@@ -1,17 +1,13 @@
-import {useState} from "react";
+import React, {useState} from "react";
 import styled from 'styled-components';
 import HubspotLogo from '../assets/HubspotLogo.png';
 import axios from 'axios';
 import history from '../types/history';
 
 const Wrapper = styled.div`
-  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-`;
-const LoginBox = styled.div`
-  height: 350px;
 `;
 const Logo = styled.img`
   height: 60px;
@@ -122,25 +118,24 @@ export function OAuthFunction(){
 export function View( states: states ){
   return (
     <Wrapper className= "wrapper">
-    <LoginBox className= "login">
-      <TitleText className= "title-text"> This is not main! This is a branch I'm testing penpal stuff on, so don't worry if it isn't working. Dm Chris if you want it running properly</TitleText>
-      <TitleText className= "title-text"> Log in to <Logo src={HubspotLogo} /></TitleText>
-      <InfoText className= "info-text">Your contacts will be synced using the HubSpot data from this user’s permissions.</InfoText>
-      <InfoText className= "info-text">For more information read our&nbsp;<a href={`https://example.com`} >HubSpot Quickstart Guide.</a></InfoText>
-      <LoginButton 
-        onClick={states.OAuth}
-        type= "button"
-        className={"login-button"}
-      >
-        {"Log in"}
-      </LoginButton>
       <div>
-        { states.showError ? <ErrorText>
-          Failed to authenticate: User closed the popup window.
-        </ErrorText> : <div></div>
-        }
+        <TitleText className= "title-text"> Log in to <Logo src={HubspotLogo} /></TitleText>
+        <InfoText className= "info-text">Your contacts will be synced using the HubSpot data from this user’s permissions.</InfoText>
+        <InfoText className= "info-text">For more information read our&nbsp;<a href={`https://example.com`} >HubSpot Quickstart Guide.</a></InfoText>
+        <LoginButton 
+          onClick={states.OAuth}
+          type= "button"
+          className={"login-button"}
+        >
+          {"Log in"}
+        </LoginButton>
+        <div>
+          { states.showError ? <ErrorText>
+            Failed to authenticate: User closed the popup window.
+          </ErrorText> : <React.Fragment />
+          }
+        </div>
       </div>
-    </LoginBox>
-  </Wrapper>
+    </Wrapper>
    );
  }
