@@ -14,10 +14,14 @@ export class HubspotApiModel {
      * @param objectId objectID of contact to query
      * @param paramToGet query parameters to filter by. eg. 'email'.
      */
-    public async getContact(contactObjectID: number, paramToGet?: string){
-        console.log("this is current user ", get_current_user());
-        let token:any = await PollTokensFromDatabase(get_current_user());
+    public async getContact(contactObjectID: number,hub_id:number, paramToGet?: string){
+
+        console.log("this is current user ", hub_id);
+
+        let token:any = await PollTokensFromDatabase(hub_id.toString());
+
         let access_token = token.accessToken;
+
         const url = `https://api.hubapi.com/crm/v3/objects/contacts/${encodeURIComponent(contactObjectID)}`;
 
         let options:any = {
@@ -56,8 +60,9 @@ export class HubspotApiModel {
      * @param createObjectBody body specifiying the create properties of the object
      * @returns axios response
      */
-    public async createObject(objectType:string, createObjectBody:object){
-        let token:any = await PollTokensFromDatabase(get_current_user());
+    public async createObject(objectType:string, createObjectBody:object, hub_id:number){
+        let token:any = await PollTokensFromDatabase(hub_id.toString());
+
         let access_token = token.accessToken;
 
         try{
@@ -81,8 +86,10 @@ export class HubspotApiModel {
      * @param propertyName the name of the property, not the label
      * @returns true if the property exists, otherwise false
      */
-    public async objectHasProperty(objectType: string, propertyName: string){
-        let token:any = await PollTokensFromDatabase(get_current_user());
+    public async objectHasProperty(objectType: string, propertyName: string,hub_id:number){
+
+        let token:any = await PollTokensFromDatabase(hub_id.toString());
+
         let access_token = token.accessToken;
 
         const readPropertyURL = 'https://api.hubapi.com/crm/v3/properties/' + objectType + '/' + propertyName; 
@@ -120,8 +127,11 @@ export class HubspotApiModel {
      * @param propertyGroupName The name of the property group the property belongs to.
      * https://developers.hubspot.com/docs/api/crm/properties
      */
-    public async createObjectProperty(objectType:string, propertyName: string, propertyLabel:string, propertyType:string, propertyFieldType:string, propertyGroupName: string){
-        let token:any = await PollTokensFromDatabase(get_current_user());
+    public async createObjectProperty(objectType:string, propertyName: string, propertyLabel:string, propertyType:string,
+                                      propertyFieldType:string, propertyGroupName: string,hub_id:number){
+
+        let token:any = await PollTokensFromDatabase(hub_id.toString());
+
         let access_token = token.accessToken;
 
         const contactCreatePropertyURL = 'https://api.hubapi.com/crm/v3/properties/' + objectType;
@@ -152,11 +162,12 @@ export class HubspotApiModel {
      * @param body body specifiying the search properties of the object
      * @returns axios response
      */
-    public async searchObject(objectType:string, body:object){
+    public async searchObject(objectType:string, body:object,hub_id:number){
 
         const searchObjectURL = 'https://api.hubapi.com/crm/v3/objects/' + objectType + '/search';
         console.log("this is current user ", get_current_user());
-        let token:any = await PollTokensFromDatabase(get_current_user());
+        let token:any = await PollTokensFromDatabase(hub_id.toString());
+
         let access_token = token.accessToken;
 
         try {

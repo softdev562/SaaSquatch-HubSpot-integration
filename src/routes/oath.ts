@@ -144,9 +144,10 @@ router.get('/oauth-callback', async (req, res) => {
             const get_user_id = await axios.get('https://api.hubapi.com/oauth/v1/refresh-tokens/'+resp.data.refresh_token,get_options);
 			//#todo temporarily using user email for tenant alias rather than id
 			// as the db does not support number tenant alias currently
-			current_user = get_user_id.data.user;
+			current_user = get_user_id.data.hub_id;
+
 			// #todo in a seperate ticket check first whether the user already exists in DB
-            AddTokensToDatabase(current_user,resp.data.access_token, resp.data.refresh_token)
+            AddTokensToDatabase(current_user.toString(),resp.data.access_token, resp.data.refresh_token)
 			// store user id in local tokenStore for knowledge of current user
 			// and for knowing which user to poll the DB
             tokenStore["userID"] = current_user;

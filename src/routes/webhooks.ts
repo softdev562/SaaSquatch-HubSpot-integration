@@ -150,10 +150,10 @@ function processHubspotPayload(hubspotPayload: HubspotPayload) {
             hubUpdatesController.NewContact(hubspotPayload);
             break;
         case SubscriptionType.ContactDeletion:
-            hubUpdatesController.DeletedContact(hubspotPayload);
+            hubUpdatesController.DeletedContact(hubspotPayload,hubspotPayload.portalId);
             break;
         case SubscriptionType.ContactPropertyChange:
-            hubUpdatesController.ChangedContact(hubspotPayload);
+            hubUpdatesController.ChangedContact(hubspotPayload,hubspotPayload.portalId);
             break;
         default:
             console.error("No matching subscriptionType. May not yet be implemented.\
