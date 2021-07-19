@@ -1,5 +1,4 @@
 import axios from "axios";
-import {get_current_user} from "../routes/oath";
 import {PollTokensFromDatabase} from "../database";
 
 /**
@@ -165,7 +164,7 @@ export class HubspotApiModel {
     public async searchObject(objectType:string, body:object,hub_id:number){
 
         const searchObjectURL = 'https://api.hubapi.com/crm/v3/objects/' + objectType + '/search';
-        console.log("this is current user ", get_current_user());
+
         let token:any = await PollTokensFromDatabase(hub_id.toString());
 
         let access_token = token.accessToken;
