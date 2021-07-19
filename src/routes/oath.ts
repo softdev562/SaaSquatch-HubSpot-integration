@@ -5,10 +5,11 @@ const querystring = require('query-string');
 import {AddTokensToDatabase} from "../database"
 import {PollTokensFromDatabase} from "../database";
 import {hubspotUpdatesController} from "../integration/hubspotUpdatesController";
+const jwt = require('jsonwebtoken');
 
 
 const router = Router();
- let current_user:string;
+ let hubspotID:string;
 
 const HUBSPOT_CLIENT_ID = process.env.HUBSPOT_CLIENT_ID;
 const HUBSPOT_CLIENT_SECRET = process.env.HUBSPOT_CLIENT_SECRET;
@@ -27,18 +28,21 @@ const SAASQUATCH_CLIENT_SECRET = process.env.SAASQUATCH_CLIENT_SECRET;
 
 export const tokenStore: any = {};
 
-export const isAuthorized = (userID: string) =>{
-	if(userID == undefined)
-	{
-		return false
-	}
-	else
-	{
-		return tokenStore["userID"] == userID ? true : false;
+// Generate Server Access Token for frontend requests
+const generateAccessToken = (userID: string) => {
+	return jwt.sign({
+		data: userID
+	}, process.env.SERVER_TOKEN_SECRET, { expiresIn: '1h' });
+}
 
+// Authenticate Server Access Token for frontend requests
+export const authenticateToken = (token: string) => {
+	try {
+		const decoded = jwt.verify(token, process.env.SERVER_TOKEN_SECRET);
+		return decoded;
 	}
+	catch (err) { console.log(err.message); }
 };
-
 
 /**
  * Gets a new access token from Hubspot
@@ -96,27 +100,42 @@ export const getSaasquatchToken = async () =>  {
 };
 
 // Start HubSpot OAuth flow
-// 1. Send user to authorization page
-router.get('/hubspot', async (req, res) => {
-    if(isAuthorized(current_user)) {
+// 1. Check whether user has previously authenticated with Hubspot and received a token
+router.get('/hubspot_authorization', async (req, res) => {
+	let decoded = undefined
+	if(req.query.token) {
+		decoded = authenticateToken(req.query.token as string)
+	}
+    if(decoded != undefined) {
         try {
-			res.status(200).send("<script>window.close();</script>");
+			res.json("Authorized");
+			res.end();
         }
         catch(e){
             console.error(e);
         }
     } else{
-        // If not authorized, send to auth url
         if(HUBSPOT_AUTH_URL){
-			res.redirect(HUBSPOT_AUTH_URL);
+			res.json("Unauthorized");
+			res.end();
         }else{
             console.error("env AUTH_URL is undefined.");
         }
     }
 });
 
-// 2. Get temporary authorization code from OAuth server
-// 3. Combine temporary auth code with app credentials and send back to OAuth server
+// 2. Get Hubspot OAuth URL if the user has not authenticated
+router.get('/hubspot_url', async (req, res) => {
+	if(HUBSPOT_AUTH_URL){
+		res.json(HUBSPOT_AUTH_URL);
+		res.end();
+	}else{
+		console.error("env AUTH_URL is undefined.");
+	}
+});
+
+// 3. Get temporary authorization code from OAuth server
+// 4. Combine temporary auth code with app credentials and send back to OAuth server
 router.get('/oauth-callback', async (req, res) => {
     // If temp authorization code was received
     if(req.query.code){
@@ -143,15 +162,14 @@ router.get('/oauth-callback', async (req, res) => {
             const get_user_id = await axios.get('https://api.hubapi.com/oauth/v1/refresh-tokens/'+resp.data.refresh_token,get_options);
 			//#todo temporarily using user email for tenant alias rather than id
 			// as the db does not support number tenant alias currently
-			current_user = get_user_id.data.user;
+			hubspotID = get_user_id.data.user;
 			// #todo in a seperate ticket check first whether the user already exists in DB
-            AddTokensToDatabase(current_user,resp.data.access_token, resp.data.refresh_token)
+            AddTokensToDatabase(hubspotID, resp.data.access_token, resp.data.refresh_token)
 			// store user id in local tokenStore for knowledge of current user
 			// and for knowing which user to poll the DB
-            tokenStore["userID"] = current_user;
-
-			res.redirect('/hubspot');
-
+            tokenStore["userID"] = hubspotID;
+			
+			res.redirect('/hubspot?hubspotID=' +hubspotID);
         }
         catch(e)
 		{
@@ -165,35 +183,25 @@ router.get('/oauth-callback', async (req, res) => {
     	}
 });
 
-// Check whether user has authenticated with Hubspot
-router.get('/hubspot_authorized', async (req, res) => {
-    if(isAuthorized(req.sessionID)) {
+// 5. Send user to authorization page if unsuccessful or create access token and close popup
+router.get('/hubspot', async (req, res) => {
+	const hubspotID = req.query.hubspotID;
+    if(hubspotID) {
         try {
-			res.json("Authorized");
-			res.end();
+			const token = generateAccessToken(hubspotID as string);
+			res.status(200).send(`<script>document.cookie="${token}"; window.close();</script>`);
         }
         catch(e){
             console.error(e);
         }
     } else{
-        // If not authorized, return Unauthorized
+        // If not authorized, send to auth url
         if(HUBSPOT_AUTH_URL){
-			res.json("Unauthorized");
-			res.end();
+			res.redirect(HUBSPOT_AUTH_URL);
         }else{
             console.error("env AUTH_URL is undefined.");
         }
     }
-});
-
-// Pass frontend the Hubspot OAuth URL
-router.get('/hubspot_url', async (req, res) => {
-	if(HUBSPOT_AUTH_URL){
-		res.json(HUBSPOT_AUTH_URL);
-		res.end();
-	}else{
-		console.error("env AUTH_URL is undefined.");
-	}
 });
 
 // Test route, delete later
@@ -210,7 +218,7 @@ router.get("/saasquatch_token", async (req, res) => {
 // Test route, delete later
 router.get("/hubspot_refresh_token", async (req, res) => {
 	try {
-		let tokens = await PollTokensFromDatabase(current_user);
+		let tokens = await PollTokensFromDatabase(hubspotID);
 		console.log(tokens)
 		const token = await getHubspotAccessToken(tokens.refreshToken);
 		res.send(token);
@@ -253,7 +261,7 @@ export const HubApiCall:any = async function (myapifunc:Function,refresh_token:s
 				// there was no error so we can store the result.
 			{
 				// #todo: Update the line below configure with DB
-				tokenStore[current_user] = {"access_token": result};
+				tokenStore[hubspotID] = {"access_token": result};
 				return await HubApiCall(myapifunc,refresh_token);
 				// over here we probably want to call the ApiCall again with the same arguments
 				// or we want to redirect to the url we were called from
@@ -268,7 +276,7 @@ export const HubApiCall:any = async function (myapifunc:Function,refresh_token:s
 }
 export function get_current_user()
 {
-	return current_user;
+	return hubspotID;
 }
 
 export default router
