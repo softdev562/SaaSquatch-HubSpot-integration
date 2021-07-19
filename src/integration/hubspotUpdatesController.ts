@@ -75,7 +75,7 @@ export class hubspotUpdatesController{
      * Received webhook of subscription type 'contact.deletion'
      * @param hubspotPayload Payload of Hubspot webhook
      */
-    public DeletedContact(hubspotPayload: HubspotPayload,hub_id:number){
+    public DeletedContact(hubspotPayload: HubspotPayload){
         console.log('received HubSpot contact.deletion');
         /**
          * TODO:
@@ -92,7 +92,7 @@ export class hubspotUpdatesController{
      * Received webhook of subscription type 'contact.propertyChange'
      * @param hubspotPayload Payload of Hubspot webhook
      */
-    public ChangedContact(hubspotPayload: HubspotPayload,hub_id:number){
+    public ChangedContact(hubspotPayload: HubspotPayload){
         console.log('received HubSpot contact.propertyChange');
         /**
          * TODO:
