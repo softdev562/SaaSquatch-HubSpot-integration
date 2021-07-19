@@ -114,7 +114,8 @@ router.post("/hubspot-webhook", async (req, res) => {
     // Validate JSON format with schema
     if(!validateHubspotSchema(req.body)){
         console.error("Request body is invalid in format and does not match expected HubSpot schema.");
-        console.error("Failed at "+ validateHubspotSchema.errors);
+        console.error("Failed at: ");
+		console.error(validateHubspotSchema.errors);
         res.status(400).end();
         return;
     }
@@ -153,6 +154,7 @@ async function processSaasquatchPayload(saasquatchPayload: SaasquatchPayload) {
 async function processHubspotPayload(hubspotPayload: HubspotPayload) {
 	const userIdentifier: string = MOCK_SESSION_USER_ID
 	const configuration: Configuration = await ConfigurationModel.getConfiguration(userIdentifier)
+	console.log(`Recieved Hubspot Webhook:\t${hubspotPayload.eventId}`)
 	if(configuration.PushContactsAsParticipants)
 		switch (hubspotPayload.subscriptionType){
 			case SubscriptionType.ContactCreation:
