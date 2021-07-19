@@ -21,7 +21,7 @@ router.get(API_CONFIGURATION_URL, async (req, res) => {
 		decoded = authenticateToken(req.cookies.frontendToken as string)
 	}
 	if (decoded != undefined) {
-		const configuration = await ConfigurationController.getConfiguration(tenantAlias)
+		const configuration = await ConfigurationController.getConfiguration(req.query.SaaSquatchTenantAlias as string)
 		res.json(configuration)
 		res.end();
 	} else {
