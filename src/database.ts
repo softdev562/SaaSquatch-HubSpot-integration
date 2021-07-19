@@ -1,5 +1,7 @@
+import chalk from "chalk";
 import firebase from "firebase/app";
 import "firebase/database";
+import { Configuration } from "./Types/types";
 const crypto = require('crypto')
 
 
@@ -110,30 +112,37 @@ export function EditDatabase(tenantAllias: string, params : {PushPartixipantsAsC
     });
 }
 
-export async function PollDatabase(tenantAllias: string) {
-    var key = hashValue(tenantAllias);
-    var databseRef = firebase.database().ref();
-    var data = {PushPartixipantsAsContacts: false, PullParticipantsIntoContacts: false,
-        DeleteContactwhenParticipantDeleted: false,PushContactsAsParticipants: false,
-        PullContactsIntoParticipants: false, DeleteParticipantWhenContactDeleted: false,
-        accessToken: "", refreshToken: ""};
-    await databseRef.child('users/' + key).get().then((snapshot) => {
-        if (snapshot.exists()) {
-            data.PushPartixipantsAsContacts =           snapshot.child("saasquach/PushPartixipantsAsContacts").val();
-            data.PullParticipantsIntoContacts =         snapshot.child("saasquach/PullParticipantsIntoContacts").val();
-            data.DeleteContactwhenParticipantDeleted =  snapshot.child("saasquach/DeleteContactwhenParticipantDeleted").val();
-            data.PushContactsAsParticipants =           snapshot.child("hubspot/PushContactsAsParticipants").val();
-            data.PullContactsIntoParticipants =         snapshot.child("hubspot/PullContactsIntoParticipants").val();
-            data.DeleteParticipantWhenContactDeleted =  snapshot.child("hubspot/DeleteParticipantWhenContactDeleted").val();
-            data.accessToken =      snapshot.child("userinfo/accessToken").val();
-            data.refreshToken =     snapshot.child("userinfo/refreshToken").val();
-        } else {
-            console.log("No data available");
-        }
-    }).catch((error) => {
-        console.error(error);
-    });
-    return data;
+export async function PollDatabase(tenantAllias: string): Promise<Configuration> {
+	const key = hashValue(tenantAllias);
+	const databseRef = firebase.database().ref();
+	let configuration: Configuration = {
+		PushPartixipantsAsContacts: false,
+		PullParticipantsIntoContacts: false,
+		DeleteContactwhenParticipantDeleted: false,
+		PushContactsAsParticipants: false,
+		PullContactsIntoParticipants: false,
+		DeleteParticipantWhenContactDeleted: false,
+		accessToken: '',
+		refreshToken: ''
+	};
+	await databseRef.child('users/' + key).get().then((snapshot) => {
+		if (snapshot.exists()) {
+			configuration.PushPartixipantsAsContacts = snapshot.child("saasquach/PushPartixipantsAsContacts").val();
+			configuration.PullParticipantsIntoContacts = snapshot.child("saasquach/PullParticipantsIntoContacts").val();
+			configuration.DeleteContactwhenParticipantDeleted = snapshot.child("saasquach/DeleteContactwhenParticipantDeleted").val();
+
+			configuration.PushContactsAsParticipants = snapshot.child("hubspot/PushContactsAsParticipants").val();
+			configuration.PullContactsIntoParticipants = snapshot.child("hubspot/PullContactsIntoParticipants").val();
+			configuration.DeleteParticipantWhenContactDeleted = snapshot.child("hubspot/DeleteParticipantWhenContactDeleted").val();
+
+			configuration.accessToken = snapshot.child("userinfo/accessToken").val();
+			configuration.refreshToken = snapshot.child("userinfo/refreshToken").val();
+		} else
+			console.log(chalk.bold("No configuration data available!"));
+	}).catch((error) => {
+		console.error(error);
+	});
+	return configuration;
 }
 
 export async function LookupAllias(hubspotID: string) {

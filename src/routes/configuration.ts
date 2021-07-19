@@ -6,6 +6,11 @@ import { Configuration } from '../Types/types'
 import { ConfigurationController } from '../integration/ConfigurationController'
 import { authenticateToken } from './oath'
 
+import {
+	MOCK_SESSION_USER_ID,
+	MOCK_SESSION_HUBSPOT_ID,
+} from '../mock'
+
 const router = Router()
 const ajv = new Ajv()
 
@@ -13,15 +18,13 @@ const validate =  ajv.compile(ConfigurationPayloadSchema)
 
 const API_CONFIGURATION_URL = '/api/configuration'
 
-const configurationController = new ConfigurationController();
-
 router.get(API_CONFIGURATION_URL, async (req, res) => {
 	let decoded = undefined
 	if(req.query.token) {
 		decoded = authenticateToken(req.query.token as string)
 	}
 	if (decoded != undefined) {
-		const configuration = await configurationController.getConfiguration()
+		const configuration = await ConfigurationController.getConfiguration(MOCK_SESSION_USER_ID)
 		res.json(configuration)
 		res.end();
 	} else {
@@ -37,7 +40,7 @@ router.post(API_CONFIGURATION_URL, async (req, res) => {
 	}
 	if(validate(req.body) && decoded != undefined) {
 		const configuration: Configuration = req.body as Configuration
-		configurationController.setConfiguration(configuration)
+		ConfigurationController.createConfiguration(MOCK_SESSION_USER_ID, MOCK_SESSION_HUBSPOT_ID, configuration)
 		res.sendStatus(200)
 		res.end()
 	} else if (!validate(req.body)) {
@@ -57,7 +60,7 @@ router.put(API_CONFIGURATION_URL, async (req, res) => {
 	}
 	if(validate(req.body) && decoded != undefined) {
 		const configuration: Configuration = req.body as Configuration
-		configurationController.updateConfiguration(configuration)
+		ConfigurationController.updateConfiguration(MOCK_SESSION_USER_ID, configuration)
 		res.sendStatus(200)
 		res.end()
 	} else if (!validate(req.body)) {

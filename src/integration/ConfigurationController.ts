@@ -1,23 +1,20 @@
+/**
+ * ConfigurationController
+ * 
+ * Includes utitlities for exposing configuration data to routes.
+ */
+
 import { Configuration } from '../Types/types'
 import { ConfigurationModel } from './ConfigurationModel'
-
 export class ConfigurationController {
-
-	private configurationModel: ConfigurationModel;
-
-    constructor(){
-        this.configurationModel = new ConfigurationModel();
-    }
-	
-	public async getConfiguration() {
-		return this.configurationModel.getConfiguration()
+	public static async getConfiguration(userIdentifier: string) {
+		return ConfigurationModel.getConfiguration(userIdentifier)
+	}
+	public static async createConfiguration(userIdentifier: string, hubspotId: string, configuration: Configuration) {
+		return ConfigurationModel.createConfiguration(userIdentifier, hubspotId, configuration)
 	}
 
-	public setConfiguration(configuration: Configuration) {
-		this.configurationModel.setConfiguration(configuration)
-	}
-
-	public updateConfiguration(configuration: Configuration) {
-		this.configurationModel.updateConfiguration(configuration)
+	public static async updateConfiguration(userId: string, configuration: Configuration) {
+		return ConfigurationModel.updateConfiguration(userId, configuration)
 	}
 }
