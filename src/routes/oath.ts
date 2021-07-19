@@ -35,7 +35,6 @@ export const isAuthorized = (userID: string) =>{
 	else
 	{
 		return tokenStore["userID"] == userID ? true : false;
-
 	}
 };
 
