@@ -1,4 +1,3 @@
-import {PollTokensFromDatabase} from "../database";
 require('dotenv').config();
 import { Router } from 'express';
 import * as jwt from "jsonwebtoken";
