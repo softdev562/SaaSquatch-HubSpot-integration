@@ -7,13 +7,10 @@ export class saasquatchUpdatesController{
     private hubApiModel: HubspotApiModel;
     private saasApiModel: SaasquatchApiModel;
 
-
      constructor(hApiKey: string, sApiKey: string, sTenantAlias: string){
         this.saasApiModel = new SaasquatchApiModel();
         this.hubApiModel = new HubspotApiModel();
      }
-
-
 
     /**
      * Received webhook of event type 'user.created'
@@ -26,32 +23,27 @@ export class saasquatchUpdatesController{
         const contactsSearchBody = {
             filterGroups: [
                 {
-                    filters: [
-                    {
-                      "value": saasquatchPayloadData.email, 
-                      "propertyName": 'email', 
-                      "operator": 'EQ'
-                  }
-                   ]
-                  }
-              ],
-              limit: 1,
-
+                    filters: [{
+                        "value": saasquatchPayloadData.email, 
+                        "propertyName": 'email', 
+                        "operator": 'EQ'
+                    }]
+                }
+            ],
+            limit: 1,
         };
         const contactsSearchResponse = await this.hubApiModel.searchObject("contacts", contactsSearchBody);
-         if (contactsSearchResponse?.data.total == 0){
+        if (contactsSearchResponse?.data.total == 0){
             const createContactBody = {
                 "properties":{
                     "email": saasquatchPayloadData.email,
                     "firstname": saasquatchPayloadData.firstName,
                     "lastname": saasquatchPayloadData.lastName,
                 }
-    
             };
             await this.hubApiModel.createObject("contacts", createContactBody);
-         }
+        }
     }
-
 
     /**
      * Received webhook of event type 'test'. No processing required as this is a test webhook.

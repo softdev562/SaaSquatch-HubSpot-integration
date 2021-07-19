@@ -1,11 +1,10 @@
 import axios from "axios";
 import {get_current_user} from "../routes/oath";
-import {isAuthorized} from "../routes/oath";
 import {PollTokensFromDatabase} from "../database";
-const querystring = require('query-string');
-import {tokenStore} from "../routes/oath";
 
-
+/**
+ * HubSpot model for interacting with the HubSpot's API
+ */
 
 export class HubspotApiModel {
 
@@ -23,26 +22,23 @@ export class HubspotApiModel {
         let token:any = await PollTokensFromDatabase(get_current_user());
         let access_token = token.accessToken;
 
-
         const url = `https://api.hubapi.com/crm/v3/objects/contacts/${encodeURIComponent(objectId)}`;
 
-        const options = {
+        let options: any = {
             qs: {"properties": 'email', "archived": 'false'},
             headers: { accept: 'application/json',authorization:`Bearer ${access_token}`}
         };
-
         if (paramToGet){
-          const options = {
+          options = {
                qs: {"properties": 'email', "archived": 'false'},
                headers:{ accept: 'application/json',authorization:`Bearer ${access_token}`}
            };
         }
         else{
-           const options = {
+           options = {
                 qs: { "archived": 'false'},
                 headers:{ accept: 'application/json',authorization:`Bearer ${access_token}`}
             };
-
         }
         try{
             const resp = await axios.get( url, options);
@@ -53,7 +49,6 @@ export class HubspotApiModel {
                 return resp.data;
             }
         }catch(e){
-
             console.error(e);
         }
     }
@@ -81,10 +76,8 @@ export class HubspotApiModel {
         } catch (e) {
             console.error("Was not able to create contact");
             console.log(e);
-            return JSON.parse(e.response.body);
         }
     }
-
 
     /**
      *
@@ -108,11 +101,7 @@ export class HubspotApiModel {
         } catch (e) {
             console.error("===== WAS NOT ABLE TO SEARCH FOR PROPERTIES OF OBJECT: " + objectType);
             console.error(e);
-            return JSON.parse(e.response.body);
         }
     }
-
-
-   
 
 }

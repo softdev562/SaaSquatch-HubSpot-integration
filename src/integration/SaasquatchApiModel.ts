@@ -1,5 +1,9 @@
-import axios, {Method} from "axios";
+import axios, { Method } from "axios";
 import { getSaasquatchToken } from "../routes/oath";
+
+/**
+ * SaaSquatch model for interacting with the SaaSquatch's API
+ */
 
 interface HeaderObject {
 	[key: string]: any
@@ -21,7 +25,7 @@ export class SaasquatchApiModel {
 	 * @return Expected data from request.
 	 */
 	public saasquatchApiRequest = async (req_method: Method, req_url: string, req_header: HeaderObject, req_params = undefined, req_body = undefined, tries = 5) => {
-		req_header.Authorization = `Bearer {SaasquatchToken}`;
+		req_header.Authorization = `Bearer ${this.SaasquatchToken}`;
 		try {
 			const resp: any = await axios.request({
 				method: req_method,
