@@ -6,6 +6,7 @@ import history from '../types/history';
 import axios from 'axios';
 import Modal from '@material-ui/core/Modal';
 import { usePenpal } from '@saasquatch/integration-boilerplate-react';
+import jwt_decode from 'jwt-decode';
 
 const PageWrapper = styled.div`
   display: flex;
@@ -134,8 +135,13 @@ export function ConfigurationP2() {
 
 export function Controller(){
   const penpal = usePenpal()
+  // sub is the attribute of the tenant alias from the tenant token
+  const tenantAliasUnparsed: {sub: string} = jwt_decode(penpal.tenantScopedToken);
+  // the alias is sent of the form exampleAlias@tenants
+  const tenantAliasParsed: string = tenantAliasUnparsed.sub.split('@')[0]
+
   const emptyConfig: SaasConfig = {
-    saasquatchTenantAlias: penpal.tenantScopedToken,
+    saasquatchTenantAlias: tenantAliasParsed,
     pushIntoParticipants: false,
     pullIntoParticipants: false, 
   }
@@ -150,10 +156,10 @@ export function Controller(){
   useEffect(() => {
     const getConfigData = () => {
       axios.get(API_CONFIGURATION_URL,
-        { params: {token: document.cookie, SaaSquatchTenantAlias: config.saasquatchTenantAlias} }
+        { params: {SaaSquatchTenantAlias: config.saasquatchTenantAlias} }
       )
       .then((response) => {
-        setConfig(config => ({...config, pushIntoParticipants: response.data.PushContactsAsParticipants, pullIntoParticipants: response.data.PullContactsIntoParticipants}));
+        setConfig(config => ({...config, pushIntoParticipants: response.data.PushContactsAsParticipants || false, pullIntoParticipants: response.data.PullContactsIntoParticipants || false}));
         // Disable import toggle if previously imported
         if (response.data.PullContactsIntoParticipants){
           setImported(true);
