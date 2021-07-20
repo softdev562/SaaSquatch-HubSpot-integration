@@ -6,7 +6,7 @@ import { Configuration } from '../Types/types';
 import { ConfigurationController } from '../integration/ConfigurationController';
 import { authenticateToken } from './oath';
 
-import { MOCK_SESSION_USER_ID, MOCK_SESSION_HUBSPOT_ID } from '../mock';
+import { MOCK_SESSION_HUBSPOT_ID } from '../mock'
 
 const router = Router();
 const ajv = new Ajv();

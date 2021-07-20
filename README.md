@@ -61,3 +61,9 @@ To run the tests use the command `yarn test`. The command will:
 3. Remove the `.steps.js` files
 
 There are three other scripts: `build-tests` for building the test files, `run-tests` for executing the tests, and `clean-tests` for removing the `.steps.js` test files. `test` performs all three of these steps together.
+
+## Running the frontend
+Due to penpal, our frontend will only render a loading state outside of SaaSqautch's context.
+There are 2 ways to see the frontend:
+1. Go to the SaaSqautch integrations page and look at it im the iframe. If you want your branch specifically to run, go to our heroku app (https://dashboard.heroku.com/apps/team2-saasquatch/deploy/github) and scroll to manual deploy, where you can deploy your branch. It will take about 7 minutes to deploy, but you will then be able to see your branch in the iframe
+2. If you want specifically to test out something in localhost, you'll have to butcher the penpal code a bit. In `Index.tsx`, comment out the `PenpalContextProvider`. Then search for `usePenpal`, and comment every instance of it, as well as anything in those files that refers to the `penpal` variable whose assignment you just commented. Then, in `ConfigurationP1.tsx` and `ConfigurationP2.tsx` find the line assigning the `emptyConfig` variable, and replace the `saasquatchTenantAlias` value with whatever tenant alias you'd like. I know it's not the prettiest solution, but it should work on localhost
