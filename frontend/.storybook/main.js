@@ -8,10 +8,10 @@ module.exports = {
   "addons": [
     "@storybook/addon-links",
     "@storybook/addon-essentials",
-    "@storybook/preset-create-react-app"
-    //"../src/gherkin-add-on/src/preset.js"
+    "@storybook/preset-create-react-app",
+    "../src/gherkin-add-on/src/preset.js"
   ],
-  webpackFinal: async (config, { configType }) => {
+  managerWebpack: async (config, { configType }) => {
     // Update config here
     config.module.rules.push({
       test: /\.txt$/,

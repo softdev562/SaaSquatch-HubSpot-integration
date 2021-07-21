@@ -15,8 +15,8 @@ export default {
   title: 'Integration/Login',
   component: View,
   parameters: {
-    Gherkin: {
-      data: 'FeatureTextFile.txt',
+    cucumber: {
+      data: 'FrontEndConfigurationIsSavedBetweenSessions.feature',
     },
   },
 } as Meta;
