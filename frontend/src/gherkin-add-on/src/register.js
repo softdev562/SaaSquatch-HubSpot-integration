@@ -3,6 +3,11 @@ import { addons, types } from '@storybook/addons';
 import { AddonPanel } from '@storybook/components';
 import { useParameter } from '@storybook/api';
 
+/**
+ * Custom addon in Storybook to load gherkin/cucumber feature files in a new panel for each story.
+ * This loads the raw file contents.
+ */
+
 const ADDON_ID = 'cucumber';
 const PANEL_ID = `${ADDON_ID}/panel`;
 const PARAM_KEY = 'cucumber';

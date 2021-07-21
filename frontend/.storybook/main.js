@@ -12,13 +12,7 @@ module.exports = {
     "../src/gherkin-add-on/src/preset.js"
   ],
   managerWebpack: async (config, { configType }) => {
-    // Update config here
-    config.module.rules.push({
-      test: /\.txt$/,
-      loaders: 'raw-loader',
-      include: path.resolve(__dirname,'../')
-    });
-    config.resolve.extensions.push('.txt');
+    // Update config to use raw loader for feature files
     config.module.rules.push({
       test: /\.feature$/,
       loaders: 'raw-loader',

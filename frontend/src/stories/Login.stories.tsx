@@ -13,12 +13,7 @@ const OpenPopup = () => {
 
 export default {
   title: 'Integration/Login',
-  component: View,
-  parameters: {
-    cucumber: {
-      data: 'FrontEndConfigurationIsSavedBetweenSessions.feature',
-    },
-  },
+  component: View
 } as Meta;
 
 export const Default = ()=> <View {...props} />

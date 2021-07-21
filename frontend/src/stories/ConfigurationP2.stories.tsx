@@ -24,6 +24,11 @@ const defaultProps = {
 export default {
   title: 'Integration/ConfigurationP2',
   component: View,
+  parameters: {
+    cucumber: {
+      data: 'SyncParticipantsWithHubSpot.feature',
+    },
+  },
 } as Meta;
 
 export const Default = () => <View {...defaultProps} />

@@ -1,7 +1,5 @@
-// /my-addon/src/preset.js
-
 function managerEntries(entry = []) {
-    return [...entry, require.resolve("./register")]; // Addon implementation
-  }
+    return [...entry, require.resolve("./register")];
+}
   
-  module.exports = { managerEntries }
+module.exports = { managerEntries }

@@ -20,6 +20,11 @@ const defaultProps = {
 export default {
   title: 'Integration/ConfigurationP1',
   component: View,
+  parameters: {
+    cucumber: {
+      data: 'SyncContactsWithSaaSquatch.feature',
+    },
+  },
 } as Meta;
 
 export const Default = () => <View {...defaultProps} />
