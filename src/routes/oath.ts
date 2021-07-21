@@ -114,11 +114,11 @@ export const getSaasquatchToken = async (): Promise<any> => {
 // Start HubSpot OAuth flow
 // 1. Check whether user has previously authenticated with Hubspot and received a token
 router.get('/hubspot_authorization', async (req, res) => {
-	let decoded = undefined
-	if(req.cookies.frontendToken) {
-		decoded = authenticateToken(req.cookies.frontendToken as string)
-	}
-    if(decoded != undefined) {
+    let decoded = undefined;
+    if (req.cookies.frontendToken) {
+        decoded = authenticateToken(req.cookies.frontendToken as string);
+    }
+    if (decoded != undefined) {
         try {
             res.json('Authorized');
             res.end();
@@ -201,10 +201,11 @@ router.get('/hubspot', async (req, res) => {
     const hubspotID = req.query.hubspotID;
     if (hubspotID) {
         try {
-			const frontendToken = generateAccessToken(hubspotID as string);
-			res.status(200).send(`<script>document.cookie="frontendToken=${frontendToken}; SameSite=None; Secure"; window.close();</script>`);
-        }
-        catch(e){
+            const frontendToken = generateAccessToken(hubspotID as string);
+            res.status(200).send(
+                `<script>document.cookie="frontendToken=${frontendToken}; SameSite=None; Secure"; window.close();</script>`,
+            );
+        } catch (e) {
             console.error(e);
         }
     } else {
