@@ -1,22 +1,19 @@
-import Ajv from 'ajv'
-import ConfigurationPayloadSchema from '../Types/configuration-payload-schema.json'
+import Ajv from 'ajv';
+import ConfigurationPayloadSchema from '../Types/configuration-payload-schema.json';
 
-import { Router } from 'express'
-import { Configuration } from '../Types/types'
-import { ConfigurationController } from '../integration/ConfigurationController'
-import { authenticateToken } from './oath'
+import { Router } from 'express';
+import { Configuration } from '../Types/types';
+import { ConfigurationController } from '../integration/ConfigurationController';
+import { authenticateToken } from './oath';
 
-import {
-	MOCK_SESSION_USER_ID,
-	MOCK_SESSION_HUBSPOT_ID,
-} from '../mock'
+import { MOCK_SESSION_USER_ID, MOCK_SESSION_HUBSPOT_ID } from '../mock';
 
-const router = Router()
-const ajv = new Ajv()
+const router = Router();
+const ajv = new Ajv();
 
-const validate =  ajv.compile(ConfigurationPayloadSchema)
+const validate = ajv.compile(ConfigurationPayloadSchema);
 
-const API_CONFIGURATION_URL = '/api/configuration'
+const API_CONFIGURATION_URL = '/api/configuration';
 
 router.get(API_CONFIGURATION_URL, async (req, res) => {
 	let decoded = undefined
@@ -74,4 +71,4 @@ router.put(API_CONFIGURATION_URL, async (req, res) => {
 	}
 })
 
-export { router as configurationRoutes }
+export { router as configurationRoutes };
