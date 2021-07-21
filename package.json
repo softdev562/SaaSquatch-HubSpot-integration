@@ -14,7 +14,7 @@
 		"test": "yarn run build-tests && yarn run run-tests && yarn run clean-tests",
 		"build-tests": "tsc --resolveJsonModule --esModuleInterop **/test/*.ts",
 		"run-tests": "jest",
-		"clean-tests": "rm **/test/*.js"
+		"clean-tests": "rm ./src/**/*.js ./src/*.js"
 	},
 	"repository": {
 		"type": "git",
