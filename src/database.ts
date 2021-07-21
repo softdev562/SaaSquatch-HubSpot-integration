@@ -199,3 +199,51 @@ export async function PollTokensFromDatabase(tenantAllias: string) {
     });
     return data;
 }
+
+
+
+
+
+/**
+ * Used to store temporary user information
+ * @param hubspotID 
+ * @param accessToken 
+ * @param refreshToken 
+ */
+export function AddTempUser(hubspotID: string, accessToken = "", refreshToken = "") {
+    var key =  hashValue(hubspotID);
+    firebase.database().ref('tempUsers/'+ key ).set({
+        hubspotID : hubspotID,
+        accessToken : accessToken,
+        refreshToken : refreshToken,
+    });
+}
+
+export function DeleteTempUser(hubspotID: string) {
+    var key = hashValue(hubspotID);
+    firebase.database().ref('tempUsers/' + key).remove();
+}
+
+
+/**
+ * Allowes us to read the values stored in the temporary user table
+ * @param hubspotID 
+ * @returns { accessToken, refreshToken }
+ *  Fields will be empty if it does not return
+ */
+export async function PollTempUser(hubspotID: string) {
+    var key = hashValue(hubspotID);
+    var databseRef = firebase.database().ref();
+    var data = { accessToken: "", refreshToken: "" };
+    await databseRef.child('tempUsers/' + key).get().then((snapshot) => {
+        if (snapshot.exists()) {
+            data.accessToken =      snapshot.child("userinfo/accessToken").val();
+            data.refreshToken =     snapshot.child("userinfo/refreshToken").val();
+        } else {
+            console.log("No data available");
+        }
+    }).catch((error) => {
+        console.error(error);
+    });
+    return data;
+}
