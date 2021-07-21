@@ -20,8 +20,8 @@ const API_CONFIGURATION_URL = '/api/configuration'
 
 router.get(API_CONFIGURATION_URL, async (req, res) => {
 	let decoded = undefined
-	if(req.query.token) {
-		decoded = authenticateToken(req.query.token as string)
+	if(req.cookies.frontendToken) {
+		decoded = authenticateToken(req.cookies.frontendToken as string)
 	}
 	if (decoded != undefined) {
 		const configuration = await ConfigurationController.getConfiguration(MOCK_SESSION_USER_ID)
@@ -35,8 +35,8 @@ router.get(API_CONFIGURATION_URL, async (req, res) => {
 })
 router.post(API_CONFIGURATION_URL, async (req, res) => {
 	let decoded = undefined
-	if(req.query.token) {
-		decoded = authenticateToken(req.query.token as string)
+	if(req.cookies.frontendToken) {
+		decoded = authenticateToken(req.cookies.frontendToken as string)
 	}
 	if(validate(req.body) && decoded != undefined) {
 		const configuration: Configuration = req.body as Configuration
@@ -55,8 +55,8 @@ router.post(API_CONFIGURATION_URL, async (req, res) => {
 })
 router.put(API_CONFIGURATION_URL, async (req, res) => {
 	let decoded = undefined
-	if(req.query.token) {
-		decoded = authenticateToken(req.query.token as string)
+	if(req.cookies.frontendToken) {
+		decoded = authenticateToken(req.cookies.frontendToken as string)
 	}
 	if(validate(req.body) && decoded != undefined) {
 		const configuration: Configuration = req.body as Configuration

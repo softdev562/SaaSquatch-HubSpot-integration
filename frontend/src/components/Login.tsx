@@ -72,9 +72,7 @@ export function OAuthFunction(){
     setError(false);
 
     // Check Server for Hubspot Authorization
-    await axios.get(HUBSPOT_AUTHORIZATION,
-      { params: {token: document.cookie} }
-    )
+    await axios.get(HUBSPOT_AUTHORIZATION)
     .then(response => {
       if (response.data === "Unauthorized"){
         // Get Hubspot OAuth URL from server
@@ -86,9 +84,7 @@ export function OAuthFunction(){
           var timer = setInterval(function() { 
             if(popup && popup.closed) {
               // Check Server for Hubspot Authorization
-              axios.get(HUBSPOT_AUTHORIZATION,
-                { params: {token: document.cookie} }
-              )
+              axios.get(HUBSPOT_AUTHORIZATION)
               .then(response => {
                 // Send user to configuration page if authorized
                 if (response.data === "Authorized"){

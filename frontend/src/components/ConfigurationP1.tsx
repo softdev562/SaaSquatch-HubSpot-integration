@@ -122,7 +122,7 @@ export function Controller(){
   const [oneway, setOneway] = useState(true);
 
   const postConfigData = async () => {
-      return await fetch(API_CONFIGURATION_URL + `?token=${document.cookie}`, {
+      return await fetch(API_CONFIGURATION_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 
@@ -135,9 +135,7 @@ export function Controller(){
   // Gets config data on page load
   useEffect(() => {
     const getConfigData = () => {
-      axios.get(API_CONFIGURATION_URL,
-        { params: {token: document.cookie} }
-      )
+      axios.get(API_CONFIGURATION_URL)
       .then((response) => {
         // A blank config object is returned if the user doesn't exist yet in the database
         if (
@@ -208,7 +206,7 @@ export function Controller(){
   // On submit we make a request to the backend to store the config data and redirect to second config screen
   const handleSubmit = () => {
     const putConfigData = async () => {
-        return await fetch(API_CONFIGURATION_URL + `?token=${document.cookie}`, {
+        return await fetch(API_CONFIGURATION_URL, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
