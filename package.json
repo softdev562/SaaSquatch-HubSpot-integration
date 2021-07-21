@@ -16,7 +16,8 @@
 		"run-tests": "jest",
 		"clean-tests": "rm ./src/**/*.js ./src/*.js",
 		"lint": "eslint 'src/**/*.{js,ts,tsx}' --fix",
-		"prettify": "prettier src/**/*.{js,ts,tsx} --write"
+		"prettify": "prettier src/**/*.{js,ts,tsx} --write",
+		"prepare": "husky install"
 	},
 	"husky": {
 		"hooks": {
@@ -26,7 +27,6 @@
 	"lint-staged": {
 		"*.{js,ts,tsx}": [
 			"prettier --write",
-			"git add",
 			"yarn run lint"
 		]
 	},
@@ -65,7 +65,7 @@
 		"eslint-config-prettier": "^8.3.0",
 		"eslint-plugin-prettier": "^3.4.0",
 		"eslint-plugin-react": "^7.24.0",
-		"husky": "^7.0.1",
+		"husky": "^7.0.0",
 		"lint-staged": "^11.0.1",
 		"nodemon": "^2.0.7",
 		"prettier": "^2.3.2",
