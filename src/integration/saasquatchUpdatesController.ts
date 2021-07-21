@@ -45,10 +45,24 @@ export class saasquatchUpdatesController{
             for (const key in saasquatchPayloadData.programShareLinks){
                 let newProgramShareLinkName = key.replace(/\W/g, '') + "saasquatch_program";
                 let newProgramShareLinkLabel = key.replace(/\W/g, '') + " Saasquatch Program";
-                if(!await this.hubApiModel.objectHasProperty("contacts", newProgramShareLinkName,20060618)){
-                    await this.hubApiModel.createObjectProperty("contacts", newProgramShareLinkName, newProgramShareLinkLabel, "string", "textarea", "contactinformation",20060618);
+                try{
+                    if(!await this.hubApiModel.objectHasProperty("contacts", newProgramShareLinkName,20060618)){
+                        try{
+                            await this.hubApiModel.createObjectProperty("contacts", newProgramShareLinkName, newProgramShareLinkLabel,
+                                "string", "textarea", "contactinformation",20060618);
+                        }
+                        catch(e) {
+                            console.log(e);
+                        }
+
+                    }
+                    programShareLinks[newProgramShareLinkName] = saasquatchPayloadData.programShareLinks[key].cleanShareLink;
+
                 }
-                programShareLinks[newProgramShareLinkName] = saasquatchPayloadData.programShareLinks[key].cleanShareLink;
+                catch(e){
+                    console.log(e);
+                }
+
                };
 
 
@@ -61,8 +75,13 @@ export class saasquatchUpdatesController{
             const createContactBody = {
                 "properties": basicInfoAndProgramShareLinks
             }
-            await this.hubApiModel.createObject("contacts", createContactBody,20060618);
+            try{
+                await this.hubApiModel.createObject("contacts", createContactBody,20060618);
 
+            }
+            catch(e){
+                console.log(e);
+            }
 
          }
     }

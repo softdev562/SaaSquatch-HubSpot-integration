@@ -16,15 +16,8 @@ export class hubspotUpdatesController{
      * @param hubspotPayload Payload of Hubspot webhook
      */
     public NewContact(hubspotPayload: HubspotPayload){
-        console.log('received HubSpot contact.creation');
-
         const contactObjectId: number = hubspotPayload.objectId;
         const hub_id: number = hubspotPayload.portalId;
-
-        console.log("New contact obj id: "+contactObjectId);
-
-        console.log("Hubspot portal id: "+hub_id);
-
 
         // Hubspot does not include email in contact.created
         // Get new contact's email

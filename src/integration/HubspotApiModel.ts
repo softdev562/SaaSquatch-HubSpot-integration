@@ -15,41 +15,56 @@ export class HubspotApiModel {
      */
     public async getContact(contactObjectID: number,hub_id:number, paramToGet?: string){
 
-        console.log("this is current user ", hub_id);
 
-        let token:any = await PollTokensFromDatabase(hub_id.toString());
+        try {
+            let token:any = await PollTokensFromDatabase(hub_id.toString());
 
-        let access_token = token.accessToken;
+            let access_token = token.accessToken;
 
-        const url = `https://api.hubapi.com/crm/v3/objects/contacts/${encodeURIComponent(contactObjectID)}`;
+            const url = `https://api.hubapi.com/crm/v3/objects/contacts/${encodeURIComponent(contactObjectID)}`;
 
-        let options:any = {
-            qs: {"properties": 'email', "archived": 'false'},
-            headers: {accept: 'application/json',authorization:`Bearer ${access_token}`}
-        };
-        if (paramToGet){
-            options = {
-               qs: {"properties": 'email', "archived": 'false'},
-               headers:{ accept: 'application/json',authorization:`Bearer ${access_token}`}
+            let options:any = {
+                qs: {"properties": 'email', "archived": 'false'},
+                headers: {accept: 'application/json',authorization:`Bearer ${access_token}`}
             };
-        }
-        else{
-            options = {
-                qs: {"archived": 'false'},
-                headers:{accept: 'application/json',authorization:`Bearer ${access_token}`}
-            };
-        }
-        try{
-            const resp = await axios.get(url, options);
-            if (resp.status != 200) {
-                throw Error("Error getting a contact from HubSpot." + resp.data["error"]);
+            if (paramToGet){
+                options = {
+                    qs: {"properties": 'email', "archived": 'false'},
+                    headers:{ accept: 'application/json',authorization:`Bearer ${access_token}`}
+                };
             }
             else{
-                return resp.data;
+                options = {
+                    qs: {"archived": 'false'},
+                    headers:{accept: 'application/json',authorization:`Bearer ${access_token}`}
+                };
             }
-        }catch(e){
-            console.error(e);
+
+            try{
+                const resp = await axios.get(url, options);
+                if (resp.status != 200) {
+                    throw Error("Error getting a contact from HubSpot." + resp.data["error"]);
+                }
+                else{
+                    return resp.data;
+                }
+            }catch(e){
+
+                console.error(e);
+            }
+
         }
+
+        catch(e)
+        {
+            console.log("ERROR FETCHING TOKENS FROM THE DB");
+            // #todo redirect to signin
+            //axios.get(/hubspot);
+        }
+
+
+
+
     }
 
     /**
@@ -60,23 +75,32 @@ export class HubspotApiModel {
      * @returns axios response
      */
     public async createObject(objectType:string, createObjectBody:object, hub_id:number){
-        let token:any = await PollTokensFromDatabase(hub_id.toString());
 
-        let access_token = token.accessToken;
-
-        try{
-            const createObjectURL = 'https://api.hubapi.com/crm/v3/objects/' + objectType;
-            const response = await axios.post(createObjectURL, createObjectBody,{
-                params: {
-                    headers:{ accept: 'application/json',authorization:`Bearer ${access_token}`}
-                }
-            });
-            return response;
-        } catch (e) {
-            console.error("Was not able to create contact");
-            console.log(e);
-            return JSON.parse(e.response.body);
+        try {
+            let token:any = await PollTokensFromDatabase(hub_id.toString());
+            let access_token = token.accessToken;
+            try{
+                const createObjectURL = 'https://api.hubapi.com/crm/v3/objects/' + objectType;
+                const response = await axios.post(createObjectURL, createObjectBody,{
+                    params: {
+                        headers:{ accept: 'application/json',authorization:`Bearer ${access_token}`}
+                    }
+                });
+                return response;
+            } catch (e) {
+                console.error("Was not able to create contact");
+                console.log(e);
+                return JSON.parse(e.response.body);
+            }
         }
+        catch(e){
+            console.log("ERROR FETCHING TOKENS FROM THE DB");
+            // #todo redirect to signin
+            //axios.get(/hubspot);
+        }
+
+
+
     }
 
     /**
@@ -87,32 +111,42 @@ export class HubspotApiModel {
      */
     public async objectHasProperty(objectType: string, propertyName: string,hub_id:number){
 
-        let token:any = await PollTokensFromDatabase(hub_id.toString());
+        try{
+            let token:any = await PollTokensFromDatabase(hub_id.toString());
+            let access_token = token.accessToken;
+            const readPropertyURL = 'https://api.hubapi.com/crm/v3/properties/' + objectType + '/' + propertyName;
 
-        let access_token = token.accessToken;
+            try {
+                const response = await axios.get(readPropertyURL, {
+                    params: {
+                        headers:{ accept: 'application/json',authorization:`Bearer ${access_token}`}
+                    }
+                });
+                if (response.status==200 ){
+                    return true;
+                } else {
+                    console.error("======== WAS NOT ABLE TO READ PROPERTY ========");
+                    console.error(response);
+                }
+            } catch (e) {
+                if(e.response.status==404){
+                    return false;
+                } else{
+                    console.error("======== WAS NOT ABLE TO MAKE CALL: STATUS CODE: "+ e.response.status+" ========");
+                    console.log(e);
+                    return JSON.parse(e.response.body);
+                }
+            }
 
-        const readPropertyURL = 'https://api.hubapi.com/crm/v3/properties/' + objectType + '/' + propertyName; 
-        try {
-         const response = await axios.get(readPropertyURL, {
-             params: {
-                headers:{ accept: 'application/json',authorization:`Bearer ${access_token}`}
-            }
-         });
-            if (response.status==200 ){
-                return true;
-            } else {
-                console.error("======== WAS NOT ABLE TO READ PROPERTY ========");
-                console.error(response);
-            }
-        } catch (e) {
-            if(e.response.status==404){
-                return false;
-            } else{
-                console.error("======== WAS NOT ABLE TO MAKE CALL: STATUS CODE: "+ e.response.status+" ========");
-                console.log(e);
-                return JSON.parse(e.response.body);
-            }
         }
+        catch(e)
+        {
+            console.log("ERROR FETCHING TOKENS FROM THE DB");
+            // #todo redirect to signin
+            //axios.get(/hubspot);
+        }
+
+
     }
 
     /**
@@ -129,30 +163,37 @@ export class HubspotApiModel {
     public async createObjectProperty(objectType:string, propertyName: string, propertyLabel:string, propertyType:string,
                                       propertyFieldType:string, propertyGroupName: string,hub_id:number){
 
-        let token:any = await PollTokensFromDatabase(hub_id.toString());
-
-        let access_token = token.accessToken;
-
-        const contactCreatePropertyURL = 'https://api.hubapi.com/crm/v3/properties/' + objectType;
-        const body = {
-            "name": propertyName,
-            "label": propertyLabel,
-            "type": propertyType,
-            "fieldType": propertyFieldType,
-            "groupName": propertyGroupName,
-            "formField": true
-        };
         try {
-            await axios.post(contactCreatePropertyURL, body, {
-                params: {
-                    headers:{ accept: 'application/json',authorization:`Bearer ${access_token}`}
-                }
-            })
-        } catch (e) {
-            console.error("==== WAS NOT ABLE TO POST NEW PROPERTY ===");
-            console.log(e);
-            return JSON.parse(e.response.body);
+            let token:any = await PollTokensFromDatabase(hub_id.toString());
+            let access_token = token.accessToken;
+            const contactCreatePropertyURL = 'https://api.hubapi.com/crm/v3/properties/' + objectType;
+            const body = {
+                "name": propertyName,
+                "label": propertyLabel,
+                "type": propertyType,
+                "fieldType": propertyFieldType,
+                "groupName": propertyGroupName,
+                "formField": true
+            };
+            try {
+                await axios.post(contactCreatePropertyURL, body, {
+                    params: {
+                        headers:{ accept: 'application/json',authorization:`Bearer ${access_token}`}
+                    }
+                })
+            } catch (e) {
+                console.error("==== WAS NOT ABLE TO POST NEW PROPERTY ===");
+                console.log(e);
+                return JSON.parse(e.response.body);
+            }
         }
+        catch(e)
+        {
+            console.log("ERROR FETCHING TOKENS FROM THE DB");
+            // #todo redirect to signin
+            //axios.get(/hubspot);
+        }
+
     }
 
     /**
@@ -163,23 +204,28 @@ export class HubspotApiModel {
      */
     public async searchObject(objectType:string, body:object,hub_id:number){
 
-        const searchObjectURL = 'https://api.hubapi.com/crm/v3/objects/' + objectType + '/search';
+        try{
+            let token:any = await PollTokensFromDatabase(hub_id.toString());
+            let access_token = token.accessToken;
+            try {
+                const searchObjectURL = 'https://api.hubapi.com/crm/v3/objects/' + objectType + '/search';
 
-        let token:any = await PollTokensFromDatabase(hub_id.toString());
-
-        let access_token = token.accessToken;
-
-        try {
-            const response = await axios.post(searchObjectURL,body, {
-                params: {
-                    headers:{ accept: 'application/json',authorization:`Bearer ${access_token}`}
-            }});
-            return response;
-        } catch (e) {
-            console.error("===== WAS NOT ABLE TO SEARCH FOR PROPERTIES OF OBJECT: " + objectType);
-            console.error(e);
-            return JSON.parse(e.response.body);
+                const response = await axios.post(searchObjectURL,body, {
+                    params: {
+                        headers:{ accept: 'application/json',authorization:`Bearer ${access_token}`}
+                    }});
+                return response;
+            } catch (e) {
+                console.error("===== WAS NOT ABLE TO SEARCH FOR PROPERTIES OF OBJECT: " + objectType);
+                return JSON.parse(e.response.body);
+            }
         }
+        catch(e){
+            console.log("ERROR FETCHING TOKENS FROM THE DB");
+            // #todo redirect to signin
+            //axios.get(/hubspot);
+        }
+
     }
    
 }
