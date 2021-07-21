@@ -17,7 +17,7 @@ export enum SubscriptionType {
 }
 
 export interface HubspotPayload{
-    eventId: string;
+    eventId: number;
     subscriptionId: number;
     portalId: number;
     appId?: number;

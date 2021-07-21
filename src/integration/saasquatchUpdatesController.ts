@@ -21,8 +21,8 @@ export class saasquatchUpdatesController{
      * @param saasquatchPayload Payload of SaaSquatch webhook
      */
     public async NewUser(saasquatchPayload: any){
-        console.log('Received SaaSquatch user.created.');
-        console.log(saasquatchPayload);
+         console.log('Received SaaSquatch user.created.');
+        // console.log(saasquatchPayload);
         const saasquatchPayloadData = saasquatchPayload.data;
         const contactsSearchBody = {
             filterGroups: [
@@ -39,17 +39,17 @@ export class saasquatchUpdatesController{
               limit: 1,
 
         };
-        const contactsSearchResponse = await this.hubApiModel.searchObject("contacts", contactsSearchBody,20060618);
+        const contactsSearchResponse = await this.hubApiModel.searchObject("contacts", contactsSearchBody,20465599);
          if (contactsSearchResponse?.data.total == 0){
             var programShareLinks: { [key: string]: any } = {};
             for (const key in saasquatchPayloadData.programShareLinks){
                 let newProgramShareLinkName = key.replace(/\W/g, '') + "saasquatch_program";
                 let newProgramShareLinkLabel = key.replace(/\W/g, '') + " Saasquatch Program";
                 try{
-                    if(!await this.hubApiModel.objectHasProperty("contacts", newProgramShareLinkName,20060618)){
+                    if(!await this.hubApiModel.objectHasProperty("contacts", newProgramShareLinkName,20465599)){
                         try{
                             await this.hubApiModel.createObjectProperty("contacts", newProgramShareLinkName, newProgramShareLinkLabel,
-                                "string", "textarea", "contactinformation",20060618);
+                                "string", "textarea", "contactinformation",20465599);
                         }
                         catch(e) {
                             console.log(e);
@@ -76,7 +76,7 @@ export class saasquatchUpdatesController{
                 "properties": basicInfoAndProgramShareLinks
             }
             try{
-                await this.hubApiModel.createObject("contacts", createContactBody,20060618);
+                await this.hubApiModel.createObject("contacts", createContactBody,20465599);
 
             }
             catch(e){

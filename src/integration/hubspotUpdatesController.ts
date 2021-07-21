@@ -18,14 +18,12 @@ export class hubspotUpdatesController{
     public NewContact(hubspotPayload: HubspotPayload){
         const contactObjectId: number = hubspotPayload.objectId;
         const hub_id: number = hubspotPayload.portalId;
-
+        console.log("this is hubid",hub_id)
         // Hubspot does not include email in contact.created
         // Get new contact's email
         let params ='';
         this.hubApiModel.getContact(contactObjectId,hub_id)
             .then(data =>{
-                console.log("response");
-                console.log(data);
                 const participant = data;
                 params = `email:${encodeURIComponent(data.properties.email)}`;
                 console.log("PARAMS");
@@ -48,8 +46,8 @@ export class hubspotUpdatesController{
                             }
                             // 3. TODO: If it does exist, get share link and other relevant data
                             else{
-                                console.log("SAAS USER "+data.users[0].email);
-                                console.log("user share links: "+data.users[0].shareLinks);
+                                // console.log("SAAS USER "+data.users[0].email);
+                                // console.log("user share links: "+data.users[0].shareLinks);
                             }
                             // 4. TODO: send referral link back to hubspot to add to contact
 
@@ -59,7 +57,6 @@ export class hubspotUpdatesController{
             });
         //console.log("contact email: "+ contactEmail);
         // const params = `email:${contactEmail}`;
-        console.log(params);
     }
 
 
