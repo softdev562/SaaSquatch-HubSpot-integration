@@ -201,7 +201,7 @@ export async function PollTokensFromDatabase(tenantAllias: string) {
  * @param accessToken 
  * @param refreshToken 
  */
-export function AddTempUser(hubspotID: string, accessToken = "", refreshToken = ""}) {
+export function AddTempUser(hubspotID: string, accessToken = "", refreshToken = "") {
     var key =  hashValue(hubspotID);
     firebase.database().ref('tempUsers/'+ key ).set({
         hubspotID : hubspotID,
