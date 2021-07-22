@@ -67,15 +67,15 @@ export interface SaasquatchPayload {
  */
 
 export interface Configuration {
-    PushPartixipantsAsContacts: boolean, 
-    PullParticipantsIntoContacts: boolean,
-    DeleteContactwhenParticipantDeleted: boolean,
-    PushContactsAsParticipants: boolean,
-    PullContactsIntoParticipants: boolean, 
-    DeleteParticipantWhenContactDeleted: boolean,
-    hubspotID: string,
-    accessToken: string, 
-    refreshToken: string
+    PushPartixipantsAsContacts: boolean;
+    PullParticipantsIntoContacts: boolean;
+    DeleteContactwhenParticipantDeleted: boolean;
+    PushContactsAsParticipants: boolean;
+    PullContactsIntoParticipants: boolean;
+    DeleteParticipantWhenContactDeleted: boolean;
+    hubspotID: string;
+    accessToken: string;
+    refreshToken: string;
 }
 
 /**
