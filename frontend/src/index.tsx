@@ -5,6 +5,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import firebase from 'firebase/app';
 import history from "./types/history";
+import {PenpalContextProvider} from '@saasquatch/integration-boilerplate-react';
 
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
@@ -20,9 +21,17 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 ReactDOM.render(
 	<Router history={history}>
-		<React.StrictMode>
-			<App />
-		</React.StrictMode>
+    <PenpalContextProvider 
+      loading={
+        <p>Loading state</p>
+      }
+      fallback={
+        <p>Fallback state</p>
+      }>
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>
+    </PenpalContextProvider>
   	</Router>,
 	document.getElementById('root')
 )

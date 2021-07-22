@@ -7,8 +7,7 @@ const crypto = require('crypto');
 //#todo: The tenant alias is a number event after converting it to string
 //      the has function requires "data" argument must be of type
 //      string or an instance of Buffer, TypedArray, or DataView.
-function hashValue(stringValue: string) {
-    stringValue.toString().toLowerCase();
+function hashValue(stringValue: string){
     return crypto.createHash('sha1').update(stringValue).digest('hex');
 }
 
@@ -30,7 +29,6 @@ export function AddToDatabase(
     {
         PushPartixipantsAsContacts = false,
         PullParticipantsIntoContacts = false,
-
         DeleteContactwhenParticipantDeleted = false,
         PushContactsAsParticipants = false,
         PullContactsIntoParticipants = false,
@@ -38,7 +36,7 @@ export function AddToDatabase(
         accessToken = '',
         refreshToken = '',
     },
-) {
+): void {
     const key = hashValue(tenantAllias);
     const id = hashValue(hubspotID);
     firebase
@@ -177,6 +175,7 @@ export async function PollDatabase(tenantAllias: string): Promise<Configuration>
     const key = hashValue(tenantAllias);
     const databseRef = firebase.database().ref();
     const configuration: Configuration = {
+        SaaSquatchTenantAlias: '',
         PushPartixipantsAsContacts: false,
         PullParticipantsIntoContacts: false,
         DeleteContactwhenParticipantDeleted: false,
