@@ -4,7 +4,6 @@ import HubspotLogo from '../assets/HubspotLogo.png';
 import history from '../types/history';
 
 const PageWrapper = styled.div`
-  min-height: 100vh;
   display: flex;
   flex-direction: row;
   align-items: center;

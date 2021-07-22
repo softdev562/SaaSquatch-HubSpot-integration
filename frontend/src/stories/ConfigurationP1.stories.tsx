@@ -3,6 +3,7 @@ import { View } from '../components/ConfigurationP1';
 
 const defaultProps = {
   config: {
+    saasquatchTenantAlias: '',
     pushIntoContacts: false,
     pullIntoContacts: false,
   },
@@ -27,6 +28,7 @@ export const TogglesSelected = () => (
   <View 
     {...defaultProps} 
     config={{
+      saasquatchTenantAlias: '',
       pushIntoContacts: true,
       pullIntoContacts: true,
     }} 
@@ -37,6 +39,7 @@ export const PreviousImport = () => (
   <View 
     {...defaultProps} 
     config={{
+      saasquatchTenantAlias: '',
       pushIntoContacts: true,
       pullIntoContacts: true,
     }}
@@ -48,6 +51,7 @@ export const ImportModal = () => (
   <View 
     {...defaultProps} 
     config={{
+      saasquatchTenantAlias: '',
       pushIntoContacts: true,
       pullIntoContacts: true,
     }}

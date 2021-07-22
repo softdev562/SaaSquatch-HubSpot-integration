@@ -1,12 +1,11 @@
-import { HubspotPayload } from "../Types/types";
-import { HubspotApiModel } from "./HubspotApiModel";
-import { SaasquatchApiModel } from "./SaasquatchApiModel";
+import { HubspotPayload } from '../Types/types';
+import { HubspotApiModel } from './HubspotApiModel';
+import { SaasquatchApiModel } from './SaasquatchApiModel';
 
-
-export class hubspotUpdatesController{
+export class hubspotUpdatesController {
     private hubApiModel: HubspotApiModel;
     private saasApiModel: SaasquatchApiModel;
-    constructor( sApiKey: string, sTenantAlias: string){
+    constructor(sApiKey: string, sTenantAlias: string) {
         this.saasApiModel = new SaasquatchApiModel(sApiKey, sTenantAlias);
         this.hubApiModel = new HubspotApiModel();
     }
@@ -55,18 +54,18 @@ export class hubspotUpdatesController{
 
                     );
             });
+
         //console.log("contact email: "+ contactEmail);
         // const params = `email:${contactEmail}`;
     }
-
 
 
     /**
      * Received webhook of subscription type 'contact.deletion'
      * @param hubspotPayload Payload of Hubspot webhook
      */
-    public DeletedContact(hubspotPayload: HubspotPayload){
-        console.log('received HubSpot contact.deletion');
+    public DeletedContact(hubspotPayload: HubspotPayload): void {
+        console.log('received HubSpot contact.deletion: ' + hubspotPayload);
         /**
          * TODO:
          * Steps
@@ -82,8 +81,8 @@ export class hubspotUpdatesController{
      * Received webhook of subscription type 'contact.propertyChange'
      * @param hubspotPayload Payload of Hubspot webhook
      */
-    public ChangedContact(hubspotPayload: HubspotPayload){
-        console.log('received HubSpot contact.propertyChange');
+    public ChangedContact(hubspotPayload: HubspotPayload): void {
+        console.log('received HubSpot contact.propertyChange: ' + hubspotPayload);
         /**
          * TODO:
          * Steps
@@ -93,6 +92,5 @@ export class hubspotUpdatesController{
          * 4. Done?
          */
     }
-
 
 }
