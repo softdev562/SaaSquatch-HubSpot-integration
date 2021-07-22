@@ -29,13 +29,13 @@ export class hubspotUpdatesController{
             params = `email:${encodeURIComponent(participant.properties.email)}`;
 
 			// Get tenant alias of the corresponding saasquatch tenant to the hubspot account.
-			const tenantAlias = await LookupAlias(hubspotPayload.portalId.toString());
+			const tenantAlias = await LookupAlias(hubspotPayload.portalId);
 			if (tenantAlias === "") {
 				throw new Error("No tenantAlias associated with this Hubspot account.")
 			}
 
             // 1. Check if contact exists as user in SaaSquatch (match by email)
-            this.saasApiModel.getUsers(params)
+            this.saasApiModel.getUsers(tenantAlias, params)
             .then( data =>{
                 //If it does not exist, create new user in SaaSquatch
                 if(data.count == 0){

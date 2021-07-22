@@ -7,7 +7,7 @@ const crypto = require('crypto')
 //      the has function requires "data" argument must be of type
 //      string or an instance of Buffer, TypedArray, or DataView.
 function hashValue(stringValue: string){
-    stringValue.toString().toLowerCase()
+    stringValue = stringValue.toString().toLowerCase()
     return crypto.createHash('sha1').update(stringValue).digest('hex');
 }
 
@@ -137,9 +137,9 @@ export async function PollDatabase(tenantAlias: string) {
     return data;
 }
 
-export async function LookupAlias(hubspotID: string) {
-    var key = hashValue(hubspotID);
-    var data = "";
+export async function LookupAlias(hubspotID: number) {
+    var key = hashValue(hubspotID.toString());
+    var data: any;
     var databseRef = firebase.database().ref();
     await databseRef.child('keyTable/' + key).get().then((snapshot) => {
         if (snapshot.exists()) {
@@ -148,10 +148,9 @@ export async function LookupAlias(hubspotID: string) {
           console.log("No tenant alias with that hubspot id.");
         }
     }).catch((error) => {
-        console.error(error);
 		throw new Error(error);
       });
-    return data;
+    return data.ID;
 }
 
 
@@ -173,8 +172,6 @@ export function AddTokensToDatabase(tenantAlias: string, accessToken: string, re
  * { accessToken, refreshToken } if the entry is available. If no entry is available, it will return two empty strings
  */ 
 export async function PollTokensFromDatabase(tenantAlias: string) {
-	console.log("tenant alias:2");
-	console.log(tenantAlias);
     var key = hashValue(tenantAlias);
     var databseRef = firebase.database().ref();
     var data = {

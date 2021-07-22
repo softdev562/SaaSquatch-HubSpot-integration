@@ -25,7 +25,7 @@ import webhooks from './routes/webhooks';
 // constants
 const PORT = process.env.PORT || 8000;
 const {
-	HUBSPOT_API_KEY: HAPIKEY,
+	SERVER_TOKEN_SECRET: SERVER_TOKEN_SECRET,
 } = process.env;
 
 // configure

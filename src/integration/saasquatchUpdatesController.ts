@@ -1,3 +1,4 @@
+import { str } from "ajv";
 import { SaasquatchPayload } from "../Types/types";
 import { HubspotApiModel } from "./HubspotApiModel";
 import { SaasquatchApiModel } from "./SaasquatchApiModel";
@@ -21,7 +22,7 @@ export class saasquatchUpdatesController{
      */
     public async NewUser(saasquatchPayload: any){
         console.log('Received SaaSquatch user.created.');
-
+        console.log(saasquatchPayload);
         const saasquatchPayloadData = saasquatchPayload.data;
         const contactsSearchBody = {
             filterGroups: [
@@ -40,15 +41,29 @@ export class saasquatchUpdatesController{
         };
         const contactsSearchResponse = await this.hubApiModel.searchObject("contacts", contactsSearchBody);
          if (contactsSearchResponse?.data.total == 0){
-            const createContactBody = {
-                "properties":{
-                    "email": saasquatchPayloadData.email,
-                    "firstname": saasquatchPayloadData.firstName,
-                    "lastname": saasquatchPayloadData.lastName,
+            var programShareLinks: { [key: string]: any } = {};
+            for (const key in saasquatchPayloadData.programShareLinks){
+                let newProgramShareLinkName = key.replace(/\W/g, '') + "saasquatch_program";
+                let newProgramShareLinkLabel = key.replace(/\W/g, '') + " Saasquatch Program";
+                if(!await this.hubApiModel.objectHasProperty("contacts", newProgramShareLinkName)){
+                    await this.hubApiModel.createObjectProperty("contacts", newProgramShareLinkName, newProgramShareLinkLabel, "string", "textarea", "contactinformation");
                 }
-    
-            };
+                programShareLinks[newProgramShareLinkName] = saasquatchPayloadData.programShareLinks[key].cleanShareLink;
+               };
+              
+               
+               const basicContactInfo = {
+                "email": saasquatchPayloadData.email,
+                "firstname": saasquatchPayloadData.firstName,
+                "lastname": saasquatchPayloadData.lastName,
+            }
+            const basicInfoAndProgramShareLinks = Object.assign(basicContactInfo, programShareLinks);
+            const createContactBody = {
+                "properties": basicInfoAndProgramShareLinks
+            }
             await this.hubApiModel.createObject("contacts", createContactBody);
+               
+            
          }
     }
 

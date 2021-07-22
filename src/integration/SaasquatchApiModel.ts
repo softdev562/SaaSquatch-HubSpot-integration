@@ -21,7 +21,7 @@ export class SaasquatchApiModel {
 	 * @return Expected data from request.
 	 */
 	public saasquatchApiRequest = async (req_method: Method, req_url: string, req_header: HeaderObject, req_params = undefined, req_body = undefined, tries = 5) => {
-		req_header.Authorization = `Bearer {SaasquatchToken}`;
+		req_header.Authorization = `Bearer ${this.SaasquatchToken}`;
 		try {
 			const resp: any = await axios.request({
 				method: req_method,
@@ -33,9 +33,10 @@ export class SaasquatchApiModel {
 			return resp;
 		} catch (e) {
 			// API token expired.
-			if (e.status === 401) {
+			if (e.response.status === 401 || e.response.status === 403) {
 				try {
-					this.SaasquatchToken = await getSaasquatchToken();
+					const tokenObject = await getSaasquatchToken();
+					this.SaasquatchToken = tokenObject.access_token;
 					// prevent infinite loops of invalid tokens, etc.
 					if (tries === undefined || tries > 5) {
 						tries = 5;
@@ -48,7 +49,7 @@ export class SaasquatchApiModel {
 					throw new Error(e);
 				}
 			} else {
-				throw new Error("Unable to complete request to Saasquatch.\n Error: {e}");
+				throw new Error(`Unable to complete request to Saasquatch. ${e}`);
 			}
 		}
 	};
@@ -61,7 +62,7 @@ export class SaasquatchApiModel {
      */
     public async getUsers(tenantAlias: string, paramToFilterBy?: string){
         const headers = {accept: 'application/json'};
-        const url = `https://staging.referralsaasquatch.com/api/v1/${encodeURIComponent(tenantAlias)}/users`;
+        const url = `https://staging.referralsaasquatch.com/api/v1/${tenantAlias}/users`;
         let qs = '';
         if (paramToFilterBy){
             qs = paramToFilterBy;
@@ -86,7 +87,7 @@ export class SaasquatchApiModel {
 			const resp = await this.saasquatchApiRequest('post', createParticipantURL, {});
 			return resp.data;
 		} catch (e) {
-			throw new Error(`Was not able to create contact.\n Error: {e}`);
+			throw new Error(`Was not able to create contact. ${e}`);
 		}
 	}
 }
