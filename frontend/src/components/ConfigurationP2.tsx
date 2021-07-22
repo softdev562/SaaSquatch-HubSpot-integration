@@ -7,6 +7,10 @@ import { usePenpal } from '@saasquatch/integration-boilerplate-react';
 import jwt_decode from 'jwt-decode';
 import { Config } from './ConfigurationP1';
 
+/**
+ * Renders the second configuration screen (available at /configuration/2).
+ * Handles the config settings to import contacts into SaaSquatch from HubSpo
+ */
 const PageWrapper = styled.div`
     display: flex;
     flex-direction: row;
@@ -169,7 +173,6 @@ export function Controller(state: Config) {
     // On submit we make a request to the backend to store the config data and redirect to integration success screen if config selected
     const handleSubmit = () => {
         const putConfigData = async () => {
-            console.log('show me the money', config);
             return await fetch(API_CONFIGURATION_URL, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },

@@ -7,6 +7,11 @@ import axios from 'axios';
 import { usePenpal } from '@saasquatch/integration-boilerplate-react';
 import jwt_decode from 'jwt-decode';
 
+/**
+ * Renders the first configuration screen (available at /configuration/1).
+ * Handles the config settings to import contacts into HubSpot from SaaSquatch
+ */
+
 const PageWrapper = styled.div`
     display: flex;
     flex-direction: row;
@@ -120,8 +125,6 @@ export function Controller(state: Config) {
         contactsImported: (state && state.contactsImported) || false,
         participantsImported: (state && state.participantsImported) || false,
     };
-    console.log('state', state);
-    console.log('currConfig', currConfig);
     const [config, setConfig] = useState<Config>(currConfig);
     const [oneway, setOneway] = useState(true);
 
