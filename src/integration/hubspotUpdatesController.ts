@@ -3,10 +3,14 @@ import { HubspotApiModel } from "./HubspotApiModel";
 import { SaasquatchApiModel } from "./SaasquatchApiModel";
 import { LookupAlias as LookupAlias } from "../database";
 
+/**
+ * Controller for handling updates from HubSpot webhooks.
+ */
 
 export class hubspotUpdatesController{
     private hubApiModel: HubspotApiModel;
     private saasApiModel: SaasquatchApiModel;
+
     constructor( sApiKey: string, sTenantAlias: string){
         this.saasApiModel = new SaasquatchApiModel();
         this.hubApiModel = new HubspotApiModel();
@@ -46,7 +50,6 @@ export class hubspotUpdatesController{
                             "lastName": participant.properties.lastname,
                             "id": participant.properties.email,
 						    "accountId": participant.properties.email,
-            
                     };
                     this.saasApiModel.createParticipant(tenantAlias, participant.properties.email, createParticipantBody);
                 }
@@ -58,17 +61,12 @@ export class hubspotUpdatesController{
                 // 4. TODO: send referral link back to hubspot to add to contact
             
                 }
-    
             );
         } catch (e) {
 			throw new Error(e);
 		}
-        //console.log("contact email: "+ contactEmail);
-        // const params = `email:${contactEmail}`;
         console.log(params);
     }
-    
-    
     
     /**
      * Received webhook of subscription type 'contact.deletion'
@@ -86,7 +84,6 @@ export class hubspotUpdatesController{
          */
     }
     
-    
     /**
      * Received webhook of subscription type 'contact.propertyChange'
      * @param hubspotPayload Payload of Hubspot webhook
@@ -102,6 +99,5 @@ export class hubspotUpdatesController{
          * 4. Done?
          */
     }
-
 
 }

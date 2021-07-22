@@ -1,5 +1,9 @@
-import axios, {Method} from "axios";
+import axios, { Method } from "axios";
 import { getSaasquatchToken } from "../routes/oath";
+
+/**
+ * SaaSquatch model for interacting with the SaaSquatch's API
+ */
 
 interface HeaderObject {
 	[key: string]: any

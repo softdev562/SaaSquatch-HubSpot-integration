@@ -17,8 +17,6 @@
             "propertyValue": {"type": "string"},
             "changeFlag": {"type": "string"},
             "changeSource": {"type": "string"}
-            
-            
         },
         "required": ["eventId", "subscriptionId", "portalId", "appId", "occurredAt", "subscriptionType", "attemptNumber", "objectId", "changeSource"],
         "additionalProperties": false

@@ -83,7 +83,6 @@ export function EditDatabase(tenantAlias: string, params : {PushPartixipantsAsCo
             PushContactsAsParticipants : params.PushContactsAsParticipants
         });
     }
-
     if(params.PullContactsIntoParticipants != undefined){  
         firebase.database().ref('users/' + key + '/hubspot').update({
             PullContactsIntoParticipants : params.PullContactsIntoParticipants
