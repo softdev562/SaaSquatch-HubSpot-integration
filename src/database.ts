@@ -1,4 +1,3 @@
-import chalk from "chalk";
 import firebase from "firebase/app";
 import "firebase/database";
 import { Configuration } from "./Types/types";
@@ -48,6 +47,7 @@ export function AddToDatabase(tenantAllias: string, hubspotID: string, {PushPart
     });
     firebase.database().ref('users/' + key + '/userinfo').set({
         tenantAllias: tenantAllias,
+        hubspotID: hubspotID,
         accessToken: accessToken,
         refreshToken: refreshToken
     });
@@ -122,6 +122,7 @@ export async function PollDatabase(tenantAllias: string): Promise<Configuration>
 		PushContactsAsParticipants: false,
 		PullContactsIntoParticipants: false,
 		DeleteParticipantWhenContactDeleted: false,
+        hubspotID: '',
 		accessToken: '',
 		refreshToken: ''
 	};
@@ -137,8 +138,9 @@ export async function PollDatabase(tenantAllias: string): Promise<Configuration>
 
 			configuration.accessToken = snapshot.child("userinfo/accessToken").val();
 			configuration.refreshToken = snapshot.child("userinfo/refreshToken").val();
+            configuration.hubspotID = snapshot.child("userinfo/hubspotID").val();
 		} else
-			console.log(chalk.bold("No configuration data available!"));
+			console.log("No configuration data available!");
 	}).catch((error) => {
 		console.error(error);
 	});

@@ -76,6 +76,7 @@ export interface Configuration {
     PushContactsAsParticipants: boolean,
     PullContactsIntoParticipants: boolean, 
     DeleteParticipantWhenContactDeleted: boolean,
+    hubspotID: string,
     accessToken: string, 
     refreshToken: string
 }
