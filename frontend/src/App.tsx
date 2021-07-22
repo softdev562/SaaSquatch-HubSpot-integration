@@ -1,20 +1,20 @@
 import { Redirect, Route } from 'react-router-dom';
-import {Login} from './components/Login';
-import {ConfigurationP1} from './components/ConfigurationP1';
-import {ConfigurationP2} from './components/ConfigurationP2';
-import { createMuiTheme, ThemeProvider } from '@material-ui/core';
+import { Login } from './components/Login';
+import { ConfigurationP1 } from './components/ConfigurationP1';
+import { ConfigurationP2 } from './components/ConfigurationP2';
+import { createTheme, ThemeProvider } from '@material-ui/core';
 import { ConfigurationSuccess } from './components/ConfigurationSuccess';
 import { OrderConfirmation } from './components/OrderConfirmation';
 
-const theme = createMuiTheme({
-  palette: {
-    primary: {
-      main: '#255fcc',
+const theme = createTheme({
+    palette: {
+        primary: {
+            main: '#255fcc',
+        },
+        secondary: {
+            main: '#5BC236',
+        },
     },
-    secondary: {
-      main: '#5BC236',
-    },
-  },
 });
 
 function App() {
