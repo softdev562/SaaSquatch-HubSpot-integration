@@ -31,30 +31,47 @@ export function AddToDatabase(
         PushPartixipantsAsContacts = false,
         PullParticipantsIntoContacts = false,
 
-                                                     DeleteContactwhenParticipantDeleted = false, PushContactsAsParticipants = false,
-                                                     PullContactsIntoParticipants = false, DeleteParticipantWhenContactDeleted = false,
-                                                     accessToken = "", refreshToken = ""}) {
-    var key = hashValue(tenantAllias);
-    var id =  hashValue(hubspotID);
-    firebase.database().ref('keyTable/' + id + "/SasID").set({
-        ID: tenantAllias
-    });
-    firebase.database().ref('users/'+ key + '/saasquach' ).set({
-        PushPartixipantsAsContacts: PushPartixipantsAsContacts,
-        PullParticipantsIntoContacts : PullParticipantsIntoContacts,
-        DeleteContactwhenParticipantDeleted : DeleteContactwhenParticipantDeleted
-    });
-    firebase.database().ref('users/' + key + '/hubspot').set({
-        PushContactsAsParticipants : PushContactsAsParticipants,
-        PullContactsIntoParticipants : PullContactsIntoParticipants,
-        DeleteParticipantWhenContactDeleted : DeleteParticipantWhenContactDeleted
-    });
-    firebase.database().ref('users/' + key + '/userinfo').set({
-        tenantAllias: tenantAllias,
-        hubspotID: hubspotID,
-        accessToken: accessToken,
-        refreshToken: refreshToken
-    });
+        DeleteContactwhenParticipantDeleted = false,
+        PushContactsAsParticipants = false,
+        PullContactsIntoParticipants = false,
+        DeleteParticipantWhenContactDeleted = false,
+        accessToken = '',
+        refreshToken = '',
+    },
+) {
+    const key = hashValue(tenantAllias);
+    const id = hashValue(hubspotID);
+    firebase
+        .database()
+        .ref('keyTable/' + id + '/SasID')
+        .set({
+            ID: tenantAllias,
+        });
+    firebase
+        .database()
+        .ref('users/' + key + '/saasquach')
+        .set({
+            PushPartixipantsAsContacts: PushPartixipantsAsContacts,
+            PullParticipantsIntoContacts: PullParticipantsIntoContacts,
+            DeleteContactwhenParticipantDeleted: DeleteContactwhenParticipantDeleted,
+        });
+    firebase
+        .database()
+        .ref('users/' + key + '/hubspot')
+        .set({
+            PushContactsAsParticipants: PushContactsAsParticipants,
+            PullContactsIntoParticipants: PullContactsIntoParticipants,
+            DeleteParticipantWhenContactDeleted: DeleteParticipantWhenContactDeleted,
+        });
+    firebase
+        .database()
+        .ref('users/' + key + '/userinfo')
+        .set({
+            tenantAllias: tenantAllias,
+            hubspotID: hubspotID,
+            accessToken: accessToken,
+            refreshToken: refreshToken,
+        });
 }
 
 /**
@@ -157,24 +174,31 @@ export function EditDatabase(
 }
 
 export async function PollDatabase(tenantAllias: string): Promise<Configuration> {
-	const key = hashValue(tenantAllias);
-	const databseRef = firebase.database().ref();
-	let configuration: Configuration = {
-		PushPartixipantsAsContacts: false,
-		PullParticipantsIntoContacts: false,
-		DeleteContactwhenParticipantDeleted: false,
-		PushContactsAsParticipants: false,
-		PullContactsIntoParticipants: false,
-		DeleteParticipantWhenContactDeleted: false,
+    const key = hashValue(tenantAllias);
+    const databseRef = firebase.database().ref();
+    const configuration: Configuration = {
+        PushPartixipantsAsContacts: false,
+        PullParticipantsIntoContacts: false,
+        DeleteContactwhenParticipantDeleted: false,
+        PushContactsAsParticipants: false,
+        PullContactsIntoParticipants: false,
+        DeleteParticipantWhenContactDeleted: false,
         hubspotID: '',
-		accessToken: '',
-		refreshToken: ''
-	};
-	await databseRef.child('users/' + key).get().then((snapshot) => {
-		if (snapshot.exists()) {
-			configuration.PushPartixipantsAsContacts = snapshot.child("saasquach/PushPartixipantsAsContacts").val();
-			configuration.PullParticipantsIntoContacts = snapshot.child("saasquach/PullParticipantsIntoContacts").val();
-			configuration.DeleteContactwhenParticipantDeleted = snapshot.child("saasquach/DeleteContactwhenParticipantDeleted").val();
+        accessToken: '',
+        refreshToken: '',
+    };
+    await databseRef
+        .child('users/' + key)
+        .get()
+        .then((snapshot) => {
+            if (snapshot.exists()) {
+                configuration.PushPartixipantsAsContacts = snapshot.child('saasquach/PushPartixipantsAsContacts').val();
+                configuration.PullParticipantsIntoContacts = snapshot
+                    .child('saasquach/PullParticipantsIntoContacts')
+                    .val();
+                configuration.DeleteContactwhenParticipantDeleted = snapshot
+                    .child('saasquach/DeleteContactwhenParticipantDeleted')
+                    .val();
 
                 configuration.PushContactsAsParticipants = snapshot.child('hubspot/PushContactsAsParticipants').val();
                 configuration.PullContactsIntoParticipants = snapshot
@@ -184,15 +208,15 @@ export async function PollDatabase(tenantAllias: string): Promise<Configuration>
                     .child('hubspot/DeleteParticipantWhenContactDeleted')
                     .val();
 
-			configuration.accessToken = snapshot.child("userinfo/accessToken").val();
-			configuration.refreshToken = snapshot.child("userinfo/refreshToken").val();
-            configuration.hubspotID = snapshot.child("userinfo/hubspotID").val();
-		} else
-			console.warn("No configuration data available!");
-	}).catch((error) => {
-		console.error(error);
-	});
-	return configuration;
+                configuration.accessToken = snapshot.child('userinfo/accessToken').val();
+                configuration.refreshToken = snapshot.child('userinfo/refreshToken').val();
+                configuration.hubspotID = snapshot.child('userinfo/hubspotID').val();
+            } else console.warn('No configuration data available!');
+        })
+        .catch((error) => {
+            console.error(error);
+        });
+    return configuration;
 }
 
 export async function LookupAllias(hubspotID: string): Promise<string> {
@@ -262,44 +286,53 @@ export async function PollTokensFromDatabase(tenantAllias: string): Promise<Inte
 
 /**
  * Used to store temporary user information
- * @param hubspotID 
- * @param accessToken 
- * @param refreshToken 
+ * @param hubspotID
+ * @param accessToken
+ * @param refreshToken
  */
-export function AddTempUser(hubspotID: string, accessToken = "", refreshToken = ""):void {
-    var key =  hashValue(hubspotID);
-    firebase.database().ref('tempUsers/'+ key ).set({
-        hubspotID : hubspotID,
-        accessToken : accessToken,
-        refreshToken : refreshToken,
-    });
+export function AddTempUser(hubspotID: string, accessToken = '', refreshToken = ''): void {
+    const key = hashValue(hubspotID);
+    firebase
+        .database()
+        .ref('tempUsers/' + key)
+        .set({
+            hubspotID: hubspotID,
+            accessToken: accessToken,
+            refreshToken: refreshToken,
+        });
 }
 
 export function DeleteTempUser(hubspotID: string) {
-    var key = hashValue(hubspotID);
-    firebase.database().ref('tempUsers/' + key).remove();
+    const key = hashValue(hubspotID);
+    firebase
+        .database()
+        .ref('tempUsers/' + key)
+        .remove();
 }
-
 
 /**
  * Allowes us to read the values stored in the temporary user table
- * @param hubspotID 
+ * @param hubspotID
  * @returns { accessToken, refreshToken }
  *  Fields will be empty if it does not return
  */
-export async function PollTempUser(hubspotID: string):Promise<IntegrationTokens> {
-    var key = hashValue(hubspotID);
-    var databseRef = firebase.database().ref();
-    var data:IntegrationTokens = { accessToken: "", refreshToken: "" };
-    await databseRef.child('tempUsers/' + key).get().then((snapshot) => {
-        if (snapshot.exists()) {
-            data.accessToken =      snapshot.child("userinfo/accessToken").val();
-            data.refreshToken =     snapshot.child("userinfo/refreshToken").val();
-        } else {
-            console.log("No data available");
-        }
-    }).catch((error) => {
-        console.error(error);
-    });
+export async function PollTempUser(hubspotID: string): Promise<IntegrationTokens> {
+    const key = hashValue(hubspotID);
+    const databseRef = firebase.database().ref();
+    const data: IntegrationTokens = { accessToken: '', refreshToken: '' };
+    await databseRef
+        .child('tempUsers/' + key)
+        .get()
+        .then((snapshot) => {
+            if (snapshot.exists()) {
+                data.accessToken = snapshot.child('userinfo/accessToken').val();
+                data.refreshToken = snapshot.child('userinfo/refreshToken').val();
+            } else {
+                console.log('No data available');
+            }
+        })
+        .catch((error) => {
+            console.error(error);
+        });
     return data;
 }
