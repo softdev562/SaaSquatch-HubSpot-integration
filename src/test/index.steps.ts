@@ -3,7 +3,7 @@ import { loadFeature, defineFeature } from 'jest-cucumber';
 const MatchUsersAndContacts = loadFeature('features/MatchUsersContacts.feature');
 
 //This is just a toy example for demonstration.
-defineFeature(MatchUsersAndContacts, test => {
+defineFeature(MatchUsersAndContacts, (test) => {
     let emailSaasquatch: string, emailHubspot: string;
 
     function update(a: string, b: string) {
@@ -12,9 +12,9 @@ defineFeature(MatchUsersAndContacts, test => {
         } else {
             return false;
         }
-    };
+    }
 
-    test('Matching email address', ({given, when, then, and}) => {
+    test('Matching email address', ({ given, when, then, and }) => {
         given('A user with the email address adamh@gmail.com', () => {
             emailSaasquatch = 'adamh@gmail.com';
         });
@@ -23,12 +23,12 @@ defineFeature(MatchUsersAndContacts, test => {
             emailHubspot = 'adamh@gmail.com';
         });
 
-        when('User\'s are synced from SaaSquatch to Contacts in Hubspot', () => {
+        when("User's are synced from SaaSquatch to Contacts in Hubspot", () => {
             //sync()
         });
 
         then('adamh@gmail.com is updated, not created in Hubspot', () => {
-            expect(update(emailSaasquatch,emailHubspot)).toBe(true);
+            expect(update(emailSaasquatch, emailHubspot)).toBe(true);
         });
     });
 });
