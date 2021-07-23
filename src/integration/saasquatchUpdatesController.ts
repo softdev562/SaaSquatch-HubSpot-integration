@@ -36,10 +36,10 @@ export class saasquatchUpdatesController {
         };
         const contactsSearchResponse = await this.hubApiModel.searchObject("contacts", contactsSearchBody,20465599);
          if (contactsSearchResponse?.data.total == 0){
-            var programShareLinks: { [key: string]: any } = {};
+            const programShareLinks: { [key: string]: any } = {};
             for (const key in saasquatchPayloadData.programShareLinks){
-                let newProgramShareLinkName = key.replace(/\W/g, '') + "saasquatch_program";
-                let newProgramShareLinkLabel = key.replace(/\W/g, '') + " Saasquatch Program";
+                const newProgramShareLinkName = key.replace(/\W/g, '') + "saasquatch_program";
+                const newProgramShareLinkLabel = key.replace(/\W/g, '') + " Saasquatch Program";
                 try{
                     if(!await this.hubApiModel.objectHasProperty("contacts", newProgramShareLinkName,20465599)){
                         try{
@@ -58,7 +58,7 @@ export class saasquatchUpdatesController {
                     console.log(e);
                 }
 
-               };
+               }
 
 
                const basicContactInfo = {

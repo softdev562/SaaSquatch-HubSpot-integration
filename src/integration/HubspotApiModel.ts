@@ -18,9 +18,9 @@ export class HubspotApiModel {
 
 
         try {
-            let token:any = await PollTokensFromDatabase(hub_id.toString());
+            const token:any = await PollTokensFromDatabase(hub_id.toString());
 
-            let access_token = token.accessToken;
+            const access_token = token.accessToken;
 
             const url = `https://api.hubapi.com/crm/v3/objects/contacts/${encodeURIComponent(contactObjectID)}`;
 
@@ -79,8 +79,8 @@ export class HubspotApiModel {
     public async createObject(objectType:string, createObjectBody:object, hub_id:number){
 
         try {
-            let token:any = await PollTokensFromDatabase(hub_id.toString());
-            let access_token = token.accessToken;
+            const token:any = await PollTokensFromDatabase(hub_id.toString());
+            const access_token = token.accessToken;
             try{
                 const createObjectURL = 'https://api.hubapi.com/crm/v3/objects/' + objectType;
                 const response = await axios.post(createObjectURL, createObjectBody,{
@@ -115,8 +115,8 @@ export class HubspotApiModel {
     public async objectHasProperty(objectType: string, propertyName: string,hub_id:number){
 
         try{
-            let token:any = await PollTokensFromDatabase(hub_id.toString());
-            let access_token = token.accessToken;
+            const token:any = await PollTokensFromDatabase(hub_id.toString());
+            const access_token = token.accessToken;
             const readPropertyURL = 'https://api.hubapi.com/crm/v3/properties/' + objectType + '/' + propertyName;
 
             try {
@@ -168,8 +168,8 @@ export class HubspotApiModel {
                                       propertyFieldType:string, propertyGroupName: string,hub_id:number){
 
         try {
-            let token:any = await PollTokensFromDatabase(hub_id.toString());
-            let access_token = token.accessToken;
+            const token:any = await PollTokensFromDatabase(hub_id.toString());
+            const access_token = token.accessToken;
             const contactCreatePropertyURL = 'https://api.hubapi.com/crm/v3/properties/' + objectType;
             const body = {
                 "name": propertyName,
@@ -210,8 +210,8 @@ export class HubspotApiModel {
     public async searchObject(objectType:string, body:object,hub_id:number){
 
         try{
-            let token:any = await PollTokensFromDatabase(hub_id.toString());
-            let access_token = token.accessToken;
+            const token:any = await PollTokensFromDatabase(hub_id.toString());
+            const access_token = token.accessToken;
             try {
                 const searchObjectURL = 'https://api.hubapi.com/crm/v3/objects/' + objectType + '/search';
 
