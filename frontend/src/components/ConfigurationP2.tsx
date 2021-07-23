@@ -148,7 +148,7 @@ export function Controller(state: Config) {
         if (!state) {
             getConfigData();
         }
-    }, []);
+    }, [config.saasquatchTenantAlias, state]);
 
     // Need a handler for each toggle because Switches are kinda weird
     // We have to do the comparisons before inverting the data, because state assignment takes a while and awaiting them didn't fix it

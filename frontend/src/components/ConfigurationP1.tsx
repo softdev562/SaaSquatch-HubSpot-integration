@@ -118,22 +118,21 @@ export function Controller(state: Config) {
     };
     const [config, setConfig] = useState<Config>(currConfig);
 
-    const postConfigData = async () => {
-        return await fetch(API_CONFIGURATION_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                SaasquatchTenantAlias: config.saasquatchTenantAlias,
-                PushPartixipantsAsContacts: false,
-                PullParticipantsIntoContacts: false,
-                PushContactsAsParticipants: false,
-                PullContactsIntoParticipants: false,
-            }),
-        });
-    };
-
     // Gets config data on page load
     useEffect(() => {
+        const postConfigData = async () => {
+            return await fetch(API_CONFIGURATION_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    SaasquatchTenantAlias: config.saasquatchTenantAlias,
+                    PushPartixipantsAsContacts: false,
+                    PullParticipantsIntoContacts: false,
+                    PushContactsAsParticipants: false,
+                    PullContactsIntoParticipants: false,
+                }),
+            });
+        };
         const getConfigData = () => {
             axios
                 .get(API_CONFIGURATION_URL, { params: { SaaSquatchTenantAlias: config.saasquatchTenantAlias } })
@@ -175,7 +174,7 @@ export function Controller(state: Config) {
         if (!state) {
             getConfigData();
         }
-    }, []);
+    }, [config.saasquatchTenantAlias, state]);
 
     // Need a handler for each toggle because Switches are kinda weird
     const toggleHubPush = () => {
