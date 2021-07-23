@@ -69,11 +69,6 @@ export class saasquatchUpdatesController {
                 lastname: saasquatchPayloadData.lastName,
             };
 
-            const basicContactInfo = {
-                email: saasquatchPayloadData.email,
-                firstname: saasquatchPayloadData.firstName,
-                lastname: saasquatchPayloadData.lastName,
-            };
             const basicInfoAndProgramShareLinks = Object.assign(basicContactInfo, programShareLinks);
             const createContactBody = {
                 properties: basicInfoAndProgramShareLinks,
