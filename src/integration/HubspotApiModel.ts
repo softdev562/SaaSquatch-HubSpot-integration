@@ -76,7 +76,7 @@ export class HubspotApiModel {
      * @param createObjectBody body specifiying the create properties of the object
      * @returns axios response
      */
-    public async createObject(objectType:string, createObjectBody:object, hub_id:number){
+    public async createObject(objectType:string, createObjectBody:any, hub_id:number){
 
         try {
             const token:any = await PollTokensFromDatabase(hub_id.toString());
@@ -207,7 +207,7 @@ export class HubspotApiModel {
      * @param body body specifiying the search properties of the object
      * @returns axios response
      */
-    public async searchObject(objectType:string, body:object,hub_id:number){
+    public async searchObject(objectType:string, body:any,hub_id:number){
 
         try{
             const token:any = await PollTokensFromDatabase(hub_id.toString());
