@@ -7,7 +7,6 @@
 	"scripts": {
 		"lint": "eslint 'src/**/*.{js,ts,tsx}' --fix",
 		"prettify": "prettier src/**/*.{js,ts,tsx} --write",
-
 		"tsc": "tsc",
 		"server": "nodemon src/index.ts",
 		"frontend": "cd frontend && yarn start",
