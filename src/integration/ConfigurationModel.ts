@@ -27,15 +27,15 @@ export class ConfigurationModel {
 		refreshToken: ""
 	}*/
 
-	public static async getConfiguration(tenantAlias: string): Promise<Configuration> {
-		return PollDatabase(tenantAlias);
-	}
+    public static async getConfiguration(tenantAlias: string): Promise<Configuration> {
+        return PollDatabase(tenantAlias);
+    }
 
-	public static async setConfiguration(hubspotId: string, configuration: Configuration): Promise<void> {
-		return AddToDatabase(configuration.SaaSquatchTenantAlias, hubspotId, configuration);
-	}
+    public static async setConfiguration(hubspotId: string, configuration: Configuration): Promise<void> {
+        return AddToDatabase(configuration.SaaSquatchTenantAlias, hubspotId, configuration);
+    }
 
-	public static async updateConfiguration(configuration: Configuration): Promise<void> {
-		return EditDatabase(configuration.SaaSquatchTenantAlias, configuration);
-	}
+    public static async updateConfiguration(configuration: Configuration): Promise<void> {
+        return EditDatabase(configuration.SaaSquatchTenantAlias, configuration);
+    }
 }

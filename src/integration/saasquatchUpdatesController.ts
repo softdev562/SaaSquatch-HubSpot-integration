@@ -15,8 +15,8 @@ export class saasquatchUpdatesController {
      * Received webhook of event type 'user.created'
      * @param saasquatchPayload Payload of SaaSquatch webhook
      */
-    public async NewUser(saasquatchPayload: any){
-         console.log('Received SaaSquatch user.created.');
+    public async NewUser(saasquatchPayload: any) {
+        console.log('Received SaaSquatch user.created.');
         // console.log(saasquatchPayload);
 
         const saasquatchPayloadData = saasquatchPayload.data;
@@ -34,39 +34,40 @@ export class saasquatchUpdatesController {
             ],
             limit: 1,
         };
-        const contactsSearchResponse = await this.hubApiModel.searchObject("contacts", contactsSearchBody,20465599);
-         if (contactsSearchResponse?.data.total == 0){
+        const contactsSearchResponse = await this.hubApiModel.searchObject('contacts', contactsSearchBody, 20465599);
+        if (contactsSearchResponse?.data.total == 0) {
             const programShareLinks: { [key: string]: any } = {};
-            for (const key in saasquatchPayloadData.programShareLinks){
-                const newProgramShareLinkName = key.replace(/\W/g, '') + "saasquatch_program";
-                const newProgramShareLinkLabel = key.replace(/\W/g, '') + " Saasquatch Program";
-                try{
-                    if(!await this.hubApiModel.objectHasProperty("contacts", newProgramShareLinkName,20465599)){
-                        try{
-                            await this.hubApiModel.createObjectProperty("contacts", newProgramShareLinkName, newProgramShareLinkLabel,
-                                "string", "textarea", "contactinformation",20465599);
-                        }
-                        catch(e) {
+            for (const key in saasquatchPayloadData.programShareLinks) {
+                const newProgramShareLinkName = key.replace(/\W/g, '') + 'saasquatch_program';
+                const newProgramShareLinkLabel = key.replace(/\W/g, '') + ' Saasquatch Program';
+                try {
+                    if (!(await this.hubApiModel.objectHasProperty('contacts', newProgramShareLinkName, 20465599))) {
+                        try {
+                            await this.hubApiModel.createObjectProperty(
+                                'contacts',
+                                newProgramShareLinkName,
+                                newProgramShareLinkLabel,
+                                'string',
+                                'textarea',
+                                'contactinformation',
+                                20465599,
+                            );
+                        } catch (e) {
                             console.log(e);
                         }
-
                     }
-                    programShareLinks[newProgramShareLinkName] = saasquatchPayloadData.programShareLinks[key].cleanShareLink;
-
-                }
-                catch(e){
+                    programShareLinks[newProgramShareLinkName] =
+                        saasquatchPayloadData.programShareLinks[key].cleanShareLink;
+                } catch (e) {
                     console.log(e);
                 }
-
-               }
-
-
-               const basicContactInfo = {
-                "email": saasquatchPayloadData.email,
-                "firstname": saasquatchPayloadData.firstName,
-                "lastname": saasquatchPayloadData.lastName,
-
             }
+
+            const basicContactInfo = {
+                email: saasquatchPayloadData.email,
+                firstname: saasquatchPayloadData.firstName,
+                lastname: saasquatchPayloadData.lastName,
+            };
 
             const basicContactInfo = {
                 email: saasquatchPayloadData.email,
@@ -75,18 +76,14 @@ export class saasquatchUpdatesController {
             };
             const basicInfoAndProgramShareLinks = Object.assign(basicContactInfo, programShareLinks);
             const createContactBody = {
-                "properties": basicInfoAndProgramShareLinks
-            }
-            try{
-                await this.hubApiModel.createObject("contacts", createContactBody,20465599);
-
-            }
-            catch(e){
+                properties: basicInfoAndProgramShareLinks,
+            };
+            try {
+                await this.hubApiModel.createObject('contacts', createContactBody, 20465599);
+            } catch (e) {
                 console.log(e);
             }
-
-         }
-
+        }
     }
 
     /**

@@ -168,27 +168,27 @@ router.get('/oauth-callback', async (req, res) => {
                 throw Error('POST to get access and refresh tokens from HubSpot failed. Error:' + resp.data['error']);
             }
 
-			// this api call is to retrieve the user id of the current user
-			// the post api call above does not contain user_id
-			const get_options = {
-				headers: {accept: 'application/json'}
-			};
-            const get_user_id = await axios.get('https://api.hubapi.com/oauth/v1/refresh-tokens/'+resp.data.refresh_token,get_options);
-			//#todo temporarily using user email for tenant alias rather than id
-			// as the db does not support number tenant alias currently
-			hubspotID = get_user_id.data.hub_id;
+            // this api call is to retrieve the user id of the current user
+            // the post api call above does not contain user_id
+            const get_options = {
+                headers: { accept: 'application/json' },
+            };
+            const get_user_id = await axios.get(
+                'https://api.hubapi.com/oauth/v1/refresh-tokens/' + resp.data.refresh_token,
+                get_options,
+            );
+            //#todo temporarily using user email for tenant alias rather than id
+            // as the db does not support number tenant alias currently
+            hubspotID = get_user_id.data.hub_id;
 
-			// #todo in a seperate ticket check first whether the user already exists in DB
-            AddTokensToDatabase(hubspotID.toString(),resp.data.access_token, resp.data.refresh_token)
+            // #todo in a seperate ticket check first whether the user already exists in DB
+            AddTokensToDatabase(hubspotID.toString(), resp.data.access_token, resp.data.refresh_token);
 
-			// store user id in local tokenStore for knowledge of current user
-			// and for knowing which user to poll the DB
+            // store user id in local tokenStore for knowledge of current user
+            // and for knowing which user to poll the DB
 
-			res.redirect('/hubspot?hubspotID=' +hubspotID);
-        }
-        catch(e)
-		{
-
+            res.redirect('/hubspot?hubspotID=' + hubspotID);
+        } catch (e) {
             console.error(e);
         }
     }

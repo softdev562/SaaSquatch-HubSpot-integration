@@ -15,7 +15,7 @@ export enum SubscriptionType {
     DealPropertyChange = 'deal.propertyChange',
 }
 
-export interface HubspotPayload{
+export interface HubspotPayload {
     eventId: number;
     subscriptionId: number;
     portalId: number;
@@ -67,7 +67,7 @@ export interface SaasquatchPayload {
  */
 
 export interface Configuration {
-    SaaSquatchTenantAlias: string,
+    SaaSquatchTenantAlias: string;
     PushPartixipantsAsContacts: boolean;
     PullParticipantsIntoContacts: boolean;
     DeleteContactwhenParticipantDeleted: boolean;
