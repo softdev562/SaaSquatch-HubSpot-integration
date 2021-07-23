@@ -54,6 +54,7 @@ const HUBSPOT_OAUTH_URL = '/hubspot_url'
 
 interface states {
   showError: boolean;
+  cookieError: boolean;
   OAuth: ()=>void;
 }
 
@@ -63,10 +64,9 @@ export function Login() {
 
 export function OAuthFunction(){
   const [showError, setError] = useState(false);
+  const [cookieError, setCookieError] = useState(false);
   
   const OAuth = async () => {
-    setError(false);
-
     // Check Server for Hubspot Authorization
     await axios.get(HUBSPOT_AUTHORIZATION)
     .then(response => {
@@ -79,25 +79,29 @@ export function OAuthFunction(){
           // Check for when popup closes
           var timer = setInterval(function() { 
             if(popup && popup.closed) {
-              // Check Server for Hubspot Authorization
-              axios.get(HUBSPOT_AUTHORIZATION)
-              .then(response => {
-                // Send user to configuration page if authorized
-                if (response.data === "Authorized"){
-                  clearInterval(timer);
-                  history.push('/configuration');
-                }
-                // Show error message when popup window is closed without Authorization
-                if (response.data === "Unauthorized") {
-                  clearInterval(timer);
-                  setTimeout(function(){ 
-                  setError(true)
-                  }, 600);
-                }
-              })
-              .catch(function(err) {
-                console.error(err + "Error getting Hubspot Authorization from: " + HUBSPOT_AUTHORIZATION);
-              });
+              if (!navigator.cookieEnabled) {
+                setCookieError(true)
+              } else {
+                // Check Server for Hubspot Authorization
+                axios.get(HUBSPOT_AUTHORIZATION)
+                .then(response => {
+                  // Send user to configuration page if authorized
+                  if (response.data === "Authorized"){
+                    clearInterval(timer);
+                    history.push('/configuration');
+                  }
+                  // Show error message when popup window is closed without Authorization
+                  if (response.data === "Unauthorized") {
+                    clearInterval(timer);
+                    setTimeout(function(){ 
+                    setError(true)
+                    }, 600);
+                  }
+                })
+                .catch(function(err) {
+                  console.error(err + "Error getting Hubspot Authorization from: " + HUBSPOT_AUTHORIZATION);
+                });
+              }
             }
           }, 200);
         })
@@ -112,7 +116,7 @@ export function OAuthFunction(){
       console.error(err + "Error getting Hubspot Authorization from: " + HUBSPOT_AUTHORIZATION);
     });
   }
-  return {showError, OAuth} as states
+  return {showError, cookieError, OAuth} as states
 }
 
 export function View( states: states ){
@@ -121,7 +125,6 @@ export function View( states: states ){
       <div>
         <TitleText className= "title-text"> Log in to <Logo src={HubspotLogo} /></TitleText>
         <InfoText className= "info-text">Your contacts will be synced using the HubSpot data from this user’s permissions.</InfoText>
-        <InfoText className= "info-text">For more information read our&nbsp;<a href={`https://example.com`} >HubSpot Quickstart Guide.</a></InfoText>
         <LoginButton 
           onClick={states.OAuth}
           type= "button"
@@ -131,7 +134,11 @@ export function View( states: states ){
         </LoginButton>
         <div>
           { states.showError ? <ErrorText>
-            Failed to authenticate: User closed the popup window.
+            Failed to authenticate: The pop-up window was closed before authentication.
+          </ErrorText> : <React.Fragment />
+          }
+          { states.cookieError ? <ErrorText>
+            Failed to authenticate: Please enable third-party cookies and try logging in again.
           </ErrorText> : <React.Fragment />
           }
         </div>

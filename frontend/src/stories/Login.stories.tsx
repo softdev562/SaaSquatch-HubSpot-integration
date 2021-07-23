@@ -1,7 +1,7 @@
 import { Meta } from '@storybook/react';
 import { View } from '../components/Login';
 
-const props = {showError: false, OAuth: ()=>console.log("Sign in")};
+const props = {showError: false, cookieError: false, OAuth: ()=>console.log("Sign in")};
 const OpenPopup = () => {
   const h = 800;
   const w = 500;
@@ -18,6 +18,7 @@ export default {
 
 export const Default = ()=> <View {...props} />
 export const Error = ()=> <View {...props} showError={true} />
+export const CookieError = ()=> <View {...props} cookieError={true} />
 export const ClickForPopup = ()=> <View {...props} OAuth={OpenPopup} />
 
 
