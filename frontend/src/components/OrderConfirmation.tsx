@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { ToggleSetting } from './ToggleSetting';
 import history from '../types/history';
 import axios from 'axios';
 import Modal from '@material-ui/core/Modal';
@@ -10,6 +9,13 @@ import { FormGroup } from '@material-ui/core';
 import { FormControlLabel } from '@material-ui/core';
 import { FormControl } from '@material-ui/core';
 import { FormLabel } from '@material-ui/core';
+
+import Button from '@material-ui/core/Button'
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 
 const PageWrapper = styled.div`
   min-height: 100vh;
@@ -111,7 +117,8 @@ interface states {
     handleBack: () => void;
     handleSubmit: () => void;
     open: boolean;
-    handleClose: () => void;
+    handleConfirm: () => void;
+    handleCancel: () => void;
     openError: boolean;
     handleErrorClose: () => void;
     imported: boolean;
@@ -161,44 +168,22 @@ export function Controller() {
         getConfigData();
     }, []);
 
-    // Need a handler for each toggle because Switches are kinda weird
-    const toggleSaasPush = () => {
-        // Show oneway message if no options are selected on page
-        if (config.pushIntoParticipants === false || config.pullIntoParticipants === true) {
-            setOneway(false);
-        } else {
-            setOneway(true);
-        }
-        setConfig({ ...config, pushIntoParticipants: !config.pushIntoParticipants });
-    }
-    const toggleSaasPull = () => {
-        // Show modal if import toggle is selected
-        if (config.pullIntoParticipants === false) {
-            setOpen(true);
-        }
-        // Show oneway message if no options are selected on page
-        if (config.pullIntoParticipants === false || config.pushIntoParticipants === true) {
-            setOneway(false);
-        } else {
-            setOneway(true);
-        }
-        setConfig({ ...config, pullIntoParticipants: !config.pullIntoParticipants });
-    }
-
-    const handleClose = () => {
-        setOpen(false);
-    };
 
     const handleErrorClose = () => {
         setOpenError(false);
     };
 
     const handleBack = () => {
-        history.push('/configuration/1');
+        history.push('/configuration/2');
     }
 
-    // On submit we make a request to the backend to store the config data and redirect to integration success screen if config selected
-    const handleSubmit = () => {
+
+    const handleConfirm = () => {
+        setOpen(false);
+        if(!(config.pullIntoParticipants || config.pullIntoContacts || config.pushIntoParticipants || config.pushIntoContacts)){
+            return
+        }
+
         const putConfigData = async () => {
             return await fetch(API_CONFIGURATION_URL, {
                 method: 'PUT',
@@ -216,99 +201,103 @@ export function Controller() {
         } else {
             history.push('/configuration/success');
         }
+    };
+    const handleCancel = () => {
+        setOpen(false);
+    };
+
+
+    // On submit we make a request to the backend to store the config data and redirect to integration success screen if config selected
+    const handleSubmit = () => {
+        if (config.pullIntoParticipants || config.pullIntoContacts) {
+            setOpen(true);
+        }
+        else if (!(config.pullIntoParticipants || config.pullIntoContacts || config.pushIntoParticipants || config.pushIntoContacts)) {
+            setOpen(true);//Need a seperate dialog to say that you just strait up can't do that
+        }
+        else {
+            const putConfigData = async () => {//This is just for submitting with no problems, but will need to change
+                return await fetch(API_CONFIGURATION_URL, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        PushContactsAsParticipants: config.pushIntoParticipants,
+                        PullContactsIntoParticipants: config.pullIntoParticipants,
+                    })
+                })
+            }
+            putConfigData().then().catch(e => console.error(e))
+            // Show configuration error modal if no config options selected or redirect to success screen
+            if (oneway && noway) {
+                setOpenError(true);
+            } else {
+                history.push('/configuration/success');
+            }
+        }
     }
-    return { config, handleBack, handleSubmit, open, handleClose, openError, handleErrorClose, imported, oneway, noway } as states
+    return { config, handleBack, handleSubmit, open, handleConfirm, handleCancel, openError, handleErrorClose, imported, oneway, noway } as states
 }
 
 export function View(states: states) {
-    var boolState = true
     return (
         <PageWrapper>
             <PageContent>
-                <TitleText>Step 3: Confim Changes</TitleText>
+                <TitleText>Step 3: Confim Configuration</TitleText>
 
                 <FormControl component="fieldset">
                     <FormLabel component="legend">Current Settings:</FormLabel>
-                    <FormGroup aria-label="position" row>
+                    <FormGroup aria-label="position">
                         <FormControlLabel disabled
                             value="ParInS"
-                            control={<Checkbox color="primary" checked={states.config.pushIntoContacts} />}
-                            label="Create new Participants in SaaSquatch from Hubspot"
+                            control={<Checkbox color="primary" checked={states.config.pushIntoParticipants} />}
+                            label="Create new Participants"
                             labelPlacement="end"
                         />
                         <FormControlLabel disabled
                             value="ParHist"
-                            control={<Checkbox color="primary" checked={states.config.pullIntoContacts} />}
-                            label="Retreive Historical Participants from Hubspot to SaaSquatch"
+                            control={<Checkbox color="primary" checked={states.config.pullIntoParticipants} />}
+                            label="Import existing Contacts as Participants"
                             labelPlacement="end"
                         />
                         <FormControlLabel disabled
                             value="ConInH"
-                            control={<Checkbox color="primary" checked={states.config.pushIntoParticipants} />}
-                            label="Create new Contact in Hubspot from SaaSquatch"
+                            control={<Checkbox color="primary" checked={states.config.pushIntoContacts} />}
+                            label="Create new Contacts"
                             labelPlacement="end"
                         />
                         <FormControlLabel disabled
                             value="ConHist"
-                            control={<Checkbox color="primary" checked={states.config.pullIntoParticipants} />}
-                            label="Retreive Historical Contacts from Hubspot to SaaSquatch"
+                            control={<Checkbox color="primary" checked={states.config.pullIntoContacts} />}
+                            label="Import existing Participants as Contacts"
                             labelPlacement="end"
                         />
                     </FormGroup>
                 </FormControl>
 
 
-                <Modal
+                <Dialog
                     open={states.open}
-                    onClose={states.handleClose}
+                    onClose={states.handleCancel}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
                 >
-                    <ModalContainer>
-                        <h1>
-                            Are you sure?
-                        </h1>
-                        <ModalBodyContainer>
-                            <p>
-                                By selecting Turn on Integration you will be importing all of your existing contacts in Hubspot as participants in Saasquatch.
-                                This action is irreversible.
-                            </p>
-                        </ModalBodyContainer>
-                    </ModalContainer>
-                </Modal>
-
-                <Modal
-                    open={states.open}
-                    onClose={states.handleClose}
-                >
-                    <ModalContainer>
-                        <h1>
-                            Are you sure?
-                        </h1>
-                        <ModalBody>
-                            <p>
-                                By selecting Next you will be importing all of your existing particpants in SaaSquatch as contacts in Hubspot.
-                                This action is irreversible.
-                            </p>
-                        </ModalBody>
-                    </ModalContainer>
-                </Modal>
-
-
-                <Modal
-                    open={states.openError}
-                    onClose={states.handleErrorClose}
-                >
-                    <ModalContainer>
-                        <h1>
-                            Configuration Error
-                        </h1>
-                        <ModalBodyContainer>
-                            <p>
-                                No configuration options have been selected. Please select a configuration to continue with the integration.
-                            </p>
-                        </ModalBodyContainer>
-                    </ModalContainer>
-                </Modal>
-
+                    <DialogTitle id="alert-dialog-title">{"Configuration Confirmation"}</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                            {states.config.pullIntoParticipants ? "By selecting Turn on Integration you will be importing all of your existing contacts in Hubspot as participants in Saasquatch. This action is irreversible.\n" : ""}
+                            {states.config.pullIntoContacts ? "By selecting Next you will be importing all of your existing particpants in SaaSquatch as contacts in Hubspot.This action is irreversible." : ""}
+                            {!(states.config.pullIntoContacts || states.config.pullIntoParticipants || states.config.pushIntoContacts || states.config.pushIntoParticipants) ? "No configuration options have been selected. Please select a configuration to continue with the integration." : ""}
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={states.handleCancel} color="primary">
+                            Cancel
+                        </Button>
+                        <Button onClick={states.handleConfirm} color="primary" autoFocus>
+                            Confirm
+                        </Button>
+                    </DialogActions>
+                </Dialog>
 
                 <ItemContainer>
                     <BackButton
@@ -324,9 +313,9 @@ export function View(states: states) {
                         {"Turn on Integration"}
                     </SyncButton>
                     <AlertText>
-                        {!states.oneway && states.noway ? "Integration is not currently configured for Hubspot, click Turn on Integration to continue with a one-way sync" : ""}
-                        {states.oneway && !states.noway ? "Integration is not currently configured for SaaSquatch, click Turn on Integration to continue with a one-way sync" : ""}
-                        {states.oneway && states.noway ? "Integration is not currently configured for Hubspot or SaaSquatch, clicking Turn on Integration will not create configuration" : ""}
+                        {!(states.config.pullIntoContacts || states.config.pushIntoContacts || states.config.pullIntoParticipants || states.config.pushIntoParticipants) ? "Integration is not currently configured for Hubspot or SaaSquatch, clicking Turn on Integration will not create configuration" : ""}
+                        {(states.config.pullIntoContacts || states.config.pushIntoContacts) && !(states.config.pullIntoParticipants || states.config.pushIntoParticipants) ? "Integration is not currently configured for Hubspot, click Turn on Integration to continue with a one-way sync" : ""}
+                        {!(states.config.pullIntoContacts || states.config.pushIntoContacts) && (states.config.pullIntoParticipants || states.config.pushIntoParticipants) ? "Integration is not currently configured for SaaSquatch, click Turn on Integration to continue with a one-way sync" : ""}
                     </AlertText>
                 </ItemContainer>
             </PageContent>
