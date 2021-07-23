@@ -37,7 +37,6 @@ export const TogglesSelected = () => (
             contactsImported: false,
             participantsImported: false,
         }}
-        oneway={false}
     />
 );
 export const PreviousImport = () => (
@@ -49,10 +48,9 @@ export const PreviousImport = () => (
             pullIntoParticipants: false,
             pushIntoContacts: true,
             pullIntoContacts: true,
-            contactsImported: false,
-            participantsImported: false,
+            contactsImported: true,
+            participantsImported: true,
         }}
-        oneway={false}
     />
 );
 export const ImportModal = () => (
@@ -67,6 +65,5 @@ export const ImportModal = () => (
             contactsImported: false,
             participantsImported: false,
         }}
-        oneway={false}
     />
 );

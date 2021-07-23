@@ -18,35 +18,23 @@ const theme = createTheme({
 });
 
 function App() {
-  return (
-    <ThemeProvider theme={theme}>
-      <div className="App">
-        <div className="app-container">
-          <Route
-            path="/configuration/1"
-            exact component={ConfigurationP1}
-          />
-          <Route
-            path="/configuration/2"
-            exact component={ConfigurationP2}
-          />
-          <Route
-            path="/confirmation"
-            exact component={OrderConfirmation}
-          />
-          <Route path="/configuration" exact >
-            <Redirect to="/configuration/1"/>
-          </Route>
-          <Route 
-            path="/configuration/success" 
-            exact component={ConfigurationSuccess}
-          />
-          <Route path="/login" exact component={Login} />
-          <Route path="/" exact component={Login} />
-        </div>
-      </div>
-    </ThemeProvider>
-  );
+    return (
+        <ThemeProvider theme={theme}>
+            <div className="App">
+                <div className="app-container">
+                    <Route path="/configuration/1" exact component={(props: any) => <ConfigurationP1 {...props} />} />
+                    <Route path="/configuration/2" exact component={(props: any) => <ConfigurationP2 {...props} />} />
+                    <Route path="/confirmation" exact component={(props: any) => <OrderConfirmation {...props} />} />
+                    <Route path="/configuration" exact>
+                        <Redirect to="/configuration/1" />
+                    </Route>
+                    <Route path="/configuration/success" exact component={ConfigurationSuccess} />
+                    <Route path="/login" exact component={Login} />
+                    <Route path="/" exact component={Login} />
+                </div>
+            </div>
+        </ThemeProvider>
+    );
 }
 
 export default App;

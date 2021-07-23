@@ -41,14 +41,6 @@ const InfoText = styled.p`
     margin-left: 60px;
     width: 680px;
 `;
-const AlertText = styled.p`
-    color: #fc3308;
-    font-size: 16px;
-    display: flex;
-    margin: 0px;
-    margin-left: 10px;
-    width: 520px;
-`;
 const Logo = styled.img`
     height: 60px;
     vertical-align: bottom;
@@ -101,7 +93,6 @@ interface states {
         toggleHubPush: () => void;
         toggleHubPull: () => void;
     };
-    oneway: boolean;
 }
 
 export function ConfigurationP1(props: any) {
@@ -126,7 +117,6 @@ export function Controller(state: Config) {
         participantsImported: (state && state.participantsImported) || false,
     };
     const [config, setConfig] = useState<Config>(currConfig);
-    const [oneway, setOneway] = useState(true);
 
     const postConfigData = async () => {
         return await fetch(API_CONFIGURATION_URL, {
@@ -174,11 +164,6 @@ export function Controller(state: Config) {
                             contactsImported: response.data.PullParticipantsIntoContacts || false,
                             participantsImported: response.data.PullContactsIntoParticipants || false,
                         }));
-
-                        // Don't show oneway message if an option is previously selected on page
-                        if (response.data.PushPartixipantsAsContacts || response.data.PullParticipantsIntoContacts) {
-                            setOneway(false);
-                        }
                     }
                 })
                 .catch((error) => {
@@ -194,21 +179,9 @@ export function Controller(state: Config) {
 
     // Need a handler for each toggle because Switches are kinda weird
     const toggleHubPush = () => {
-        // Show oneway message if no options are selected on page
-        if (config.pushIntoContacts === false || config.pullIntoContacts === true) {
-            setOneway(false);
-        } else {
-            setOneway(true);
-        }
         setConfig({ ...config, pushIntoContacts: !config.pushIntoContacts });
     };
     const toggleHubPull = () => {
-        // Show oneway message if no options are selected on page
-        if (config.pullIntoContacts === false || config.pushIntoContacts === true) {
-            setOneway(false);
-        } else {
-            setOneway(true);
-        }
         setConfig({ ...config, pullIntoContacts: !config.pullIntoContacts });
     };
 
@@ -222,6 +195,7 @@ export function Controller(state: Config) {
         history.push({
             pathname: '/configuration/2',
             state: {
+                saasquatchTenantAlias: config.saasquatchTenantAlias,
                 pushIntoContacts: config.pushIntoContacts,
                 pullIntoContacts: config.pullIntoContacts,
                 pushIntoParticipants: config.pushIntoParticipants,
@@ -231,7 +205,7 @@ export function Controller(state: Config) {
             },
         });
     };
-    return { config, handleSubmit, handleToggles, oneway } as states;
+    return { config, handleSubmit, handleToggles } as states;
 }
 
 export function View(states: states) {
@@ -266,11 +240,6 @@ export function View(states: states) {
                     <SyncButton onClick={states.handleSubmit} type="button">
                         {'Next'}
                     </SyncButton>
-                    <AlertText>
-                        {states.oneway
-                            ? 'Integration is not currently configured for Hubspot, click Next to continue with a one-way sync'
-                            : ''}
-                    </AlertText>
                 </ItemContainer>
             </PageContent>
         </PageWrapper>
