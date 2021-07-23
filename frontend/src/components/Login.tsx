@@ -70,6 +70,7 @@ export function OAuthFunction(){
     // Check Server for Hubspot Authorization
     await axios.get(HUBSPOT_AUTHORIZATION)
     .then(response => {
+      console.log(document.cookie)
       if (response.data === "Unauthorized"){
         // Get Hubspot OAuth URL from server
         axios.get(HUBSPOT_OAUTH_URL)
@@ -81,6 +82,7 @@ export function OAuthFunction(){
             if(popup && popup.closed) {
               if (!navigator.cookieEnabled) {
                 document.cookie="frontendToken=''; SameSite=None; Secure";
+                console.log(document.cookie)
                 setCookieError(true)
               } else {
                 // Check Server for Hubspot Authorization
