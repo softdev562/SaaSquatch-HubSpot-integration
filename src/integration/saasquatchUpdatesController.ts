@@ -1,20 +1,15 @@
-import { str } from "ajv";
-import { SaasquatchPayload } from "../Types/types";
-import { HubspotApiModel } from "./HubspotApiModel";
-import { SaasquatchApiModel } from "./SaasquatchApiModel";
+import { SaasquatchPayload } from '../Types/types';
+import { HubspotApiModel } from './HubspotApiModel';
+import { SaasquatchApiModel } from './SaasquatchApiModel';
 
-export class saasquatchUpdatesController{
-
+export class saasquatchUpdatesController {
     private hubApiModel: HubspotApiModel;
     private saasApiModel: SaasquatchApiModel;
 
-
-     constructor(hApiKey: string, sApiKey: string, sTenantAlias: string){
+    constructor(hApiKey: string, sApiKey: string, sTenantAlias: string) {
         this.saasApiModel = new SaasquatchApiModel(sApiKey, sTenantAlias);
         this.hubApiModel = new HubspotApiModel();
-     }
-
-
+    }
 
     /**
      * Received webhook of event type 'user.created'
@@ -23,21 +18,21 @@ export class saasquatchUpdatesController{
     public async NewUser(saasquatchPayload: any){
          console.log('Received SaaSquatch user.created.');
         // console.log(saasquatchPayload);
+
         const saasquatchPayloadData = saasquatchPayload.data;
         const contactsSearchBody = {
             filterGroups: [
                 {
                     filters: [
-                    {
-                      "value": saasquatchPayloadData.email, 
-                      "propertyName": 'email', 
-                      "operator": 'EQ'
-                  }
-                   ]
-                  }
-              ],
-              limit: 1,
-
+                        {
+                            value: saasquatchPayloadData.email,
+                            propertyName: 'email',
+                            operator: 'EQ',
+                        },
+                    ],
+                },
+            ],
+            limit: 1,
         };
         const contactsSearchResponse = await this.hubApiModel.searchObject("contacts", contactsSearchBody,20465599);
          if (contactsSearchResponse?.data.total == 0){
@@ -70,7 +65,14 @@ export class saasquatchUpdatesController{
                 "email": saasquatchPayloadData.email,
                 "firstname": saasquatchPayloadData.firstName,
                 "lastname": saasquatchPayloadData.lastName,
+
             }
+
+            const basicContactInfo = {
+                email: saasquatchPayloadData.email,
+                firstname: saasquatchPayloadData.firstName,
+                lastname: saasquatchPayloadData.lastName,
+            };
             const basicInfoAndProgramShareLinks = Object.assign(basicContactInfo, programShareLinks);
             const createContactBody = {
                 "properties": basicInfoAndProgramShareLinks
@@ -84,16 +86,15 @@ export class saasquatchUpdatesController{
             }
 
          }
-    }
 
+    }
 
     /**
      * Received webhook of event type 'test'. No processing required as this is a test webhook.
-     * 
+     *
      * @param saasquatchPayload Payload of SaaSquatch webhook
      */
-    public Test(saasquatchPayload: SaasquatchPayload){
-        console.log('Received SaaSquatch test webhook.');  
+    public Test(saasquatchPayload: SaasquatchPayload): void {
+        console.info('Received SaaSquatch test webhook:' + saasquatchPayload);
     }
-
 }

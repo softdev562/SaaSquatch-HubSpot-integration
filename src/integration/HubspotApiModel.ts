@@ -1,15 +1,16 @@
 import axios from "axios";
 import {PollTokensFromDatabase} from "../database";
+import { IntegrationTokens } from '../Types/types';
+
 
 /**
  * This is the model between the HubSpot API and our controller.
  */
 
 export class HubspotApiModel {
-
     /**
      * Gets contact from HubSpot.
-     * 
+     *
      * @param objectId objectID of contact to query
      * @param paramToGet query parameters to filter by. eg. 'email'.
      */
@@ -52,6 +53,7 @@ export class HubspotApiModel {
 
                 console.error(e);
             }
+
 
         }
 
@@ -97,6 +99,7 @@ export class HubspotApiModel {
             console.log("ERROR FETCHING TOKENS FROM THE DB");
             // #todo redirect to signin
             //axios.get(/hubspot);
+
         }
 
 
@@ -136,6 +139,7 @@ export class HubspotApiModel {
                     console.log(e);
                     return JSON.parse(e.response.body);
                 }
+
             }
 
         }
@@ -151,7 +155,7 @@ export class HubspotApiModel {
 
     /**
      * Create a hubspot property for an object
-     * 
+     *
      * @param objectType object to create property for
      * @param propertyName The internal property name, which must be used when referencing the property via the (hubspot's) API.
      * @param propertyLabel A human-readable property label that will be shown in HubSpot.
@@ -192,6 +196,7 @@ export class HubspotApiModel {
             console.log("ERROR FETCHING TOKENS FROM THE DB");
             // #todo redirect to signin
             //axios.get(/hubspot);
+
         }
 
     }
@@ -219,6 +224,7 @@ export class HubspotApiModel {
                 console.error("===== WAS NOT ABLE TO SEARCH FOR PROPERTIES OF OBJECT: " + objectType);
                 return JSON.parse(e.response.body);
             }
+
         }
         catch(e){
             console.log("ERROR FETCHING TOKENS FROM THE DB");
@@ -227,5 +233,4 @@ export class HubspotApiModel {
         }
 
     }
-   
 }

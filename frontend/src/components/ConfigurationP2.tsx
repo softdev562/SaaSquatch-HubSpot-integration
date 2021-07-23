@@ -5,9 +5,10 @@ import SaaSquatchLogo from '../assets/SaaSquatchLogo.png';
 import history from '../types/history';
 import axios from 'axios';
 import Modal from '@material-ui/core/Modal';
+import { usePenpal } from '@saasquatch/integration-boilerplate-react';
+import jwt_decode from 'jwt-decode';
 
 const PageWrapper = styled.div`
-  min-height: 100vh;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -106,6 +107,7 @@ const ModalBodyContainer = styled.div`
 const API_CONFIGURATION_URL = '/api/configuration'
 
 interface SaasConfig {
+  saasquatchTenantAlias: string,
   pushIntoParticipants: boolean,
   pullIntoParticipants: boolean,
 }
@@ -132,7 +134,14 @@ export function ConfigurationP2() {
 }
 
 export function Controller(){
+  const penpal = usePenpal()
+  // sub is the attribute of the tenant alias from the tenant token
+  const tenantAliasUnparsed: {sub: string} = jwt_decode(penpal.tenantScopedToken);
+  // the alias is sent of the form exampleAlias@tenants
+  const tenantAliasParsed: string = tenantAliasUnparsed.sub.split('@')[0]
+
   const emptyConfig: SaasConfig = {
+    saasquatchTenantAlias: tenantAliasParsed,
     pushIntoParticipants: false,
     pullIntoParticipants: false, 
   }
@@ -147,10 +156,10 @@ export function Controller(){
   useEffect(() => {
     const getConfigData = () => {
       axios.get(API_CONFIGURATION_URL,
-        { params: {token: document.cookie} }
+        { params: {SaaSquatchTenantAlias: config.saasquatchTenantAlias} }
       )
       .then((response) => {
-        setConfig(config => ({...config, pushIntoParticipants: response.data.PushContactsAsParticipants, pullIntoParticipants: response.data.PullContactsIntoParticipants}));
+        setConfig(config => ({...config, pushIntoParticipants: response.data.PushContactsAsParticipants || false, pullIntoParticipants: response.data.PullContactsIntoParticipants || false}));
         // Disable import toggle if previously imported
         if (response.data.PullContactsIntoParticipants){
           setImported(true);
@@ -216,10 +225,11 @@ export function Controller(){
   // On submit we make a request to the backend to store the config data and redirect to integration success screen if config selected
   const handleSubmit = () => {
     const putConfigData = async () => {
-      return await fetch(API_CONFIGURATION_URL + `?token=${document.cookie}`, {
+      return await fetch(API_CONFIGURATION_URL, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
+          SaaSquatchTenantAlias : config.saasquatchTenantAlias,
           PushContactsAsParticipants: config.pushIntoParticipants,
           PullContactsIntoParticipants: config.pullIntoParticipants, 
         })
