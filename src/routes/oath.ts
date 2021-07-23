@@ -2,10 +2,10 @@ import { Router } from 'express';
 require('dotenv').config();
 import axios from 'axios';
 const querystring = require('query-string');
-import { AddTokensToDatabase } from '../database';
 import { PollTokensFromDatabase } from '../database';
 import { IntegrationTokens } from '../Types/types';
 const jwt = require('jsonwebtoken');
+import { AddTempUser } from '../database';
 
 const router = Router();
 let hubspotID: string;
@@ -167,23 +167,25 @@ router.get('/oauth-callback', async (req, res) => {
             if (resp.status != 200) {
                 throw Error('POST to get access and refresh tokens from HubSpot failed. Error:' + resp.data['error']);
             }
+
             // this api call is to retrieve the user id of the current user
             // the post api call above does not contain user_id
             const get_options = {
                 headers: { accept: 'application/json' },
             };
-            const get_user_id = await axios.get(
+            const getUserInfo = await axios.get(
                 'https://api.hubapi.com/oauth/v1/refresh-tokens/' + resp.data.refresh_token,
                 get_options,
             );
             //#todo temporarily using user email for tenant alias rather than id
             // as the db does not support number tenant alias currently
-            hubspotID = get_user_id.data.user;
+            hubspotID = getUserInfo.data.hub_id;
+
             // #todo in a seperate ticket check first whether the user already exists in DB
-            AddTokensToDatabase(hubspotID, resp.data.access_token, resp.data.refresh_token);
+            AddTempUser(hubspotID.toString(), resp.data.access_token, resp.data.refresh_token);
+
             // store user id in local tokenStore for knowledge of current user
             // and for knowing which user to poll the DB
-            tokenStore['userID'] = hubspotID;
 
             res.redirect('/hubspot?hubspotID=' + hubspotID);
         } catch (e) {

@@ -5,6 +5,8 @@
 	"main": "index.js",
 	"proxy": "http://localhost:8000",
 	"scripts": {
+		"lint": "eslint 'src/**/*.{js,ts,tsx}' --fix",
+		"prettify": "prettier src/**/*.{js,ts,tsx} --write",
 		"tsc": "tsc",
 		"server": "nodemon src/index.ts",
 		"frontend": "cd frontend && yarn start",
@@ -15,8 +17,6 @@
 		"build-tests": "tsc --resolveJsonModule --esModuleInterop **/test/*.ts",
 		"run-tests": "jest",
 		"clean-tests": "rm ./src/**/*.js ./src/*.js",
-		"lint": "eslint 'src/**/*.{js,ts,tsx}' --fix",
-		"prettify": "prettier src/**/*.{js,ts,tsx} --write",
 		"prepare": "husky install"
 	},
 	"husky": {

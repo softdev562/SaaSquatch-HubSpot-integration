@@ -16,7 +16,7 @@ export enum SubscriptionType {
 }
 
 export interface HubspotPayload {
-    eventId: string;
+    eventId: number;
     subscriptionId: number;
     portalId: number;
     appId?: number;
@@ -67,7 +67,7 @@ export interface SaasquatchPayload {
  */
 
 export interface Configuration {
-    SaaSquatchTenantAlias: string,
+    SaaSquatchTenantAlias: string;
     PushPartixipantsAsContacts: boolean;
     PullParticipantsIntoContacts: boolean;
     DeleteContactwhenParticipantDeleted: boolean;

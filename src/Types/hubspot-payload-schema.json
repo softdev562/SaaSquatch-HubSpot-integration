@@ -5,7 +5,7 @@
     "items":{
         "type": "object",
         "properties": {
-            "eventId": {"type": "string"},
+            "eventId": {"type": "number"},
             "subscriptionId": {"type": "number"},
             "portalId": {"type": "number"},
             "appId": {"type": "number"},
@@ -17,8 +17,7 @@
             "propertyValue": {"type": "string"},
             "changeFlag": {"type": "string"},
             "changeSource": {"type": "string"}
-            
-            
+
         },
         "required": ["eventId", "subscriptionId", "portalId", "occurredAt", "subscriptionType", "attemptNumber", "objectId", "changeSource"],
         "additionalProperties": false
