@@ -9,6 +9,11 @@ const defaultProps = {
 export default {
   title: 'Integration/ConfigurationSuccess',
   component: View,
+  parameters: {
+    cucumber: {
+      data: 'FrontEndConfigurationIsSavedBetweenSessions.feature',
+    },
+  },
 } as Meta;
 
 export const Default = () => <View {...defaultProps} />
