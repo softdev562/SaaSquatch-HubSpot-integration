@@ -3,6 +3,7 @@
     "description": "The payload of a Configuration POST/PUT",
 	"type": "object",
 	"properties": {
+		"SaaSquatchTenantAlias": {"type": "string"},
 		"PushPartixipantsAsContacts": { "type": "boolean" },
 		"PullParticipantsIntoContacts": { "type": "boolean" },
 		"DeleteContactwhenParticipantDeleted": { "type": "boolean" },

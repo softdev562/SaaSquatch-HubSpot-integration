@@ -5,9 +5,10 @@ import HubspotLogo from '../assets/HubspotLogo.png';
 import history from '../types/history';
 import axios from 'axios';
 import Modal from '@material-ui/core/Modal';
+import { usePenpal } from '@saasquatch/integration-boilerplate-react';
+import jwt_decode from 'jwt-decode';
 
 const PageWrapper = styled.div`
-  min-height: 100vh;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -90,6 +91,7 @@ const ModalBody = styled.div`
 const API_CONFIGURATION_URL = '/api/configuration'
 
 interface HubConfig {
+  saasquatchTenantAlias: string,
   pushIntoContacts: boolean,
   pullIntoContacts: boolean,
 }
@@ -112,7 +114,14 @@ export function ConfigurationP1() {
 }
 
 export function Controller(){
+  const penpal = usePenpal()
+  // sub is the attribute of the tenant alias from the tenant token
+  const tenantAliasUnparsed: {sub: string} = jwt_decode(penpal.tenantScopedToken);
+  // the alias is sent of the form exampleAlias@tenants
+  const tenantAliasParsed: string = tenantAliasUnparsed.sub.split('@')[0]
+  
   const emptyConfig: HubConfig = {
+    saasquatchTenantAlias: tenantAliasParsed,
     pushIntoContacts: false,
     pullIntoContacts: false,
   }
@@ -126,6 +135,7 @@ export function Controller(){
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 
+        SaasquatchTenantAlias: config.saasquatchTenantAlias,
         PushPartixipantsAsContacts: false,
         PullParticipantsIntoContacts: false,
       })
@@ -135,7 +145,9 @@ export function Controller(){
   // Gets config data on page load
   useEffect(() => {
     const getConfigData = () => {
-      axios.get(API_CONFIGURATION_URL)
+      axios.get(API_CONFIGURATION_URL,
+        { params: {SaaSquatchTenantAlias: config.saasquatchTenantAlias} }
+      )
       .then((response) => {
         // A blank config object is returned if the user doesn't exist yet in the database
         if (
@@ -151,7 +163,7 @@ export function Controller(){
             postConfigData().then().catch( e => console.error(e) )
         } else {
           // Display config data for user from database
-          setConfig(config => ({...config, pushIntoContacts: response.data.PushPartixipantsAsContacts, pullIntoContacts: response.data.PullParticipantsIntoContacts}));
+          setConfig(config => ({...config, pushIntoContacts: response.data.PushPartixipantsAsContacts || false, pullIntoContacts: response.data.PullParticipantsIntoContacts || false}));
           // Disable import toggle if previously imported
           if (response.data.PullParticipantsIntoContacts){
             setImported(true);
@@ -210,6 +222,7 @@ export function Controller(){
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
+          SaaSquatchTenantAlias: config.saasquatchTenantAlias,
           PushPartixipantsAsContacts: config.pushIntoContacts,
           PullParticipantsIntoContacts: config.pullIntoContacts,
         })

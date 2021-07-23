@@ -1,22 +1,19 @@
-import Ajv from 'ajv'
-import ConfigurationPayloadSchema from '../Types/configuration-payload-schema.json'
+import Ajv from 'ajv';
+import ConfigurationPayloadSchema from '../Types/configuration-payload-schema.json';
 
-import { Router } from 'express'
-import { Configuration } from '../Types/types'
-import { ConfigurationController } from '../integration/ConfigurationController'
-import { authenticateToken } from './oath'
+import { Router } from 'express';
+import { Configuration } from '../Types/types';
+import { ConfigurationController } from '../integration/ConfigurationController';
+import { authenticateToken } from './oath';
 
-import {
-	MOCK_SESSION_USER_ID,
-	MOCK_SESSION_HUBSPOT_ID,
-} from '../mock'
+import { MOCK_SESSION_HUBSPOT_ID } from '../mock'
 
-const router = Router()
-const ajv = new Ajv()
+const router = Router();
+const ajv = new Ajv();
 
-const validate =  ajv.compile(ConfigurationPayloadSchema)
+const validate = ajv.compile(ConfigurationPayloadSchema);
 
-const API_CONFIGURATION_URL = '/api/configuration'
+const API_CONFIGURATION_URL = '/api/configuration';
 
 router.get(API_CONFIGURATION_URL, async (req, res) => {
 	let decoded = undefined
@@ -24,7 +21,7 @@ router.get(API_CONFIGURATION_URL, async (req, res) => {
 		decoded = authenticateToken(req.cookies.frontendToken as string)
 	}
 	if (decoded != undefined) {
-		const configuration = await ConfigurationController.getConfiguration(MOCK_SESSION_USER_ID)
+		const configuration = await ConfigurationController.getConfiguration(req.query.SaaSquatchTenantAlias as string)
 		res.json(configuration)
 		res.end();
 	} else {
@@ -40,7 +37,7 @@ router.post(API_CONFIGURATION_URL, async (req, res) => {
 	}
 	if(validate(req.body) && decoded != undefined) {
 		const configuration: Configuration = req.body as Configuration
-		ConfigurationController.createConfiguration(MOCK_SESSION_USER_ID, MOCK_SESSION_HUBSPOT_ID, configuration)
+		ConfigurationController.setConfiguration(MOCK_SESSION_HUBSPOT_ID, configuration)
 		res.sendStatus(200)
 		res.end()
 	} else if (!validate(req.body)) {
@@ -60,7 +57,7 @@ router.put(API_CONFIGURATION_URL, async (req, res) => {
 	}
 	if(validate(req.body) && decoded != undefined) {
 		const configuration: Configuration = req.body as Configuration
-		ConfigurationController.updateConfiguration(MOCK_SESSION_USER_ID, configuration)
+		ConfigurationController.updateConfiguration(configuration)
 		res.sendStatus(200)
 		res.end()
 	} else if (!validate(req.body)) {
@@ -74,4 +71,4 @@ router.put(API_CONFIGURATION_URL, async (req, res) => {
 	}
 })
 
-export { router as configurationRoutes }
+export { router as configurationRoutes };
