@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { PollTokensFromDatabase } from '../database';
 import { IntegrationTokens } from '../Types/types';
+import { LookupAllias } from '../database';
 
 /**
  * This is the model between the HubSpot API and our controller.
@@ -15,42 +16,48 @@ export class HubspotApiModel {
      */
     public async getContact(contactObjectID: number, hub_id: number, paramToGet?: string) {
         try {
-            const token: any = await PollTokensFromDatabase(hub_id.toString());
-
-            const access_token = token.accessToken;
-
-            const url = `https://api.hubapi.com/crm/v3/objects/contacts/${encodeURIComponent(contactObjectID)}`;
-
-            let options: any = {
-                qs: { properties: 'email', archived: 'false' },
-                headers: { accept: 'application/json', authorization: `Bearer ${access_token}` },
-            };
-            if (paramToGet) {
-                options = {
+            const tenantAlias: any = await LookupAllias(hub_id.toString());
+            if (tenantAlias.ID == '') {
+                throw Error('Alias not found');
+            }
+            try {
+                const token: any = await PollTokensFromDatabase(tenantAlias.ID);
+                console.log('here is the otken we received', token);
+                const access_token = token.accessToken;
+                const url = `https://api.hubapi.com/crm/v3/objects/contacts/${encodeURIComponent(contactObjectID)}`;
+                let options: any = {
                     qs: { properties: 'email', archived: 'false' },
                     headers: { accept: 'application/json', authorization: `Bearer ${access_token}` },
                 };
-            } else {
-                options = {
-                    qs: { archived: 'false' },
-                    headers: { accept: 'application/json', authorization: `Bearer ${access_token}` },
-                };
-            }
-
-            try {
-                const resp = await axios.get(url, options);
-                if (resp.status != 200) {
-                    throw Error('Error getting a contact from HubSpot.' + resp.data['error']);
+                if (paramToGet) {
+                    options = {
+                        qs: { properties: 'email', archived: 'false' },
+                        headers: { accept: 'application/json', authorization: `Bearer ${access_token}` },
+                    };
                 } else {
-                    return resp.data;
+                    options = {
+                        qs: { archived: 'false' },
+                        headers: { accept: 'application/json', authorization: `Bearer ${access_token}` },
+                    };
+                }
+
+                try {
+                    const resp = await axios.get(url, options);
+                    if (resp.status != 200) {
+                        throw Error('Error getting a contact from HubSpot.' + resp.data['error']);
+                    } else {
+                        return resp.data;
+                    }
+                } catch (e) {
+                    console.error(e);
                 }
             } catch (e) {
-                console.error(e);
+                console.log('ERROR FETCHING TOKENS FROM THE DB');
+                // #todo redirect to signin
+                //axios.get(/hubspot);
             }
         } catch (e) {
             console.log('ERROR FETCHING TOKENS FROM THE DB');
-            // #todo redirect to signin
-            //axios.get(/hubspot);
         }
     }
 
