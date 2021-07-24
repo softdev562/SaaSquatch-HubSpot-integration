@@ -4,9 +4,13 @@ import { ToggleSetting } from './ToggleSetting';
 import HubspotLogo from '../assets/HubspotLogo.png';
 import history from '../types/history';
 import axios from 'axios';
-import Modal from '@material-ui/core/Modal';
 import { usePenpal } from '@saasquatch/integration-boilerplate-react';
 import jwt_decode from 'jwt-decode';
+
+/**
+ * Renders the first configuration screen (available at /configuration/1).
+ * Handles the config settings to import contacts into HubSpot from SaaSquatch
+ */
 
 const PageWrapper = styled.div`
     display: flex;
@@ -37,14 +41,6 @@ const InfoText = styled.p`
     margin-left: 60px;
     width: 680px;
 `;
-const AlertText = styled.p`
-    color: #fc3308;
-    font-size: 16px;
-    display: flex;
-    margin: 0px;
-    margin-left: 10px;
-    width: 520px;
-`;
 const Logo = styled.img`
     height: 60px;
     vertical-align: bottom;
@@ -71,80 +67,73 @@ const SyncButton = styled.button`
     height: 50px;
     margin-right: 10px;
 `;
-const ModalContainer = styled.div`
-    align-items: center;
-    justify-content: center;
-    background-color: #ffffff;
-    margin-left: auto;
-    margin-right: auto;
-    font-size: 18px;
-    padding: 10px;
-    width: 500px;
-`;
-const ModalBody = styled.div`
-    align-items: center;
-    justify-content: center;
-    background-color: #ffffff;
-    font-size: 14px;
-`;
 
 const API_CONFIGURATION_URL = '/api/configuration';
 
-interface HubConfig {
+export interface HubConfig {
     saasquatchTenantAlias: string;
     pushIntoContacts: boolean;
     pullIntoContacts: boolean;
 }
 
+export interface Config {
+    saasquatchTenantAlias: string;
+    pushIntoContacts: boolean;
+    pullIntoContacts: boolean;
+    pushIntoParticipants: boolean;
+    pullIntoParticipants: boolean;
+    contactsImported: boolean;
+    participantsImported: boolean;
+}
+
 interface states {
-    config: HubConfig;
+    config: Config;
     handleSubmit: () => void;
     handleToggles: {
         toggleHubPush: () => void;
         toggleHubPull: () => void;
     };
-    open: boolean;
-    handleClose: () => void;
-    imported: boolean;
-    oneway: boolean;
 }
 
-export function ConfigurationP1() {
-    return <View {...Controller()} />;
+export function ConfigurationP1(props: any) {
+    const { state } = props.location;
+    return <View {...Controller(state)} />;
 }
 
-export function Controller() {
+export function Controller(state: Config) {
     const penpal = usePenpal();
     // sub is the attribute of the tenant alias from the tenant token
     const tenantAliasUnparsed: { sub: string } = jwt_decode(penpal.tenantScopedToken);
     // the alias is sent of the form exampleAlias@tenants
     const tenantAliasParsed: string = tenantAliasUnparsed.sub.split('@')[0];
 
-    const emptyConfig: HubConfig = {
+    const currConfig: Config = {
         saasquatchTenantAlias: tenantAliasParsed,
-        pushIntoContacts: false,
-        pullIntoContacts: false,
+        pushIntoContacts: (state && state.pushIntoContacts) || false,
+        pullIntoContacts: (state && state.pullIntoContacts) || false,
+        pushIntoParticipants: (state && state.pushIntoParticipants) || false,
+        pullIntoParticipants: (state && state.pullIntoParticipants) || false,
+        contactsImported: (state && state.contactsImported) || false,
+        participantsImported: (state && state.participantsImported) || false,
     };
-    const [config, setConfig] = useState<HubConfig>(emptyConfig);
-    const [open, setOpen] = useState(false);
-    const [imported, setImported] = useState(false);
-    const [oneway, setOneway] = useState(true);
-
-    const postConfigData = async () => {
-        return await fetch(API_CONFIGURATION_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                SaaSquatchTenantAlias: config.saasquatchTenantAlias,
-                PushPartixipantsAsContacts: false,
-                PullParticipantsIntoContacts: false,
-                hubspotID: '', // TODO: Need to get Hubspot ID on this page from Login
-            }),
-        });
-    };
+    const [config, setConfig] = useState<Config>(currConfig);
 
     // Gets config data on page load
     useEffect(() => {
+        const postConfigData = async () => {
+            return await fetch(API_CONFIGURATION_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    SaaSquatchTenantAlias: config.saasquatchTenantAlias,
+                    PushPartixipantsAsContacts: false,
+                    PullParticipantsIntoContacts: false,
+                    PushContactsAsParticipants: false,
+                    PullContactsIntoParticipants: false,
+                    huspotID: '',
+                }),
+            });
+        };
         const getConfigData = () => {
             axios
                 .get(API_CONFIGURATION_URL, { params: { SaaSquatchTenantAlias: config.saasquatchTenantAlias } })
@@ -170,15 +159,11 @@ export function Controller() {
                             ...config,
                             pushIntoContacts: response.data.PushPartixipantsAsContacts || false,
                             pullIntoContacts: response.data.PullParticipantsIntoContacts || false,
+                            pushIntoParticipants: response.data.PushContactsAsParticipants || false,
+                            pullIntoParticipants: response.data.PullContactsIntoParticipants || false,
+                            contactsImported: response.data.PullParticipantsIntoContacts || false,
+                            participantsImported: response.data.PullContactsIntoParticipants || false,
                         }));
-                        // Disable import toggle if previously imported
-                        if (response.data.PullParticipantsIntoContacts) {
-                            setImported(true);
-                        }
-                        // Don't show oneway message if an option is previously selected on page
-                        if (response.data.PushPartixipantsAsContacts || response.data.PullParticipantsIntoContacts) {
-                            setOneway(false);
-                        }
                     }
                 })
                 .catch((error) => {
@@ -186,30 +171,17 @@ export function Controller() {
                     console.error('Error: Unable to retrieve Configuration Data');
                 });
         };
-        getConfigData();
-    }, []);
+        // If we don't already know the configuration, get it from the db
+        if (!state) {
+            getConfigData();
+        }
+    }, [config.saasquatchTenantAlias, state]);
 
     // Need a handler for each toggle because Switches are kinda weird
     const toggleHubPush = () => {
-        // Show oneway message if no options are selected on page
-        if (config.pushIntoContacts === false || config.pullIntoContacts === true) {
-            setOneway(false);
-        } else {
-            setOneway(true);
-        }
         setConfig({ ...config, pushIntoContacts: !config.pushIntoContacts });
     };
     const toggleHubPull = () => {
-        // Show modal if import toggle is selected
-        if (config.pullIntoContacts === false) {
-            setOpen(true);
-        }
-        // Show oneway message if no options are selected on page
-        if (config.pullIntoContacts === false || config.pushIntoContacts === true) {
-            setOneway(false);
-        } else {
-            setOneway(true);
-        }
         setConfig({ ...config, pullIntoContacts: !config.pullIntoContacts });
     };
 
@@ -218,29 +190,22 @@ export function Controller() {
         toggleHubPull,
     };
 
-    const handleClose = () => {
-        setOpen(false);
-    };
-
     // On submit we make a request to the backend to store the config data and redirect to second config screen
     const handleSubmit = () => {
-        const putConfigData = async () => {
-            return await fetch(API_CONFIGURATION_URL, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    SaaSquatchTenantAlias: config.saasquatchTenantAlias,
-                    PushPartixipantsAsContacts: config.pushIntoContacts,
-                    PullParticipantsIntoContacts: config.pullIntoContacts,
-                }),
-            });
-        };
-        putConfigData()
-            .then()
-            .catch((e) => console.error(e));
-        history.push('/configuration/2');
+        history.push({
+            pathname: '/configuration/2',
+            state: {
+                saasquatchTenantAlias: config.saasquatchTenantAlias,
+                pushIntoContacts: config.pushIntoContacts,
+                pullIntoContacts: config.pullIntoContacts,
+                pushIntoParticipants: config.pushIntoParticipants,
+                pullIntoParticipants: config.pullIntoParticipants,
+                contactsImported: config.contactsImported,
+                participantsImported: config.participantsImported,
+            },
+        });
     };
-    return { config, handleSubmit, handleToggles, open, handleClose, imported, oneway } as states;
+    return { config, handleSubmit, handleToggles } as states;
 }
 
 export function View(states: states) {
@@ -264,33 +229,17 @@ export function View(states: states) {
                     settingText={'Import existing Participants as Contacts'}
                     isChecked={states.config.pullIntoContacts}
                     handleChange={states.handleToggles.toggleHubPull}
-                    disabled={states.imported}
+                    disabled={states.config.contactsImported}
                 />
                 <InfoText>
                     {
                         'All existing participants in your SaaSquatch account will be imported as matching contacts with the same Name, Email, Sharelink, and Referrals in your connected Hubspot account.'
                     }
                 </InfoText>
-                <Modal open={states.open} onClose={states.handleClose}>
-                    <ModalContainer>
-                        <h1>Are you sure?</h1>
-                        <ModalBody>
-                            <p>
-                                By selecting Next you will be importing all of your existing particpants in SaaSquatch
-                                as contacts in Hubspot. This action is irreversible.
-                            </p>
-                        </ModalBody>
-                    </ModalContainer>
-                </Modal>
                 <ItemContainer>
                     <SyncButton onClick={states.handleSubmit} type="button">
                         {'Next'}
                     </SyncButton>
-                    <AlertText>
-                        {states.oneway
-                            ? 'Integration is not currently configured for Hubspot, click Next to continue with a one-way sync'
-                            : ''}
-                    </AlertText>
                 </ItemContainer>
             </PageContent>
         </PageWrapper>

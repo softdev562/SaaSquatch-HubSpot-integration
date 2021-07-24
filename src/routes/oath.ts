@@ -167,7 +167,6 @@ router.get('/oauth-callback', async (req, res) => {
             if (resp.status != 200) {
                 throw Error('POST to get access and refresh tokens from HubSpot failed. Error:' + resp.data['error']);
             }
-
             // this api call is to retrieve the user id of the current user
             // the post api call above does not contain user_id
             const get_options = {

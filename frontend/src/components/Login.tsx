@@ -7,6 +7,11 @@ import { usePenpal } from '@saasquatch/integration-boilerplate-react';
 import jwt_decode from 'jwt-decode';
 import ErrorDialog from './Dialog';
 
+/**
+ * Renders the login screen (available at /login).
+ * Handles opening a popup with the HubSpot oauth, and stores the returned hubspot account info
+ */
+
 const Wrapper = styled.div`
     display: flex;
     align-items: center;

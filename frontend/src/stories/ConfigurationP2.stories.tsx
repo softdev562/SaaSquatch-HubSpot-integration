@@ -2,84 +2,96 @@ import { Meta } from '@storybook/react';
 import { View } from '../components/ConfigurationP2';
 
 const defaultProps = {
-  config: {
-    saasquatchTenantAlias: '',
-    pushIntoParticipants: false,
-    pullIntoParticipants: false,
-  },
-  handleBack: ()=>{},
-  handleSubmit: ()=>{},
-  handleToggles: {
-    toggleSaasPush: ()=>{},
-    toggleSaasPull: ()=>{},
-  },
-  open: false,
-  handleClose: ()=>{},
-  openError: false,
-  handleErrorClose: ()=>{},
-  imported: false,
-  oneway: true,
-  noway: false,
+    config: {
+        saasquatchTenantAlias: '',
+        pushIntoContacts: false,
+        pullIntoContacts: false,
+        pushIntoParticipants: false,
+        pullIntoParticipants: false,
+        contactsImported: false,
+        participantsImported: false,
+    },
+    handleBack: () => {},
+    handleSubmit: () => {},
+    handleToggles: {
+        toggleSaasPush: () => {},
+        toggleSaasPull: () => {},
+    },
 };
 
 export default {
-  title: 'Integration/ConfigurationP2',
-  component: View,
-  parameters: {
-    cucumber: {
-      data: 'SyncParticipantsWithHubSpot.feature',
-    },
-  },
+    title: 'Integration/ConfigurationP2',
+    component: View,
 } as Meta;
 
-export const Default = () => <View {...defaultProps} />
+export const Default = () => <View {...defaultProps} />;
 export const TogglesSelected = () => (
-  <View 
-    {...defaultProps} 
-    config={{
-      saasquatchTenantAlias: '',
-      pushIntoParticipants: true,
-      pullIntoParticipants: true,
-    }} 
-    oneway={false}
-  />
-)
+    <View
+        {...defaultProps}
+        config={{
+            saasquatchTenantAlias: '',
+            pushIntoContacts: false,
+            pullIntoContacts: false,
+            pushIntoParticipants: true,
+            pullIntoParticipants: true,
+            contactsImported: false,
+            participantsImported: false,
+        }}
+    />
+);
 export const PreviousImport = () => (
-  <View 
-    {...defaultProps} 
-    config={{
-      saasquatchTenantAlias: '',
-      pushIntoParticipants: true,
-      pullIntoParticipants: true,
-    }}
-    oneway={false}
-    imported={true}
-  />
-)
+    <View
+        {...defaultProps}
+        config={{
+            saasquatchTenantAlias: '',
+            pushIntoContacts: false,
+            pullIntoContacts: false,
+            pushIntoParticipants: true,
+            pullIntoParticipants: true,
+            contactsImported: false,
+            participantsImported: false,
+        }}
+    />
+);
 export const ImportModal = () => (
-  <View 
-    {...defaultProps} 
-    config={{
-      saasquatchTenantAlias: '',
-      pushIntoParticipants: true,
-      pullIntoParticipants: true,
-    }}
-    oneway={false}
-    open={true}
-  />
-)
+    <View
+        {...defaultProps}
+        config={{
+            saasquatchTenantAlias: '',
+            pushIntoContacts: false,
+            pullIntoContacts: false,
+            pushIntoParticipants: true,
+            pullIntoParticipants: true,
+            contactsImported: false,
+            participantsImported: false,
+        }}
+    />
+);
 export const NowayError = () => (
-  <View 
-    {...defaultProps} 
-    oneway={true}
-    noway={true}
-  />
-)
+    <View
+        {...defaultProps}
+        config={{
+            saasquatchTenantAlias: '',
+            pushIntoContacts: false,
+            pullIntoContacts: false,
+            pushIntoParticipants: true,
+            pullIntoParticipants: true,
+            contactsImported: true,
+            participantsImported: true,
+        }}
+    />
+);
 export const NowayModal = () => (
-  <View 
-    {...defaultProps} 
-    oneway={true}
-    noway={true}
-    openError={true}
-  />
-)
+    <View
+        {...defaultProps}
+        config={{
+            saasquatchTenantAlias: '',
+            pushIntoContacts: false,
+            pullIntoContacts: false,
+            pushIntoParticipants: true,
+            pullIntoParticipants: true,
+            contactsImported: true,
+            participantsImported: true,
+        }}
+    />
+);
