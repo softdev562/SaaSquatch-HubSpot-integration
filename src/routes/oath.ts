@@ -168,9 +168,6 @@ router.get('/oauth-callback', async (req, res) => {
 			hubspotID = get_hub_id.data.hub_id.toString();
 			// #todo in a seperate ticket check first whether the user already exists in DB
             AddTokensToDatabase(hubspotID, resp.data.access_token, resp.data.refresh_token)
-			console.log("refresh token:")
-			console.log(resp.data.refresh_token)
-			console.log(resp.data.access_token)
 			// store user id in local tokenStore for knowledge of current user
 			// and for knowing which user to poll the DB
             tokenStore["userID"] = hubspotID;

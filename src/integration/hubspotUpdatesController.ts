@@ -30,8 +30,6 @@ export class hubspotUpdatesController{
 		try {
         	const participant = await this.hubApiModel.getContact(contactObjectId);
 
-            params = `email:${encodeURIComponent(participant.properties.email)}`;
-
 			// Get tenant alias of the corresponding saasquatch tenant to the hubspot account.
 			const tenantAlias = await LookupAlias(hubspotPayload.portalId);
 			if (tenantAlias === "") {
@@ -39,33 +37,24 @@ export class hubspotUpdatesController{
 			}
 
             // 1. Check if contact exists as user in SaaSquatch (match by email)
-            this.saasApiModel.getUsers(tenantAlias, params)
-            .then( data =>{
-                //If it does not exist, create new user in SaaSquatch
-                if(data.count == 0){
-                    console.log("User does not exist in SaaSquatch");
-                    const createParticipantBody = {
-                            "email": participant.properties.email,
-                            "firstName": participant.properties.firstname,
-                            "lastName": participant.properties.lastname,
-                            "id": participant.properties.email,
-						    "accountId": participant.properties.email,
-                    };
-                    this.saasApiModel.createParticipant(tenantAlias, participant.properties.email, createParticipantBody);
-                }
-                // 3. TODO: If it does exist, get share link and other relevant data
-                else{
-                    console.log("SAAS USER "+data.users[0].email);
-                    console.log("user share links: "+data.users[0].shareLinks);
-                }
-                // 4. TODO: send referral link back to hubspot to add to contact
-            
-                }
-            );
+            const users = await this.saasApiModel.getUserByEmail(tenantAlias, participant.properties.email);
+
+			//If it does not exist, create new user in SaaSquatch
+			if (users.count == 0) {
+				const createParticipantBody = {
+						"email": participant.properties.email,
+						"firstName": participant.properties.firstname,
+						"lastName": participant.properties.lastname,
+						"id": participant.properties.email,
+						"accountId": participant.properties.email,
+				};
+				await this.saasApiModel.createParticipant(tenantAlias, createParticipantBody);
+			}   
+			// 3. TODO: If it does exist, get share link and other relevant data
+            // 4. TODO: send referral link back to hubspot to add to contact
         } catch (e) {
 			throw new Error(e);
 		}
-        console.log(params);
     }
     
     /**
