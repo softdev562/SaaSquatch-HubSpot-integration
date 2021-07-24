@@ -80,7 +80,8 @@ export function OAuthFunction(){
           var timer = setInterval(function() { 
             if(popup && popup.closed) {
               if (!navigator.cookieEnabled) {
-                document.cookie="frontendToken=''; SameSite=None; Secure";
+                const token = undefined;
+                document.cookie=`frontendToken=${token}; SameSite=None; Secure`;
                 setCookieError(true)
               } else {
                 // Check Server for Hubspot Authorization
