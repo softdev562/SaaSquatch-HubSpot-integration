@@ -6,8 +6,6 @@ import { Configuration } from '../Types/types';
 import { ConfigurationController } from '../integration/ConfigurationController';
 import { authenticateToken } from './oath';
 
-import { MOCK_SESSION_HUBSPOT_ID } from '../mock';
-
 const router = Router();
 const ajv = new Ajv();
 
@@ -37,7 +35,7 @@ router.post(API_CONFIGURATION_URL, async (req, res) => {
     }
     if (validate(req.body) && decoded != undefined) {
         const configuration: Configuration = req.body as Configuration;
-        ConfigurationController.setConfiguration(MOCK_SESSION_HUBSPOT_ID, configuration);
+        ConfigurationController.setConfiguration(configuration.hubspotID, configuration);
         res.sendStatus(200);
         res.end();
     } else if (!validate(req.body)) {

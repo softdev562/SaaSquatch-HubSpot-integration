@@ -120,7 +120,7 @@ router.get('/hubspot_authorization', async (req, res) => {
     }
     if (decoded != undefined) {
         try {
-            res.json('Authorized');
+            res.json(decoded.data);
             res.end();
         } catch (e) {
             console.error(e);
