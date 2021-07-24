@@ -18,7 +18,7 @@
             "changeFlag": {"type": "string"},
             "changeSource": {"type": "string"}
         },
-        "required": ["eventId", "subscriptionId", "portalId", "appId", "occurredAt", "subscriptionType", "attemptNumber", "objectId", "changeSource"],
+        "required": ["eventId", "subscriptionId", "portalId", "occurredAt", "subscriptionType", "attemptNumber", "objectId", "changeSource"],
         "additionalProperties": false
     }
 }

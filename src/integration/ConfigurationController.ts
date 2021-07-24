@@ -1,23 +1,20 @@
-import { Configuration } from '../Types/types'
-import { ConfigurationModel } from './ConfigurationModel'
+/**
+ * ConfigurationController
+ *
+ * Includes utilities for exposing configuration data to routes.
+ */
 
+import { Configuration } from '../Types/types';
+import { ConfigurationModel } from './ConfigurationModel';
 export class ConfigurationController {
-
-	private configurationModel: ConfigurationModel;
-
-    constructor(){
-        this.configurationModel = new ConfigurationModel();
+    public static async getConfiguration(tenantAlias: string): Promise<Configuration> {
+        return ConfigurationModel.getConfiguration(tenantAlias);
     }
-	
-	public async getConfiguration() {
-		return this.configurationModel.getConfiguration()
-	}
+    public static async setConfiguration(hubspotId: string, configuration: Configuration): Promise<void> {
+        return ConfigurationModel.setConfiguration(hubspotId, configuration);
+    }
 
-	public setConfiguration(configuration: Configuration) {
-		this.configurationModel.setConfiguration(configuration)
-	}
-
-	public updateConfiguration(configuration: Configuration) {
-		this.configurationModel.updateConfiguration(configuration)
-	}
+    public static async updateConfiguration(configuration: Configuration): Promise<void> {
+        return ConfigurationModel.updateConfiguration(configuration);
+    }
 }

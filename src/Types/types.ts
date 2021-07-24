@@ -1,4 +1,3 @@
-
 /**
  * HubSpot interfaces for webhooks
  */
@@ -13,14 +12,14 @@ export enum SubscriptionType {
     CompanyPropertyChange = 'company.propertyChange',
     DealCreation = 'deal.creation',
     DealDeletion = 'deal.deletion',
-    DealPropertyChange = 'deal.propertyChange'
+    DealPropertyChange = 'deal.propertyChange',
 }
 
-export interface HubspotPayload{
+export interface HubspotPayload {
     eventId: number;
     subscriptionId: number;
     portalId: number;
-    appId: number;
+    appId?: number;
     occurredAt: number;
     subscriptionType: SubscriptionType;
     attemptNumber: number;
@@ -30,7 +29,6 @@ export interface HubspotPayload{
     changeFlag?: string;
     changeSource: string;
 }
-
 
 /**
  * SaaSquatch interfaces for webhooks
@@ -52,16 +50,16 @@ export enum EventType {
     ThemePublishFinished = 'theme.publish.finished',
     ExportCreated = 'export.created',
     ExportCompleted = 'export.completed',
-    Test = 'test'
+    Test = 'test',
 }
 
-export interface SaasquatchPayload{
-    id: string,
-    type: EventType,
-    tenantAlias: string,
-    live: boolean,
-    created: number,
-    data: object
+export interface SaasquatchPayload {
+    id: string;
+    type: EventType;
+    tenantAlias: string;
+    live: boolean;
+    created: number;
+    data: any;
 }
 
 /**
@@ -69,13 +67,23 @@ export interface SaasquatchPayload{
  */
 
 export interface Configuration {
+    SaaSquatchTenantAlias: string;
+    PushPartixipantsAsContacts: boolean;
+    PullParticipantsIntoContacts: boolean;
+    DeleteContactwhenParticipantDeleted: boolean;
+    PushContactsAsParticipants: boolean;
+    PullContactsIntoParticipants: boolean;
+    DeleteParticipantWhenContactDeleted: boolean;
+    hubspotID: string;
+    accessToken: string;
+    refreshToken: string;
+}
 
-    PushPartixipantsAsContacts: boolean, 
-    PullParticipantsIntoContacts: boolean,
-    DeleteContactwhenParticipantDeleted: boolean,
-    PushContactsAsParticipants: boolean,
-    PullContactsIntoParticipants: boolean, 
-    DeleteParticipantWhenContactDeleted: boolean,
-    accessToken: string, 
-    refreshToken: string
+/**
+ * Database Access Tokens
+ */
+
+export interface IntegrationTokens {
+    accessToken: string;
+    refreshToken: string;
 }

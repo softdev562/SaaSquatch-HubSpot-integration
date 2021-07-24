@@ -1,54 +1,51 @@
-import {defineFeature, loadFeature} from "jest-cucumber";
-import {HubApiCall} from "../routes/oath";
-const axios = require("axios");
+import { defineFeature, loadFeature } from 'jest-cucumber';
+import { HubApiCall } from '../routes/oath';
+const axios = require('axios');
 const Disconnect = loadFeature('features/Disconnect.feature');
-const querystring = require('query-string');
-axios.defaults.adapter = require('axios/lib/adapters/http')
+axios.defaults.adapter = require('axios/lib/adapters/http');
 let refresh_token: string, access_token: string;
 
 const apiCallThatReturnsSuccess = async () => {
     try {
         // this represents any api call that doesn't fail
         //#todo update this with an api call to HUBSPOT when we have test account access tokens availble in DB
-       const response = await axios.get('https://dog.ceo/api/breeds/list/all')
+        const response = await axios.get('https://dog.ceo/api/breeds/list/all');
         const data = response.data;
         return data;
     } catch (e) {
         console.error('  > Unable to retrieve contact');
         return JSON.parse(e.response.body);
     }
-
-}
+};
 
 const apiCallWithExpiredAccessToken = async () => {
     try {
         const response = await axios.get('https://api.hubapi.com/crm/v3/objects/contacts', {
             headers: {
-            accept: 'application/json', authorization: "Bearer" + access_token
-            }
-        })
+                accept: 'application/json',
+                authorization: 'Bearer' + access_token,
+            },
+        });
         const data = response.data;
         return data;
     } catch (e) {
-		if (process.env.NODE_ENV !== 'test') {
-			console.log('  > Unable to retrieve contact');
-		}
+        if (process.env.NODE_ENV !== 'test') {
+            console.warn('  > Unable to retrieve contact');
+        }
         return JSON.parse(e.response.body);
     }
+};
 
-}
-
-defineFeature(Disconnect, test => {
+defineFeature(Disconnect, (test) => {
     //#todo UPDATE LINE BELOW TO RECIEVE access and refresh token from DB
 
-    test('Disconnecting Hubspot from integration',  ({given, and, when, then}) => {
-
+    test('Disconnecting Hubspot from integration', ({ given, and, when, then }) => {
         given('I have a SaaSquatch account', () => {
-
+            // Required to access integration.
         });
 
         and('a Hubspot account', () => {
-
+            // Required to initiate integration by signing in.
         });
 
         given('I have installed the integration in Hubspot', () => {
@@ -63,49 +60,43 @@ defineFeature(Disconnect, test => {
         });
 
         and('the current access token expires', () => {
-
-            access_token = "nowexpiredaccess_token";
+            access_token = 'nowexpiredaccess_token';
         });
 
         then('requests from the integration to protected endpoints in Hubspot fail', async () => {
             try {
-                const response = await axios.get('https://api.hubapi.com/crm/v3/objects/contacts', {
+                await axios.get('https://api.hubapi.com/crm/v3/objects/contacts', {
                     headers: {
-                        accept: 'application/json', authorization: "Bearer" + access_token
-                    }
-                })
-            }
-            catch(e)
-            {
+                        accept: 'application/json',
+                        authorization: 'Bearer' + access_token,
+                    },
+                });
+            } catch (e) {
                 expect(e.response.data.category).toBe('INVALID_AUTHENTICATION');
             }
-        })
+        });
 
-        and('the integration attempts to get a new access token from Hubspot',async () => {
-
+        and('the integration attempts to get a new access token from Hubspot', async () => {
             // this step is done in step a call to hubspotAPi function in the then below
         });
 
         then('a bad request error is returned', async () => {
-			try {
-				const res = await HubApiCall(apiCallWithExpiredAccessToken,refresh_token);
-				expect(res).toBeUndefined();
-			} catch(e) {
-				expect(e).toBe(400);
-			}
-
+            try {
+                const res = await HubApiCall(apiCallWithExpiredAccessToken, refresh_token);
+                expect(res).toBeUndefined();
+            } catch (e) {
+                expect(e).toBe(400);
+            }
         });
-
     });
 
-    test('Disconnecting Hubspot from integration and access token is not expired yet', ({given, and, when, then}) => {
-
+    test('Disconnecting Hubspot from integration and access token is not expired yet', ({ given, and, when, then }) => {
         given('I have a SaaSquatch account', () => {
-
+            // Required to access integration.
         });
 
         and('a Hubspot account', () => {
-
+            // Required to initiate integration by signing in.
         });
 
         given('I have installed the integration in Hubspot', () => {
@@ -122,18 +113,16 @@ defineFeature(Disconnect, test => {
         and('the current access token has not expired', () => {
             //#todo perhaps consider getting the access token from DB
             //#todo although a mock api call that returns success is sufficient for this test
-            access_token = "valid_access_token";
+            access_token = 'valid_access_token';
         });
 
         then('requests from the integration to protected endpoints in Hubspot pass', () => {
             // the api call will happen in the final then
         });
 
-        and('a status 200 is returned',async () => {
-                const res = await HubApiCall(apiCallThatReturnsSuccess,refresh_token);
-                expect(res.status).toBe('success');
+        and('a status 200 is returned', async () => {
+            const res = await HubApiCall(apiCallThatReturnsSuccess, refresh_token);
+            expect(res.status).toBe('success');
         });
-
     });
-
 });
