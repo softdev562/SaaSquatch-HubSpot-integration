@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import history from '../types/history';
 
@@ -15,6 +15,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { Config } from './ConfigurationP1';
+import axios from 'axios';
 
 const PageWrapper = styled.div`
     display: flex;
@@ -90,6 +91,9 @@ const BackButton = styled.button`
 `;
 
 const API_CONFIGURATION_URL = '/api/configuration';
+const API_TEMP_CONFIGURATION_URL = '/api/configuration/temp';
+const API_DELETE_TEMP_CONFIGURATION_URL = '/api/configuration/tempDelete';
+const HUBSPOT_AUTHORIZATION = '/hubspot_authorization';
 
 interface ConfigList {
     pushIntoParticipants: boolean;
@@ -113,7 +117,7 @@ export function OrderConfirmation(props: any) {
 }
 
 export function Controller(state: Config) {
-    const config: Config = {
+    let currConfig: Config = {
         saasquatchTenantAlias: state && state.saasquatchTenantAlias ? state.saasquatchTenantAlias : '',
         pushIntoContacts: (state && state.pushIntoContacts) || false,
         pullIntoContacts: (state && state.pullIntoContacts) || false,
@@ -121,8 +125,40 @@ export function Controller(state: Config) {
         pullIntoParticipants: (state && state.pullIntoParticipants) || false,
         contactsImported: (state && state.contactsImported) || false,
         participantsImported: (state && state.participantsImported) || false,
+        newUser: (state && state.newUser) || false,
     };
+
     const [open, setOpen] = useState(false);
+    const [hubspotID, setHubspotID] = useState('');
+    const [accessToken, setAccessToken] = useState('');
+    const [refreshToken, setRefreshToken] = useState('');
+    const [config, setConfig] = useState<Config>(currConfig);
+
+    // Gets temp hubspot user data on page load
+    useEffect(() => {
+        const hubspotInfo = () => {
+            axios
+                .get(HUBSPOT_AUTHORIZATION)
+                .then((response) => {
+                    setHubspotID(response.data.toString());
+                    axios
+                        .get(API_TEMP_CONFIGURATION_URL, { params: { hubspotID: response.data.toString() } })
+                        .then((response) => {
+                            setAccessToken(response.data.accessToken);
+                            setRefreshToken(response.data.refreshToken);
+                        })
+                        .catch(function (err) {
+                            console.error(
+                                err + 'Error getting Hubspot Temp User Tokens from: ' + API_TEMP_CONFIGURATION_URL,
+                            );
+                        });
+                })
+                .catch(function (err) {
+                    console.error(err + 'Error getting Hubspot Authorization from: ' + HUBSPOT_AUTHORIZATION);
+                });
+        };
+        hubspotInfo();
+    }, []);
 
     const handleBack = () => {
         history.push({
@@ -135,6 +171,7 @@ export function Controller(state: Config) {
                 pullIntoParticipants: config.pullIntoParticipants,
                 contactsImported: config.contactsImported,
                 participantsImported: config.participantsImported,
+                newUser: config.newUser,
             },
         });
     };
@@ -149,8 +186,31 @@ export function Controller(state: Config) {
                 PullParticipantsIntoContacts: config.pullIntoContacts,
                 PushContactsAsParticipants: config.pushIntoParticipants,
                 PullContactsIntoParticipants: config.pullIntoParticipants,
+                accessToken: accessToken,
+                refreshToken: refreshToken,
             }),
         });
+    };
+
+    const postConfigData = async () => {
+        return await fetch(API_CONFIGURATION_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                SaaSquatchTenantAlias: config.saasquatchTenantAlias,
+                PushPartixipantsAsContacts: config.pushIntoContacts,
+                PullParticipantsIntoContacts: config.pullIntoContacts,
+                PushContactsAsParticipants: config.pushIntoParticipants,
+                PullContactsIntoParticipants: config.pullIntoParticipants,
+                hubspotID: hubspotID,
+                accessToken: accessToken,
+                refreshToken: refreshToken,
+            }),
+        });
+    };
+
+    const deleteTempUser = async () => {
+        axios.delete(API_DELETE_TEMP_CONFIGURATION_URL, { params: { hubspotID: hubspotID } });
     };
 
     const handleConfirm = () => {
@@ -165,9 +225,20 @@ export function Controller(state: Config) {
         ) {
             return;
         }
-        putConfigData()
-            .then()
-            .catch((e) => console.error(e));
+        if (config.newUser) {
+            setConfig((config) => ({
+                ...config,
+                newUser: false,
+            }));
+            postConfigData()
+                .then()
+                .catch((e) => console.error(e));
+        } else {
+            putConfigData()
+                .then()
+                .catch((e) => console.error(e));
+        }
+        deleteTempUser();
         history.push('/configuration/success');
     };
     const handleCancel = () => {
@@ -191,9 +262,20 @@ export function Controller(state: Config) {
         ) {
             setOpen(true); //Need a seperate dialog to say that you just strait up can't do that
         } else {
-            putConfigData()
-                .then()
-                .catch((e) => console.error(e));
+            if (config.newUser) {
+                setConfig((config) => ({
+                    ...config,
+                    newUser: false,
+                }));
+                postConfigData()
+                    .then()
+                    .catch((e) => console.error(e));
+            } else {
+                putConfigData()
+                    .then()
+                    .catch((e) => console.error(e));
+            }
+            deleteTempUser();
             history.push('/configuration/success');
         }
     };

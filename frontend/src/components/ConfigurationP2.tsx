@@ -119,6 +119,7 @@ export function Controller(state: Config) {
         pullIntoParticipants: (state && state.pullIntoParticipants) || false,
         contactsImported: (state && state.contactsImported) || false,
         participantsImported: (state && state.participantsImported) || false,
+        newUser: (state && state.newUser) || false,
     };
     const [config, setConfig] = useState<Config>(currConfig);
 
@@ -175,6 +176,7 @@ export function Controller(state: Config) {
                 pullIntoParticipants: config.pullIntoParticipants,
                 contactsImported: config.contactsImported,
                 participantsImported: config.participantsImported,
+                newUser: config.newUser,
             },
         });
     };
@@ -192,6 +194,7 @@ export function Controller(state: Config) {
                 pullIntoParticipants: config.pullIntoParticipants,
                 contactsImported: config.contactsImported,
                 participantsImported: config.participantsImported,
+                newUser: config.newUser,
             },
         });
         // history.push('/configuration/success');

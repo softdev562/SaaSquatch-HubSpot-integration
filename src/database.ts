@@ -7,7 +7,7 @@ const crypto = require('crypto');
 //#todo: The tenant alias is a number event after converting it to string
 //      the has function requires "data" argument must be of type
 //      string or an instance of Buffer, TypedArray, or DataView.
-function hashValue(stringValue: string){
+function hashValue(stringValue: string) {
     return crypto.createHash('sha1').update(stringValue).digest('hex');
 }
 
@@ -93,6 +93,7 @@ export function EditDatabase(
         PushContactsAsParticipants: boolean;
         PullContactsIntoParticipants: boolean;
         DeleteParticipantWhenContactDeleted: boolean;
+        hubspotID: string;
         accessToken: string;
         refreshToken: string;
     },
@@ -145,6 +146,14 @@ export function EditDatabase(
             .ref('users/' + key + '/hubspot')
             .update({
                 DeleteParticipantWhenContactDeleted: params.DeleteParticipantWhenContactDeleted,
+            });
+    }
+    if (params.hubspotID != undefined) {
+        firebase
+            .database()
+            .ref('users/' + key + '/userinfo')
+            .update({
+                accessToken: params.hubspotID,
             });
     }
     if (params.accessToken != undefined) {
@@ -324,8 +333,8 @@ export async function PollTempUser(hubspotID: string): Promise<IntegrationTokens
         .get()
         .then((snapshot) => {
             if (snapshot.exists()) {
-                data.accessToken = snapshot.child('userinfo/accessToken').val();
-                data.refreshToken = snapshot.child('userinfo/refreshToken').val();
+                data.accessToken = snapshot.child('accessToken').val();
+                data.refreshToken = snapshot.child('refreshToken').val();
             } else {
                 console.log('No data available');
             }

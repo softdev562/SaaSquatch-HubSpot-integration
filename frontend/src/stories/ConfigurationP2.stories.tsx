@@ -10,6 +10,7 @@ const defaultProps = {
         pullIntoParticipants: false,
         contactsImported: false,
         participantsImported: false,
+        newUser: false,
     },
     handleBack: () => {},
     handleSubmit: () => {},
@@ -36,6 +37,7 @@ export const TogglesSelected = () => (
             pullIntoParticipants: true,
             contactsImported: false,
             participantsImported: false,
+            newUser: false,
         }}
     />
 );
@@ -50,6 +52,7 @@ export const PreviousImport = () => (
             pullIntoParticipants: true,
             contactsImported: false,
             participantsImported: false,
+            newUser: false,
         }}
     />
 );
@@ -64,6 +67,7 @@ export const ImportModal = () => (
             pullIntoParticipants: true,
             contactsImported: false,
             participantsImported: false,
+            newUser: false,
         }}
     />
 );
@@ -78,6 +82,7 @@ export const NowayError = () => (
             pullIntoParticipants: true,
             contactsImported: true,
             participantsImported: true,
+            newUser: false,
         }}
     />
 );
@@ -92,6 +97,7 @@ export const NowayModal = () => (
             pullIntoParticipants: true,
             contactsImported: true,
             participantsImported: true,
+            newUser: false,
         }}
     />
 );

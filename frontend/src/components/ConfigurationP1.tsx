@@ -70,12 +70,6 @@ const SyncButton = styled.button`
 
 const API_CONFIGURATION_URL = '/api/configuration';
 
-export interface HubConfig {
-    saasquatchTenantAlias: string;
-    pushIntoContacts: boolean;
-    pullIntoContacts: boolean;
-}
-
 export interface Config {
     saasquatchTenantAlias: string;
     pushIntoContacts: boolean;
@@ -84,6 +78,7 @@ export interface Config {
     pullIntoParticipants: boolean;
     contactsImported: boolean;
     participantsImported: boolean;
+    newUser: boolean;
 }
 
 interface states {
@@ -115,25 +110,12 @@ export function Controller(state: Config) {
         pullIntoParticipants: (state && state.pullIntoParticipants) || false,
         contactsImported: (state && state.contactsImported) || false,
         participantsImported: (state && state.participantsImported) || false,
+        newUser: (state && state.newUser) || false,
     };
     const [config, setConfig] = useState<Config>(currConfig);
 
     // Gets config data on page load
     useEffect(() => {
-        const postConfigData = async () => {
-            return await fetch(API_CONFIGURATION_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    SaaSquatchTenantAlias: config.saasquatchTenantAlias,
-                    PushPartixipantsAsContacts: false,
-                    PullParticipantsIntoContacts: false,
-                    PushContactsAsParticipants: false,
-                    PullContactsIntoParticipants: false,
-                    huspotID: '',
-                }),
-            });
-        };
         const getConfigData = () => {
             axios
                 .get(API_CONFIGURATION_URL, { params: { SaaSquatchTenantAlias: config.saasquatchTenantAlias } })
@@ -149,10 +131,10 @@ export function Controller(state: Config) {
                         response.data.accessToken === '' &&
                         response.data.refreshToken === ''
                     ) {
-                        // Post request to create new user entry in configuration database
-                        postConfigData()
-                            .then()
-                            .catch((e) => console.error(e));
+                        setConfig((config) => ({
+                            ...config,
+                            newUser: true,
+                        }));
                     } else {
                         // Display config data for user from database
                         setConfig((config) => ({
@@ -202,6 +184,7 @@ export function Controller(state: Config) {
                 pullIntoParticipants: config.pullIntoParticipants,
                 contactsImported: config.contactsImported,
                 participantsImported: config.participantsImported,
+                newUser: config.newUser,
             },
         });
     };

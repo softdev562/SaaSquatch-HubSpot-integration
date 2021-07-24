@@ -10,13 +10,13 @@ const defaultProps = {
         pullIntoContacts: false,
         contactsImported: false,
         participantsImported: false,
+        newUser: false,
     },
     handleSubmit: () => {},
     handleToggles: {
         toggleHubPush: () => {},
         toggleHubPull: () => {},
     },
-    oneway: true,
 };
 
 export default {
@@ -36,6 +36,7 @@ export const TogglesSelected = () => (
             pullIntoContacts: true,
             contactsImported: false,
             participantsImported: false,
+            newUser: false,
         }}
     />
 );
@@ -50,6 +51,7 @@ export const PreviousImport = () => (
             pullIntoContacts: true,
             contactsImported: true,
             participantsImported: true,
+            newUser: false,
         }}
     />
 );
@@ -64,6 +66,7 @@ export const ImportModal = () => (
             pullIntoContacts: true,
             contactsImported: false,
             participantsImported: false,
+            newUser: false,
         }}
     />
 );
