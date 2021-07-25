@@ -54,7 +54,7 @@ export class HubspotApiModel {
                 console.log('Error Fetching Tokens from DB');
             }
         } catch (e) {
-            throw Error('Error getting ALIAS');
+            throw Error('Alias not found');
         }
     }
 
@@ -90,7 +90,7 @@ export class HubspotApiModel {
                 throw Error('Error Fetching Tokens from DB');
             }
         } catch (e) {
-            throw Error('Error getting ALIAS');
+            throw Error('Alias not found');
         }
     }
 
@@ -138,7 +138,7 @@ export class HubspotApiModel {
                 throw Error('Error Fetching Tokens from DB');
             }
         } catch (e) {
-            throw Error('Error getting ALIAS');
+            throw Error('Alias not found');
         }
     }
 
@@ -194,7 +194,7 @@ export class HubspotApiModel {
                 throw Error('Error Fetching Tokens from DB');
             }
         } catch (e) {
-            throw Error('Error getting ALIAS');
+            throw Error('Alias not found');
         }
     }
 
@@ -231,7 +231,7 @@ export class HubspotApiModel {
                 throw Error('Error Fetching Tokens from DB');
             }
         } catch (e) {
-            throw Error('Error getting ALIAS');
+            throw Error('Alias not found');
         }
     }
 }
