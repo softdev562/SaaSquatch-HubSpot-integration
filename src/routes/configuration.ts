@@ -6,15 +6,45 @@ import { Configuration } from '../Types/types';
 import { ConfigurationController } from '../integration/ConfigurationController';
 import { authenticateToken } from './oath';
 
-import { MOCK_SESSION_HUBSPOT_ID } from '../mock';
-
 const router = Router();
 const ajv = new Ajv();
 
 const validate = ajv.compile(ConfigurationPayloadSchema);
 
 const API_CONFIGURATION_URL = '/api/configuration';
+const API_TEMP_CONFIGURATION_URL = '/api/configuration/temp';
+const API_DELETE_TEMP_CONFIGURATION_URL = '/api/configuration/tempDelete';
 
+router.get(API_TEMP_CONFIGURATION_URL, async (req, res) => {
+    let decoded = undefined;
+    if (req.cookies.frontendToken) {
+        decoded = authenticateToken(req.cookies.frontendToken as string);
+    }
+    if (decoded != undefined) {
+        const integrationTokens = await ConfigurationController.getTempUser(req.query.hubspotID as string);
+        res.json(integrationTokens);
+        res.end();
+    } else {
+        console.error(`GET ${API_TEMP_CONFIGURATION_URL} -> Failed to validate OAuth token`);
+        res.sendStatus(400);
+        res.end();
+    }
+});
+router.delete(API_DELETE_TEMP_CONFIGURATION_URL, async (req, res) => {
+    let decoded = undefined;
+    if (req.cookies.frontendToken) {
+        decoded = authenticateToken(req.cookies.frontendToken as string);
+    }
+    if (decoded != undefined) {
+        await ConfigurationController.deleteTempUser(req.query.hubspotID as string);
+        res.sendStatus(202);
+        res.end();
+    } else {
+        console.error(`DELETE ${API_DELETE_TEMP_CONFIGURATION_URL} -> Failed to validate OAuth token`);
+        res.sendStatus(400);
+        res.end();
+    }
+});
 router.get(API_CONFIGURATION_URL, async (req, res) => {
     let decoded = undefined;
     if (req.cookies.frontendToken) {
@@ -37,7 +67,7 @@ router.post(API_CONFIGURATION_URL, async (req, res) => {
     }
     if (validate(req.body) && decoded != undefined) {
         const configuration: Configuration = req.body as Configuration;
-        ConfigurationController.setConfiguration(MOCK_SESSION_HUBSPOT_ID, configuration);
+        ConfigurationController.setConfiguration(configuration.hubspotID, configuration);
         res.sendStatus(200);
         res.end();
     } else if (!validate(req.body)) {

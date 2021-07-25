@@ -2,65 +2,76 @@ import { Meta } from '@storybook/react';
 import { View } from '../components/ConfigurationP1';
 
 const defaultProps = {
-  config: {
-    saasquatchTenantAlias: '',
-    pushIntoContacts: false,
-    pullIntoContacts: false,
-  },
-  handleSubmit: ()=>{},
-  handleToggles: {
-    toggleHubPush: ()=>{},
-    toggleHubPull: ()=>{},
-  },
-  open: false,
-  handleClose: ()=>{},
-  imported: false,
-  oneway: true,
+    config: {
+        saasquatchTenantAlias: '',
+        pushIntoParticipants: false,
+        pullIntoParticipants: false,
+        pushIntoContacts: false,
+        pullIntoContacts: false,
+        contactsImported: false,
+        participantsImported: false,
+        newUser: false,
+    },
+    handleSubmit: () => {},
+    handleToggles: {
+        toggleHubPush: () => {},
+        toggleHubPull: () => {},
+    },
 };
 
 export default {
-  title: 'Integration/ConfigurationP1',
-  component: View,
-  parameters: {
-    cucumber: {
-      data: 'SyncContactsWithSaaSquatch.feature',
+    title: 'Integration/ConfigurationP1',
+    component: View,
+    parameters: {
+        cucumber: {
+            data: 'SyncContactsWithSaaSquatch.feature',
+        },
     },
-  },
 } as Meta;
 
-export const Default = () => <View {...defaultProps} />
+export const Default = () => <View {...defaultProps} />;
 export const TogglesSelected = () => (
-  <View 
-    {...defaultProps} 
-    config={{
-      saasquatchTenantAlias: '',
-      pushIntoContacts: true,
-      pullIntoContacts: true,
-    }} 
-    oneway={false}
-  />
-)
+    <View
+        {...defaultProps}
+        config={{
+            saasquatchTenantAlias: '',
+            pushIntoParticipants: false,
+            pullIntoParticipants: false,
+            pushIntoContacts: true,
+            pullIntoContacts: true,
+            contactsImported: false,
+            participantsImported: false,
+            newUser: false,
+        }}
+    />
+);
 export const PreviousImport = () => (
-  <View 
-    {...defaultProps} 
-    config={{
-      saasquatchTenantAlias: '',
-      pushIntoContacts: true,
-      pullIntoContacts: true,
-    }}
-    oneway={false}
-    imported={true}
-  />
-)
+    <View
+        {...defaultProps}
+        config={{
+            saasquatchTenantAlias: '',
+            pushIntoParticipants: false,
+            pullIntoParticipants: false,
+            pushIntoContacts: true,
+            pullIntoContacts: true,
+            contactsImported: true,
+            participantsImported: true,
+            newUser: false,
+        }}
+    />
+);
 export const ImportModal = () => (
-  <View 
-    {...defaultProps} 
-    config={{
-      saasquatchTenantAlias: '',
-      pushIntoContacts: true,
-      pullIntoContacts: true,
-    }}
-    oneway={false}
-    open={true}
-  />
-)
+    <View
+        {...defaultProps}
+        config={{
+            saasquatchTenantAlias: '',
+            pushIntoParticipants: false,
+            pullIntoParticipants: false,
+            pushIntoContacts: true,
+            pullIntoContacts: true,
+            contactsImported: false,
+            participantsImported: false,
+            newUser: false,
+        }}
+    />
+);

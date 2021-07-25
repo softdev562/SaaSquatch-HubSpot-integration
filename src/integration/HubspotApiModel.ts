@@ -2,9 +2,10 @@ import axios from 'axios';
 import { PollTokensFromDatabase } from '../database';
 import { IntegrationTokens } from '../Types/types';
 import { LookupAllias } from '../database';
+import { AxiosRequestConfig } from 'axios';
 
 /**
- * This is the model between the HubSpot API and our controller.
+ * HubSpot model for interacting with the HubSpot's API
  */
 
 export class HubspotApiModel {
@@ -14,7 +15,7 @@ export class HubspotApiModel {
      * @param objectId objectID of contact to query
      * @param paramToGet query parameters to filter by. eg. 'email'.
      */
-    public async getContact(contactObjectID: number, hub_id: number, paramToGet?: string) {
+    public async getContact(contactObjectID: number, hub_id: number, paramToGet?: string): Promise<any> {
         try {
             const tenantAlias: any = await LookupAllias(hub_id.toString());
             if (tenantAlias.ID == '') {
@@ -34,6 +35,7 @@ export class HubspotApiModel {
                         qs: { properties: 'email', archived: 'false' },
                         headers: { accept: 'application/json', authorization: `Bearer ${access_token}` },
                     };
+
                 } else {
                     options = {
                         qs: { archived: 'false' },
@@ -56,6 +58,7 @@ export class HubspotApiModel {
             }
         } catch (e) {
             console.error('Alias not found');
+
         }
     }
 

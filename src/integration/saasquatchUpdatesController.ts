@@ -6,8 +6,8 @@ export class saasquatchUpdatesController {
     private hubApiModel: HubspotApiModel;
     private saasApiModel: SaasquatchApiModel;
 
-    constructor(hApiKey: string, sApiKey: string, sTenantAlias: string) {
-        this.saasApiModel = new SaasquatchApiModel(sApiKey, sTenantAlias);
+    constructor() {
+        this.saasApiModel = new SaasquatchApiModel();
         this.hubApiModel = new HubspotApiModel();
     }
 
