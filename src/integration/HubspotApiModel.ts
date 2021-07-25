@@ -1,9 +1,10 @@
 import axios from 'axios';
 import { PollTokensFromDatabase } from '../database';
 import { IntegrationTokens } from '../Types/types';
+import { AxiosRequestConfig } from 'axios';
 
 /**
- * This is the model between the HubSpot API and our controller.
+ * HubSpot model for interacting with the HubSpot's API
  */
 
 export class HubspotApiModel {
@@ -13,28 +14,21 @@ export class HubspotApiModel {
      * @param objectId objectID of contact to query
      * @param paramToGet query parameters to filter by. eg. 'email'.
      */
-    public async getContact(contactObjectID: number, hub_id: number, paramToGet?: string) {
+    public async getContact(contactObjectID: number, hub_id: number, paramToGet?: string): Promise<any> {
         try {
-            const token: any = await PollTokensFromDatabase(hub_id.toString());
+            const token = await PollTokensFromDatabase(hub_id.toString());
 
             const access_token = token.accessToken;
 
             const url = `https://api.hubapi.com/crm/v3/objects/contacts/${encodeURIComponent(contactObjectID)}`;
 
-            let options: any = {
-                qs: { properties: 'email', archived: 'false' },
+            const options: AxiosRequestConfig = {
                 headers: { accept: 'application/json', authorization: `Bearer ${access_token}` },
             };
-            if (paramToGet) {
-                options = {
-                    qs: { properties: 'email', archived: 'false' },
-                    headers: { accept: 'application/json', authorization: `Bearer ${access_token}` },
-                };
+            if (!paramToGet) {
+                options.data = { archived: 'false' };
             } else {
-                options = {
-                    qs: { archived: 'false' },
-                    headers: { accept: 'application/json', authorization: `Bearer ${access_token}` },
-                };
+                options.data = { properties: 'email', archived: 'false' };
             }
 
             try {
@@ -48,7 +42,7 @@ export class HubspotApiModel {
                 console.error(e);
             }
         } catch (e) {
-            console.log('ERROR FETCHING TOKENS FROM THE DB');
+            console.error('ERROR FETCHING TOKENS FROM THE DB');
             // #todo redirect to signin
             //axios.get(/hubspot);
         }

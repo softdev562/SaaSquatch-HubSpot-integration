@@ -1,7 +1,7 @@
 /**
  * ConfigurationController
  *
- * Includes utitlities for exposing configuration data to routes.
+ * Includes utilities for exposing configuration data to routes.
  */
 
 import { Configuration } from '../Types/types';
