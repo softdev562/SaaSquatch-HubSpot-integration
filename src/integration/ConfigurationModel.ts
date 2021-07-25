@@ -10,25 +10,22 @@
 
 import { IntegrationTokens } from '../Types/types';
 import { Configuration } from '../Types/types';
-import { PollTempUser } from '../database';
+import { LookupAlias, PollTempUser } from '../database';
 import { DeleteTempUser } from '../database';
 import { PollDatabase } from '../database';
 import { AddToDatabase } from '../database';
 import { EditDatabase } from '../database';
 
 export class ConfigurationModel {
-    /*
-	static configuration: Configuration = {
-		SaaSquatchTenantAlias: "",
-		PushPartixipantsAsContacts: false, 
-		PullParticipantsIntoContacts: false,
-		DeleteContactwhenParticipantDeleted: false,
-		PushContactsAsParticipants: false,
-		PullContactsIntoParticipants: false, 
-		DeleteParticipantWhenContactDeleted: false,
-		accessToken: "", 
-		refreshToken: ""
-	}*/
+    public static async getConfigurationWithSaaSquatchTenantAlias(tenantAlias: string): Promise<Configuration> {
+        return PollDatabase(tenantAlias);
+    }
+
+    public static async getConfigurationWithHubspotId(hubspotId: number): Promise<Configuration> {
+        const tenantAlias = await LookupAlias(String(hubspotId));
+        if (tenantAlias) return PollDatabase(tenantAlias);
+        else throw Error(`Failed to find tenant alias for hubspotId: ${hubspotId}`);
+    }
 
     public static async getTempUser(hubspotID: string): Promise<IntegrationTokens> {
         return PollTempUser(hubspotID);

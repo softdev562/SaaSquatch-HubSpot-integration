@@ -182,48 +182,41 @@ export function EditDatabase(
 export async function PollDatabase(tenantAlias: string): Promise<Configuration> {
     const key = hashValue(tenantAlias);
     const databseRef = firebase.database().ref();
-    const configuration: Configuration = {
-        SaaSquatchTenantAlias: '',
-        PushPartixipantsAsContacts: false,
-        PullParticipantsIntoContacts: false,
-        DeleteContactwhenParticipantDeleted: false,
-        PushContactsAsParticipants: false,
-        PullContactsIntoParticipants: false,
-        DeleteParticipantWhenContactDeleted: false,
-        hubspotID: '',
-        accessToken: '',
-        refreshToken: '',
-    };
-    await databseRef
-        .child('users/' + key)
-        .get()
-        .then((snapshot) => {
-            if (snapshot.exists()) {
-                configuration.PushPartixipantsAsContacts = snapshot.child('saasquach/PushPartixipantsAsContacts').val();
-                configuration.PullParticipantsIntoContacts = snapshot
-                    .child('saasquach/PullParticipantsIntoContacts')
-                    .val();
-                configuration.DeleteContactwhenParticipantDeleted = snapshot
-                    .child('saasquach/DeleteContactwhenParticipantDeleted')
-                    .val();
-
-                configuration.PushContactsAsParticipants = snapshot.child('hubspot/PushContactsAsParticipants').val();
-                configuration.PullContactsIntoParticipants = snapshot
-                    .child('hubspot/PullContactsIntoParticipants')
-                    .val();
-                configuration.DeleteParticipantWhenContactDeleted = snapshot
-                    .child('hubspot/DeleteParticipantWhenContactDeleted')
-                    .val();
-
-                configuration.accessToken = snapshot.child('userinfo/accessToken').val();
-                configuration.refreshToken = snapshot.child('userinfo/refreshToken').val();
-                configuration.hubspotID = snapshot.child('userinfo/hubspotID').val();
-            } else console.warn('No configuration data available!');
-        })
-        .catch((error) => {
-            console.error(error);
+    const snapshot: firebase.database.DataSnapshot = await databseRef.child(`users/${key}`).get();
+    if (snapshot.exists()) {
+        const snapshotReducerFactory = (snapshotChild: string) => (accumulator: any, key: string) => ({
+            ...accumulator,
+            [key]: snapshot.child(snapshotChild).child(key).val(),
         });
-    return configuration;
+        return {
+            ...[
+                'PushPartixipantsAsContacts',
+                'PullParticipantsIntoContacts',
+                'DeleteContactwhenParticipantDeleted',
+            ].reduce(snapshotReducerFactory('saasquach'), {}),
+            ...[
+                'PushContactsAsParticipants',
+                'PullContactsIntoParticipants',
+                'DeleteParticipantWhenContactDeleted',
+                'hubspotID',
+                'accessToken',
+                'refreshToken',
+            ].reduce(snapshotReducerFactory('hubspot'), {}),
+        } as Configuration;
+    } else {
+        return {
+            SaaSquatchTenantAlias: '',
+            PushPartixipantsAsContacts: false,
+            PullParticipantsIntoContacts: false,
+            DeleteContactwhenParticipantDeleted: false,
+            PushContactsAsParticipants: false,
+            PullContactsIntoParticipants: false,
+            DeleteParticipantWhenContactDeleted: false,
+            hubspotID: '',
+            accessToken: '',
+            refreshToken: '',
+        };
+    }
 }
 
 export async function LookupAlias(hubspotID: string): Promise<string> {

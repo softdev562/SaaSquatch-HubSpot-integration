@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { PollTokensFromDatabase } from '../database';
 import { IntegrationTokens } from '../Types/types';
-import { LookupAllias } from '../database';
+import { LookupAlias } from '../database';
 import { AxiosRequestConfig } from 'axios';
 
 /**
@@ -17,7 +17,7 @@ export class HubspotApiModel {
      */
     public async getContact(contactObjectID: number, hub_id: number, paramToGet?: string): Promise<any> {
         try {
-            const tenantAlias: any = await LookupAllias(hub_id.toString());
+            const tenantAlias: any = await LookupAlias(hub_id.toString());
             if (tenantAlias.ID == '') {
                 throw Error('Alias not found');
             }
@@ -35,7 +35,6 @@ export class HubspotApiModel {
                         qs: { properties: 'email', archived: 'false' },
                         headers: { accept: 'application/json', authorization: `Bearer ${access_token}` },
                     };
-
                 } else {
                     options = {
                         qs: { archived: 'false' },
@@ -58,7 +57,6 @@ export class HubspotApiModel {
             }
         } catch (e) {
             console.error('Alias not found');
-
         }
     }
 
@@ -71,7 +69,7 @@ export class HubspotApiModel {
      */
     public async createObject(objectType: string, createObjectBody: any, hub_id: number) {
         try {
-            const tenantAlias: any = await LookupAllias(hub_id.toString());
+            const tenantAlias: any = await LookupAlias(hub_id.toString());
             if (tenantAlias.ID == '') {
                 throw Error('Alias not found');
             }
@@ -106,7 +104,7 @@ export class HubspotApiModel {
      */
     public async objectHasProperty(objectType: string, propertyName: string, hub_id: number) {
         try {
-            const tenantAlias: any = await LookupAllias(hub_id.toString());
+            const tenantAlias: any = await LookupAlias(hub_id.toString());
             if (tenantAlias.ID == '') {
                 throw Error('Alias not found');
             }
@@ -167,7 +165,7 @@ export class HubspotApiModel {
         hub_id: number,
     ) {
         try {
-            const tenantAlias: any = await LookupAllias(hub_id.toString());
+            const tenantAlias: any = await LookupAlias(hub_id.toString());
             if (tenantAlias.ID == '') {
                 throw Error('Alias not found');
             }
@@ -210,7 +208,7 @@ export class HubspotApiModel {
      */
     public async searchObject(objectType: string, body: any, hub_id: number) {
         try {
-            const tenantAlias: any = await LookupAllias(hub_id.toString());
+            const tenantAlias: any = await LookupAlias(hub_id.toString());
             if (tenantAlias.ID == '') {
                 throw Error('Alias not found');
             }

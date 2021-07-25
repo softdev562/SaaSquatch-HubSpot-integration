@@ -5,7 +5,7 @@
     "items":{
         "type": "object",
         "properties": {
-            "eventId": {"type": "number"},
+            "eventId": {"type": "string"},
             "subscriptionId": {"type": "number"},
             "portalId": {"type": "number"},
             "appId": {"type": "number"},
