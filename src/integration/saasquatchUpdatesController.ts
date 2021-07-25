@@ -69,6 +69,7 @@ export class saasquatchUpdatesController {
                 lastname: saasquatchPayloadData.lastName,
             };
 
+
             const basicInfoAndProgramShareLinks = Object.assign(basicContactInfo, programShareLinks);
             const createContactBody = {
                 properties: basicInfoAndProgramShareLinks,

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { PollTokensFromDatabase } from '../database';
 import { IntegrationTokens } from '../Types/types';
+import { LookupAllias } from '../database';
 import { AxiosRequestConfig } from 'axios';
 
 /**
@@ -16,35 +17,48 @@ export class HubspotApiModel {
      */
     public async getContact(contactObjectID: number, hub_id: number, paramToGet?: string): Promise<any> {
         try {
-            const token = await PollTokensFromDatabase(hub_id.toString());
-
-            const access_token = token.accessToken;
-
-            const url = `https://api.hubapi.com/crm/v3/objects/contacts/${encodeURIComponent(contactObjectID)}`;
-
-            const options: AxiosRequestConfig = {
-                headers: { accept: 'application/json', authorization: `Bearer ${access_token}` },
-            };
-            if (!paramToGet) {
-                options.data = { archived: 'false' };
-            } else {
-                options.data = { properties: 'email', archived: 'false' };
+            const tenantAlias: any = await LookupAllias(hub_id.toString());
+            if (tenantAlias.ID == '') {
+                throw Error('Alias not found');
             }
-
             try {
-                const resp = await axios.get(url, options);
-                if (resp.status != 200) {
-                    throw Error('Error getting a contact from HubSpot.' + resp.data['error']);
+                const token: any = await PollTokensFromDatabase(tenantAlias.ID);
+                const access_token = token.accessToken;
+
+                const url = `https://api.hubapi.com/crm/v3/objects/contacts/${encodeURIComponent(contactObjectID)}`;
+                let options: any = {
+                    qs: { properties: 'email', archived: 'false' },
+                    headers: { accept: 'application/json', authorization: `Bearer ${access_token}` },
+                };
+                if (paramToGet) {
+                    options = {
+                        qs: { properties: 'email', archived: 'false' },
+                        headers: { accept: 'application/json', authorization: `Bearer ${access_token}` },
+                    };
+
                 } else {
-                    return resp.data;
+                    options = {
+                        qs: { archived: 'false' },
+                        headers: { accept: 'application/json', authorization: `Bearer ${access_token}` },
+                    };
+                }
+
+                try {
+                    const resp = await axios.get(url, options);
+                    if (resp.status != 200) {
+                        throw Error('Error getting a contact from HubSpot.' + resp.data['error']);
+                    } else {
+                        return resp.data;
+                    }
+                } catch (e) {
+                    console.error('Error getting a contact from HubSpot');
                 }
             } catch (e) {
-                console.error(e);
+                console.error('Error Fetching Tokens from DB');
             }
         } catch (e) {
-            console.error('ERROR FETCHING TOKENS FROM THE DB');
-            // #todo redirect to signin
-            //axios.get(/hubspot);
+            console.error('Alias not found');
+
         }
     }
 
@@ -57,25 +71,30 @@ export class HubspotApiModel {
      */
     public async createObject(objectType: string, createObjectBody: any, hub_id: number) {
         try {
-            const token: any = await PollTokensFromDatabase(hub_id.toString());
-            const access_token = token.accessToken;
+            const tenantAlias: any = await LookupAllias(hub_id.toString());
+            if (tenantAlias.ID == '') {
+                throw Error('Alias not found');
+            }
             try {
-                const createObjectURL = 'https://api.hubapi.com/crm/v3/objects/' + objectType;
-                const response = await axios.post(createObjectURL, createObjectBody, {
-                    params: {
-                        headers: { accept: 'application/json', authorization: `Bearer ${access_token}` },
-                    },
-                });
-                return response;
+                const token: any = await PollTokensFromDatabase(tenantAlias.ID);
+                const access_token = token.accessToken;
+                try {
+                    const createObjectURL = 'https://api.hubapi.com/crm/v3/objects/' + objectType;
+                    const response = await axios.post(createObjectURL, createObjectBody, {
+                        params: {
+                            headers: { accept: 'application/json', authorization: `Bearer ${access_token}` },
+                        },
+                    });
+                    return response;
+                } catch (e) {
+                    console.error('Was not able to create contact');
+                    return JSON.parse(e.response.body);
+                }
             } catch (e) {
-                console.error('Was not able to create contact');
-                console.log(e);
-                return JSON.parse(e.response.body);
+                console.error('Error Fetching Tokens from DB');
             }
         } catch (e) {
-            console.log('ERROR FETCHING TOKENS FROM THE DB');
-            // #todo redirect to signin
-            //axios.get(/hubspot);
+            console.error('Alias not found');
         }
     }
 
@@ -87,37 +106,43 @@ export class HubspotApiModel {
      */
     public async objectHasProperty(objectType: string, propertyName: string, hub_id: number) {
         try {
-            const token: any = await PollTokensFromDatabase(hub_id.toString());
-            const access_token = token.accessToken;
-            const readPropertyURL = 'https://api.hubapi.com/crm/v3/properties/' + objectType + '/' + propertyName;
-
+            const tenantAlias: any = await LookupAllias(hub_id.toString());
+            if (tenantAlias.ID == '') {
+                throw Error('Alias not found');
+            }
             try {
-                const response = await axios.get(readPropertyURL, {
-                    params: {
-                        headers: { accept: 'application/json', authorization: `Bearer ${access_token}` },
-                    },
-                });
-                if (response.status == 200) {
-                    return true;
-                } else {
-                    console.error('======== WAS NOT ABLE TO READ PROPERTY ========');
-                    console.error(response);
+                const token: any = await PollTokensFromDatabase(tenantAlias);
+                const access_token = token.accessToken;
+                const readPropertyURL = 'https://api.hubapi.com/crm/v3/properties/' + objectType + '/' + propertyName;
+
+                try {
+                    const response = await axios.get(readPropertyURL, {
+                        params: {
+                            headers: { accept: 'application/json', authorization: `Bearer ${access_token}` },
+                        },
+                    });
+                    if (response.status == 200) {
+                        return true;
+                    } else {
+                        console.error('======== WAS NOT ABLE TO READ PROPERTY ========');
+                        console.error(response);
+                    }
+                } catch (e) {
+                    if (e.response.status == 404) {
+                        return false;
+                    } else {
+                        console.error(
+                            '======== WAS NOT ABLE TO MAKE CALL: STATUS CODE: ' + e.response.status + ' ========',
+                        );
+                        console.log(e);
+                        return JSON.parse(e.response.body);
+                    }
                 }
             } catch (e) {
-                if (e.response.status == 404) {
-                    return false;
-                } else {
-                    console.error(
-                        '======== WAS NOT ABLE TO MAKE CALL: STATUS CODE: ' + e.response.status + ' ========',
-                    );
-                    console.log(e);
-                    return JSON.parse(e.response.body);
-                }
+                console.error('Error Fetching Tokens from DB');
             }
         } catch (e) {
-            console.log('ERROR FETCHING TOKENS FROM THE DB');
-            // #todo redirect to signin
-            //axios.get(/hubspot);
+            console.error('Alias not found');
         }
     }
 
@@ -142,32 +167,38 @@ export class HubspotApiModel {
         hub_id: number,
     ) {
         try {
-            const token: any = await PollTokensFromDatabase(hub_id.toString());
-            const access_token = token.accessToken;
-            const contactCreatePropertyURL = 'https://api.hubapi.com/crm/v3/properties/' + objectType;
-            const body = {
-                name: propertyName,
-                label: propertyLabel,
-                type: propertyType,
-                fieldType: propertyFieldType,
-                groupName: propertyGroupName,
-                formField: true,
-            };
+            const tenantAlias: any = await LookupAllias(hub_id.toString());
+            if (tenantAlias.ID == '') {
+                throw Error('Alias not found');
+            }
             try {
-                await axios.post(contactCreatePropertyURL, body, {
-                    params: {
-                        headers: { accept: 'application/json', authorization: `Bearer ${access_token}` },
-                    },
-                });
+                const token: any = await PollTokensFromDatabase(tenantAlias);
+                const access_token = token.accessToken;
+                const contactCreatePropertyURL = 'https://api.hubapi.com/crm/v3/properties/' + objectType;
+                const body = {
+                    name: propertyName,
+                    label: propertyLabel,
+                    type: propertyType,
+                    fieldType: propertyFieldType,
+                    groupName: propertyGroupName,
+                    formField: true,
+                };
+                try {
+                    await axios.post(contactCreatePropertyURL, body, {
+                        params: {
+                            headers: { accept: 'application/json', authorization: `Bearer ${access_token}` },
+                        },
+                    });
+                } catch (e) {
+                    console.error('==== WAS NOT ABLE TO POST NEW PROPERTY ===');
+                    console.log(e);
+                    return JSON.parse(e.response.body);
+                }
             } catch (e) {
-                console.error('==== WAS NOT ABLE TO POST NEW PROPERTY ===');
-                console.log(e);
-                return JSON.parse(e.response.body);
+                console.error('Error Fetching Tokens from DB');
             }
         } catch (e) {
-            console.log('ERROR FETCHING TOKENS FROM THE DB');
-            // #todo redirect to signin
-            //axios.get(/hubspot);
+            console.error('Alias not found');
         }
     }
 
@@ -179,25 +210,32 @@ export class HubspotApiModel {
      */
     public async searchObject(objectType: string, body: any, hub_id: number) {
         try {
-            const token: any = await PollTokensFromDatabase(hub_id.toString());
-            const access_token = token.accessToken;
-            try {
-                const searchObjectURL = 'https://api.hubapi.com/crm/v3/objects/' + objectType + '/search';
+            const tenantAlias: any = await LookupAllias(hub_id.toString());
+            if (tenantAlias.ID == '') {
+                throw Error('Alias not found');
+            }
 
-                const response = await axios.post(searchObjectURL, body, {
-                    params: {
-                        headers: { accept: 'application/json', authorization: `Bearer ${access_token}` },
-                    },
-                });
-                return response;
+            try {
+                const token: any = await PollTokensFromDatabase(hub_id.toString());
+                const access_token = token.accessToken;
+                try {
+                    const searchObjectURL = 'https://api.hubapi.com/crm/v3/objects/' + objectType + '/search';
+
+                    const response = await axios.post(searchObjectURL, body, {
+                        params: {
+                            headers: { accept: 'application/json', authorization: `Bearer ${access_token}` },
+                        },
+                    });
+                    return response;
+                } catch (e) {
+                    console.error('===== WAS NOT ABLE TO SEARCH FOR PROPERTIES OF OBJECT: ' + objectType);
+                    return JSON.parse(e.response.body);
+                }
             } catch (e) {
-                console.error('===== WAS NOT ABLE TO SEARCH FOR PROPERTIES OF OBJECT: ' + objectType);
-                return JSON.parse(e.response.body);
+                console.error('Error Fetching Tokens from DB');
             }
         } catch (e) {
-            console.log('ERROR FETCHING TOKENS FROM THE DB');
-            // #todo redirect to signin
-            //axios.get(/hubspot);
+            console.error('Alias not found');
         }
     }
 }

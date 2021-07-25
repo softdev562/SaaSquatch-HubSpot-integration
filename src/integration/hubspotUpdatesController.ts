@@ -18,6 +18,7 @@ export class hubspotUpdatesController {
      */
     public async NewContact(hubspotPayload: HubspotPayload) {
         const contactObjectId: number = hubspotPayload.objectId;
+        const hub_id: number = hubspotPayload.portalId;
 
         // Hubspot does not include email in contact.created
         // Get new contact's email
