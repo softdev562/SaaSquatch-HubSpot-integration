@@ -177,15 +177,9 @@ router.get('/oauth-callback', async (req, res) => {
                 'https://api.hubapi.com/oauth/v1/refresh-tokens/' + resp.data.refresh_token,
                 get_options,
             );
-            //#todo temporarily using user email for tenant alias rather than id
-            // as the db does not support number tenant alias currently
+
             hubspotID = getUserInfo.data.hub_id;
-
-            // #todo in a seperate ticket check first whether the user already exists in DB
             AddTempUser(hubspotID.toString(), resp.data.access_token, resp.data.refresh_token);
-
-            // store user id in local tokenStore for knowledge of current user
-            // and for knowing which user to poll the DB
 
             res.redirect('/hubspot?hubspotID=' + hubspotID);
         } catch (e) {

@@ -23,6 +23,7 @@ export class HubspotApiModel {
             try {
                 const token: any = await PollTokensFromDatabase(tenantAlias.ID);
                 const access_token = token.accessToken;
+
                 const url = `https://api.hubapi.com/crm/v3/objects/contacts/${encodeURIComponent(contactObjectID)}`;
                 let options: any = {
                     qs: { properties: 'email', archived: 'false' },
@@ -48,13 +49,13 @@ export class HubspotApiModel {
                         return resp.data;
                     }
                 } catch (e) {
-                    throw Error('Error getting a contact from HubSpot.');
+                    console.error('Error getting a contact from HubSpot');
                 }
             } catch (e) {
-                console.log('Error Fetching Tokens from DB');
+                console.error('Error Fetching Tokens from DB');
             }
         } catch (e) {
-            throw Error('Alias not found');
+            console.error('Alias not found');
         }
     }
 
@@ -87,10 +88,10 @@ export class HubspotApiModel {
                     return JSON.parse(e.response.body);
                 }
             } catch (e) {
-                throw Error('Error Fetching Tokens from DB');
+                console.error('Error Fetching Tokens from DB');
             }
         } catch (e) {
-            throw Error('Alias not found');
+            console.error('Alias not found');
         }
     }
 
@@ -135,10 +136,10 @@ export class HubspotApiModel {
                     }
                 }
             } catch (e) {
-                throw Error('Error Fetching Tokens from DB');
+                console.error('Error Fetching Tokens from DB');
             }
         } catch (e) {
-            throw Error('Alias not found');
+            console.error('Alias not found');
         }
     }
 
@@ -191,10 +192,10 @@ export class HubspotApiModel {
                     return JSON.parse(e.response.body);
                 }
             } catch (e) {
-                throw Error('Error Fetching Tokens from DB');
+                console.error('Error Fetching Tokens from DB');
             }
         } catch (e) {
-            throw Error('Alias not found');
+            console.error('Alias not found');
         }
     }
 
@@ -228,10 +229,10 @@ export class HubspotApiModel {
                     return JSON.parse(e.response.body);
                 }
             } catch (e) {
-                throw Error('Error Fetching Tokens from DB');
+                console.error('Error Fetching Tokens from DB');
             }
         } catch (e) {
-            throw Error('Alias not found');
+            console.error('Alias not found');
         }
     }
 }
