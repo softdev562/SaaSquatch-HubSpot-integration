@@ -68,7 +68,7 @@ export interface SaasquatchPayload {
 
 export interface Configuration {
     SaaSquatchTenantAlias: string;
-    PushPartixipantsAsContacts: boolean;
+    PushParticipantsAsContacts: boolean;
     PullParticipantsIntoContacts: boolean;
     DeleteContactwhenParticipantDeleted: boolean;
     PushContactsAsParticipants: boolean;

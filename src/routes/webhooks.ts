@@ -135,7 +135,7 @@ async function processSaasquatchPayload(saasquatchPayload: SaasquatchPayload) {
     const userIdentifier: string = saasquatchPayload.tenantAlias;
 
     const configuration: Configuration = await ConfigurationModel.getConfiguration(userIdentifier);
-    if (configuration.PushPartixipantsAsContacts)
+    if (configuration.PushParticipantsAsContacts)
         switch (saasquatchPayload.type) {
             case EventType.UserCreated:
                 saasUpdatesController.NewUser(saasquatchPayload);

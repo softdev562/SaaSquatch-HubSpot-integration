@@ -122,7 +122,7 @@ export function Controller(state: Config) {
                 .then((response) => {
                     // A blank config object is returned if the user doesn't exist yet in the database
                     if (
-                        response.data.PushPartixipantsAsContacts === false &&
+                        response.data.PushParticipantsAsContacts === false &&
                         response.data.PullParticipantsIntoContacts === false &&
                         response.data.DeleteContactwhenParticipantDeleted === false &&
                         response.data.PushContactsAsParticipants === false &&
@@ -139,7 +139,7 @@ export function Controller(state: Config) {
                         // Display config data for user from database
                         setConfig((config) => ({
                             ...config,
-                            pushIntoContacts: response.data.PushPartixipantsAsContacts || false,
+                            pushIntoContacts: response.data.PushParticipantsAsContacts || false,
                             pullIntoContacts: response.data.PullParticipantsIntoContacts || false,
                             pushIntoParticipants: response.data.PushContactsAsParticipants || false,
                             pullIntoParticipants: response.data.PullContactsIntoParticipants || false,

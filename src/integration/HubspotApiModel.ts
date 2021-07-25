@@ -1,8 +1,6 @@
 import axios from 'axios';
 import { PollTokensFromDatabase } from '../database';
-import { IntegrationTokens } from '../Types/types';
 import { LookupAlias } from '../database';
-import { AxiosRequestConfig } from 'axios';
 
 /**
  * HubSpot model for interacting with the HubSpot's API
