@@ -4,8 +4,13 @@ import { View } from '../components/ConfigurationP2';
 const defaultProps = {
     config: {
         saasquatchTenantAlias: '',
+        pushIntoContacts: false,
+        pullIntoContacts: false,
         pushIntoParticipants: false,
         pullIntoParticipants: false,
+        contactsImported: false,
+        participantsImported: false,
+        newUser: false,
     },
     handleBack: () => {},
     handleSubmit: () => {},
@@ -13,13 +18,6 @@ const defaultProps = {
         toggleSaasPush: () => {},
         toggleSaasPull: () => {},
     },
-    open: false,
-    handleClose: () => {},
-    openError: false,
-    handleErrorClose: () => {},
-    imported: false,
-    oneway: true,
-    noway: false,
 };
 
 export default {
@@ -38,10 +36,14 @@ export const TogglesSelected = () => (
         {...defaultProps}
         config={{
             saasquatchTenantAlias: '',
+            pushIntoContacts: false,
+            pullIntoContacts: false,
             pushIntoParticipants: true,
             pullIntoParticipants: true,
+            contactsImported: false,
+            participantsImported: false,
+            newUser: false,
         }}
-        oneway={false}
     />
 );
 export const PreviousImport = () => (
@@ -49,11 +51,14 @@ export const PreviousImport = () => (
         {...defaultProps}
         config={{
             saasquatchTenantAlias: '',
+            pushIntoContacts: false,
+            pullIntoContacts: false,
             pushIntoParticipants: true,
             pullIntoParticipants: true,
+            contactsImported: false,
+            participantsImported: false,
+            newUser: false,
         }}
-        oneway={false}
-        imported={true}
     />
 );
 export const ImportModal = () => (
@@ -61,12 +66,43 @@ export const ImportModal = () => (
         {...defaultProps}
         config={{
             saasquatchTenantAlias: '',
+            pushIntoContacts: false,
+            pullIntoContacts: false,
             pushIntoParticipants: true,
             pullIntoParticipants: true,
+            contactsImported: false,
+            participantsImported: false,
+            newUser: false,
         }}
-        oneway={false}
-        open={true}
     />
 );
-export const NowayError = () => <View {...defaultProps} oneway={true} noway={true} />;
-export const NowayModal = () => <View {...defaultProps} oneway={true} noway={true} openError={true} />;
+export const NowayError = () => (
+    <View
+        {...defaultProps}
+        config={{
+            saasquatchTenantAlias: '',
+            pushIntoContacts: false,
+            pullIntoContacts: false,
+            pushIntoParticipants: true,
+            pullIntoParticipants: true,
+            contactsImported: true,
+            participantsImported: true,
+            newUser: false,
+        }}
+    />
+);
+export const NowayModal = () => (
+    <View
+        {...defaultProps}
+        config={{
+            saasquatchTenantAlias: '',
+            pushIntoContacts: false,
+            pullIntoContacts: false,
+            pushIntoParticipants: true,
+            pullIntoParticipants: true,
+            contactsImported: true,
+            participantsImported: true,
+            newUser: false,
+        }}
+    />
+);

@@ -10,6 +10,7 @@
 		"PushContactsAsParticipants": { "type": "boolean" },
 		"PullContactsIntoParticipants": { "type": "boolean" },
 		"DeleteParticipantWhenContactDeleted": { "type": "boolean" },
+		"hubspotID": { "type": "string" },
 		"accessToken": { "type": "string" },
 		"refreshToken": { "type": "string" }
 	},

@@ -4,18 +4,19 @@ import { View } from '../components/ConfigurationP1';
 const defaultProps = {
     config: {
         saasquatchTenantAlias: '',
+        pushIntoParticipants: false,
+        pullIntoParticipants: false,
         pushIntoContacts: false,
         pullIntoContacts: false,
+        contactsImported: false,
+        participantsImported: false,
+        newUser: false,
     },
     handleSubmit: () => {},
     handleToggles: {
         toggleHubPush: () => {},
         toggleHubPull: () => {},
     },
-    open: false,
-    handleClose: () => {},
-    imported: false,
-    oneway: true,
 };
 
 export default {
@@ -34,10 +35,14 @@ export const TogglesSelected = () => (
         {...defaultProps}
         config={{
             saasquatchTenantAlias: '',
+            pushIntoParticipants: false,
+            pullIntoParticipants: false,
             pushIntoContacts: true,
             pullIntoContacts: true,
+            contactsImported: false,
+            participantsImported: false,
+            newUser: false,
         }}
-        oneway={false}
     />
 );
 export const PreviousImport = () => (
@@ -45,11 +50,14 @@ export const PreviousImport = () => (
         {...defaultProps}
         config={{
             saasquatchTenantAlias: '',
+            pushIntoParticipants: false,
+            pullIntoParticipants: false,
             pushIntoContacts: true,
             pullIntoContacts: true,
+            contactsImported: true,
+            participantsImported: true,
+            newUser: false,
         }}
-        oneway={false}
-        imported={true}
     />
 );
 export const ImportModal = () => (
@@ -57,10 +65,13 @@ export const ImportModal = () => (
         {...defaultProps}
         config={{
             saasquatchTenantAlias: '',
+            pushIntoParticipants: false,
+            pullIntoParticipants: false,
             pushIntoContacts: true,
             pullIntoContacts: true,
+            contactsImported: false,
+            participantsImported: false,
+            newUser: false,
         }}
-        oneway={false}
-        open={true}
     />
 );

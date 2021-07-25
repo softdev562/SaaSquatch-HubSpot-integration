@@ -92,6 +92,7 @@ export function EditDatabase(
         PushContactsAsParticipants: boolean;
         PullContactsIntoParticipants: boolean;
         DeleteParticipantWhenContactDeleted: boolean;
+        hubspotID: string;
         accessToken: string;
         refreshToken: string;
     },
@@ -144,6 +145,14 @@ export function EditDatabase(
             .ref('users/' + key + '/hubspot')
             .update({
                 DeleteParticipantWhenContactDeleted: params.DeleteParticipantWhenContactDeleted,
+            });
+    }
+    if (params.hubspotID != undefined) {
+        firebase
+            .database()
+            .ref('users/' + key + '/userinfo')
+            .update({
+                accessToken: params.hubspotID,
             });
     }
     if (params.accessToken != undefined) {
@@ -325,8 +334,8 @@ export async function PollTempUser(hubspotID: string): Promise<IntegrationTokens
         .get()
         .then((snapshot) => {
             if (snapshot.exists()) {
-                data.accessToken = snapshot.child('userinfo/accessToken').val();
-                data.refreshToken = snapshot.child('userinfo/refreshToken').val();
+                data.accessToken = snapshot.child('accessToken').val();
+                data.refreshToken = snapshot.child('refreshToken').val();
             } else {
                 console.error('No data available');
             }

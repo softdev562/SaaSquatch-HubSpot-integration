@@ -3,6 +3,11 @@ import SaaSquatchLogo from '../assets/SaaSquatchLogo.png';
 import HubspotLogo from '../assets/HubspotLogo.png';
 import history from '../types/history';
 
+/**
+ * Renders the configuration success screen (available at /configuration/success).
+ * Has links to go to either configuration screen
+ */
+
 const PageWrapper = styled.div`
     display: flex;
     flex-direction: row;
