@@ -12,18 +12,15 @@ To setup your development environment:
 The backend can be viewed at `http://localhost:8000`. The port `8000` can be changed with the `PORT` environment variable.
 
 ## Environment Variables
-The API requires environment variables PORT and HAPIKEY.
+The API requires environment variables PORT.
 You can specify them in the terminal:
 
-e.g. `PORT=8000 HAPIKEY= ... npm run watch`
+e.g. `PORT=8000 npm run watch`
 
 or alternatively create a `.env` file with the following:
 
 ```
 PORT=3000
-HAPIKEY=...
-SAPIKEY=...
-STENANTALIAS=...
 SERVER_TOKEN_SECRET=2c175eff51d2c03d2e1afac045ce026013f04a2e472cd08440b07307e99a6932cf81346513c5acec43899ef577e582aab8feceb0fd7a76b2bc49f0fa0df1c194
 
 // Hubspot App Properties
@@ -66,4 +63,22 @@ There are three other scripts: `build-tests` for building the test files, `run-t
 Due to penpal, our frontend will only render a loading state outside of SaaSqautch's context.
 There are 2 ways to see the frontend:
 1. Go to the SaaSqautch integrations page and look at it im the iframe. If you want your branch specifically to run, go to our heroku app (https://dashboard.heroku.com/apps/team2-saasquatch/deploy/github) and scroll to manual deploy, where you can deploy your branch. It will take about 7 minutes to deploy, but you will then be able to see your branch in the iframe
-2. If you want specifically to test out something in localhost, you'll have to butcher the penpal code a bit. In `Index.tsx`, comment out the `PenpalContextProvider`. Then search for `usePenpal`, and comment every instance of it, as well as anything in those files that refers to the `penpal` variable whose assignment you just commented. Then, in `ConfigurationP1.tsx` and `ConfigurationP2.tsx` find the line assigning the `emptyConfig` variable, and replace the `saasquatchTenantAlias` value with whatever tenant alias you'd like. I know it's not the prettiest solution, but it should work on localhost
+2. If you want specifically to test out something in localhost, you'll have to butcher the penpal code a bit. In `Index.tsx`, replace 
+```
+<PenpalContextProvider loading={<p>Loading state</p>} fallback={<p>Fallback state</p>}>
+  <React.StrictMode>
+      <App />
+  </React.StrictMode>
+</PenpalContextProvider>
+```
+with
+```
+{/* <PenpalContextProvider loading={<p>Loading state</p>} fallback={<p>Fallback state</p>}> */}
+    <React.StrictMode>
+        <App />
+    </React.StrictMode>
+{/* </PenpalContextProvider> */}
+``` 
+Then search for `usePenpal`, in each file where it is used, comment out these 3 lines `const penpal = usePenpal();`, `const tenantAliasUnparsed: { sub: string } = jwt_decode(penpal.tenantScopedToken);`, and `const tenantAliasParsed: string = tenantAliasUnparsed.sub.split('@')[0];`
+
+And replace any reference to `tenantAliasParsed` with whatever temporary tenantAlias you'd like (can just make it a string: `'tenantAliasParsed'`). I know it's not the prettiest solution, but it should work on localhost. Just remember to undo these changes before you push

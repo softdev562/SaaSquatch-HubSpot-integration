@@ -1,12 +1,19 @@
 /**
  * ConfigurationController
  *
- * Includes utitlities for exposing configuration data to routes.
+ * Includes utilities for exposing configuration data to routes.
  */
 
+import { IntegrationTokens } from '../Types/types';
 import { Configuration } from '../Types/types';
 import { ConfigurationModel } from './ConfigurationModel';
 export class ConfigurationController {
+    public static async getTempUser(hubspotID: string): Promise<IntegrationTokens> {
+        return ConfigurationModel.getTempUser(hubspotID);
+    }
+    public static async deleteTempUser(hubspotID: string): Promise<void> {
+        return ConfigurationModel.deleteTempUser(hubspotID);
+    }
     public static async getConfiguration(tenantAlias: string): Promise<Configuration> {
         return ConfigurationModel.getConfiguration(tenantAlias);
     }

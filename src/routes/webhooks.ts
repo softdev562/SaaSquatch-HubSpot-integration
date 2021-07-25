@@ -50,13 +50,9 @@ ajv.addSchema(saasquatchSchema, 'saasquatch');
 const validateHubspotSchema = ajv.getSchema('hubspot');
 const validateSaasquatchSchema = ajv.getSchema('saasquatch');
 
-const hubUpdatesController = new hubspotUpdatesController(process.env.SAPIKEY, process.env.STENANTALIAS);
+const hubUpdatesController = new hubspotUpdatesController();
 
-const saasUpdatesController = new saasquatchUpdatesController(
-    process.env.HAPIKEY,
-    process.env.SAPIKEY,
-    process.env.STENANTALIAS,
-);
+const saasUpdatesController = new saasquatchUpdatesController();
 
 const crypto = require('crypto');
 

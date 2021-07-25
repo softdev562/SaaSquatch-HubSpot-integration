@@ -88,7 +88,7 @@ export const getHubspotAccessToken = async (refreshToken: string | undefined): P
 /**
  * Gets a new API JWT from Saasquatch
  *
- * @returns Saasquatch JWT object.
+ * @returns Saasquatch JWT object. {access_token, expires_in, token_type}
  */
 export const getSaasquatchToken = async (): Promise<any> => {
     if (!SAASQUATCH_CLIENT_ID) {
@@ -120,7 +120,7 @@ router.get('/hubspot_authorization', async (req, res) => {
     }
     if (decoded != undefined) {
         try {
-            res.json('Authorized');
+            res.json(decoded.data);
             res.end();
         } catch (e) {
             console.error(e);
@@ -167,7 +167,6 @@ router.get('/oauth-callback', async (req, res) => {
             if (resp.status != 200) {
                 throw Error('POST to get access and refresh tokens from HubSpot failed. Error:' + resp.data['error']);
             }
-
             // this api call is to retrieve the user id of the current user
             // the post api call above does not contain user_id
             const get_options = {
@@ -177,15 +176,9 @@ router.get('/oauth-callback', async (req, res) => {
                 'https://api.hubapi.com/oauth/v1/refresh-tokens/' + resp.data.refresh_token,
                 get_options,
             );
-            //#todo temporarily using user email for tenant alias rather than id
-            // as the db does not support number tenant alias currently
+
             hubspotID = getUserInfo.data.hub_id;
-
-            // #todo in a seperate ticket check first whether the user already exists in DB
             AddTempUser(hubspotID.toString(), resp.data.access_token, resp.data.refresh_token);
-
-            // store user id in local tokenStore for knowledge of current user
-            // and for knowing which user to poll the DB
 
             res.redirect('/hubspot?hubspotID=' + hubspotID);
         } catch (e) {
