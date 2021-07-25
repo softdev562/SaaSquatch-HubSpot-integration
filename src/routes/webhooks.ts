@@ -1,3 +1,5 @@
+import { LookupAlias } from '../database';
+
 require('dotenv').config();
 import { Router } from 'express';
 import * as jwt from 'jsonwebtoken';
@@ -129,7 +131,9 @@ router.post('/hubspot-webhook', async (req, res) => {
 
 async function processSaasquatchPayload(saasquatchPayload: SaasquatchPayload) {
     //  TODO: Change to use information from webhook
-    const userIdentifier: string = MOCK_SESSION_USER_ID;
+
+    const userIdentifier: string = saasquatchPayload.tenantAlias;
+
     const configuration: Configuration = await ConfigurationModel.getConfiguration(userIdentifier);
     if (configuration.PushPartixipantsAsContacts)
         switch (saasquatchPayload.type) {
@@ -142,34 +146,40 @@ async function processSaasquatchPayload(saasquatchPayload: SaasquatchPayload) {
             default:
                 console.error(
                     'No matching EventType. May not yet be implemented.\
-				Received type: ' + saasquatchPayload.type,
+                    Received type: ' +
+                        saasquatchPayload.type,
                 );
         }
     else console.warn(`Ignored SaaSquatch WebHook:\t${saasquatchPayload.type}`);
 }
 
 async function processHubspotPayload(hubspotPayload: HubspotPayload) {
-    const userIdentifier: string = MOCK_SESSION_USER_ID;
-    const configuration: Configuration = await ConfigurationModel.getConfiguration(userIdentifier);
-    if (configuration.PushContactsAsParticipants)
-        switch (hubspotPayload.subscriptionType) {
-            case SubscriptionType.ContactCreation:
-                hubUpdatesController.NewContact(hubspotPayload);
-                break;
-            case SubscriptionType.ContactDeletion:
-                hubUpdatesController.DeletedContact(hubspotPayload);
-                break;
-            case SubscriptionType.ContactPropertyChange:
-                hubUpdatesController.ChangedContact(hubspotPayload);
-                break;
-            default:
-                console.error(
-                    'No matching subscriptionType. May not yet be implemented.\
-				Received subscriptionType: ' +
-                        hubspotPayload.subscriptionType,
-                );
-        }
-    else console.warn(`Ignored HubSpot WebHook:\t${hubspotPayload.subscriptionType}`);
+    try {
+        const tenantAlias: any = await LookupAlias(hubspotPayload.portalId.toString());
+        const userIdentifier: string = tenantAlias;
+        const configuration: Configuration = await ConfigurationModel.getConfiguration(userIdentifier);
+        if (configuration.PushContactsAsParticipants)
+            switch (hubspotPayload.subscriptionType) {
+                case SubscriptionType.ContactCreation:
+                    hubUpdatesController.NewContact(hubspotPayload);
+                    break;
+                case SubscriptionType.ContactDeletion:
+                    hubUpdatesController.DeletedContact(hubspotPayload);
+                    break;
+                case SubscriptionType.ContactPropertyChange:
+                    hubUpdatesController.ChangedContact(hubspotPayload);
+                    break;
+                default:
+                    console.error(
+                        'No matching subscriptionType. May not yet be implemented.\
+                    Received subscriptionType: ' +
+                            hubspotPayload.subscriptionType,
+                    );
+            }
+        else console.warn(`Ignored HubSpot WebHook:\t${hubspotPayload.subscriptionType}`);
+    } catch (e) {
+        console.error('processHubspotPayload ERROR');
+    }
 }
 
 /**

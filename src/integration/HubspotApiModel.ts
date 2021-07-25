@@ -18,14 +18,12 @@ export class HubspotApiModel {
     public async getContact(contactObjectID: number, hub_id: number, paramToGet?: string): Promise<any> {
         try {
             const tenantAlias: any = await LookupAlias(hub_id.toString());
-            console.log(tenantAlias);
-            if (tenantAlias.ID == '') {
+            if (tenantAlias == '') {
                 throw Error('Alias not found');
             }
             try {
-                const token: any = await PollTokensFromDatabase(tenantAlias.ID);
+                const token: any = await PollTokensFromDatabase(tenantAlias);
                 const access_token = token.accessToken;
-                console.log;
                 const url = `https://api.hubapi.com/crm/v3/objects/contacts/${encodeURIComponent(contactObjectID)}`;
                 let options: any = {
                     qs: { properties: 'email', archived: 'false' },
@@ -71,11 +69,11 @@ export class HubspotApiModel {
     public async createObject(objectType: string, createObjectBody: any, hub_id: number) {
         try {
             const tenantAlias: any = await LookupAlias(hub_id.toString());
-            if (tenantAlias.ID == '') {
+            if (tenantAlias == '') {
                 throw Error('Alias not found');
             }
             try {
-                const token: any = await PollTokensFromDatabase(tenantAlias.ID);
+                const token: any = await PollTokensFromDatabase(tenantAlias);
                 const access_token = token.accessToken;
                 try {
                     const createObjectURL = 'https://api.hubapi.com/crm/v3/objects/' + objectType;
@@ -106,7 +104,7 @@ export class HubspotApiModel {
     public async objectHasProperty(objectType: string, propertyName: string, hub_id: number) {
         try {
             const tenantAlias: any = await LookupAlias(hub_id.toString());
-            if (tenantAlias.ID == '') {
+            if (tenantAlias == '') {
                 throw Error('Alias not found');
             }
             try {
@@ -133,7 +131,6 @@ export class HubspotApiModel {
                         console.error(
                             '======== WAS NOT ABLE TO MAKE CALL: STATUS CODE: ' + e.response.status + ' ========',
                         );
-                        console.log(e);
                         return JSON.parse(e.response.body);
                     }
                 }
@@ -167,7 +164,7 @@ export class HubspotApiModel {
     ) {
         try {
             const tenantAlias: any = await LookupAlias(hub_id.toString());
-            if (tenantAlias.ID == '') {
+            if (tenantAlias == '') {
                 throw Error('Alias not found');
             }
             try {
@@ -190,7 +187,6 @@ export class HubspotApiModel {
                     });
                 } catch (e) {
                     console.error('==== WAS NOT ABLE TO POST NEW PROPERTY ===');
-                    console.log(e);
                     return JSON.parse(e.response.body);
                 }
             } catch (e) {
@@ -210,12 +206,13 @@ export class HubspotApiModel {
     public async searchObject(objectType: string, body: any, hub_id: number) {
         try {
             const tenantAlias: any = await LookupAlias(hub_id.toString());
-            if (tenantAlias.ID == '') {
+            if (tenantAlias == '') {
                 throw Error('Alias not found');
             }
 
             try {
-                const token: any = await PollTokensFromDatabase(hub_id.toString());
+                const token: any = await PollTokensFromDatabase(tenantAlias);
+
                 const access_token = token.accessToken;
                 try {
                     const searchObjectURL = 'https://api.hubapi.com/crm/v3/objects/' + objectType + '/search';
@@ -225,6 +222,7 @@ export class HubspotApiModel {
                             headers: { accept: 'application/json', authorization: `Bearer ${access_token}` },
                         },
                     });
+
                     return response;
                 } catch (e) {
                     console.error('===== WAS NOT ABLE TO SEARCH FOR PROPERTIES OF OBJECT: ' + objectType);
