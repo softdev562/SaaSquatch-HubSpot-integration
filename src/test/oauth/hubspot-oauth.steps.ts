@@ -11,7 +11,7 @@ const HubspotOauth = loadFeature('features/Oauth/High-Level/Hubspot-Oauth.featur
 });
 
 defineFeature(HubspotOauth, (test) => {
-    test('The integration is able to obtain a new refresh token from Hubspot', ({ given, when, then, and }) => {
+    test('The integration is able to obtain a new refresh token from Hubspot', ({ given, when, then }) => {
         const connectedRefreshToken = process.env.HUBSPOT_REFRESH_TOKEN_CONNECTED; // TODO: remove and connect to firebase if we want to set test accounts
         let data: any;
 

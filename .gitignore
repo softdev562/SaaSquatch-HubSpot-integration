@@ -115,7 +115,3 @@ dist
 build/*
 public/*
 frontend/build/*
-
-# Yarn lock
-yarn.lock
-frontend/yarn.lock

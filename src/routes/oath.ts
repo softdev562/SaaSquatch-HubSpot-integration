@@ -88,7 +88,7 @@ export const getHubspotAccessToken = async (refreshToken: string | undefined): P
 /**
  * Gets a new API JWT from Saasquatch
  *
- * @returns Saasquatch JWT object.
+ * @returns Saasquatch JWT object. {access_token, expires_in, token_type}
  */
 export const getSaasquatchToken = async (): Promise<any> => {
     if (!SAASQUATCH_CLIENT_ID) {
