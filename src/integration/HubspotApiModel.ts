@@ -48,10 +48,10 @@ export class HubspotApiModel {
                         return resp.data;
                     }
                 } catch (e) {
-                    console.error('Error getting a contact from HubSpot');
+                    console.error(`Error getting a contact from HubSpot. ${e}`);
                 }
             } catch (e) {
-                console.error('Error Fetching Tokens from DB');
+                console.error(`Error Fetching Tokens from DB when getting contact. ${e}`);
             }
         } catch (e) {
             console.error('Alias not found');
@@ -85,14 +85,14 @@ export class HubspotApiModel {
                     });
                     return response;
                 } catch (e) {
-                    console.error('Was not able to create contact');
+                    console.error(`Unable to create contact. ${e}`);
                     return JSON.parse(e.response.body);
                 }
             } catch (e) {
-                console.error('Error Fetching Tokens from DB');
+                console.error(`Error Fetching Tokens from DB when creating object. ${e}`);
             }
         } catch (e) {
-            console.error('Alias not found');
+            console.error(`Alias not found when creating contact. ${e}`);
         }
     }
 
@@ -131,17 +131,15 @@ export class HubspotApiModel {
                     if (e.response.status == 404) {
                         return false;
                     } else {
-                        console.error(
-                            '======== WAS NOT ABLE TO MAKE CALL: STATUS CODE: ' + e.response.status + ' ========',
-                        );
+                        console.error(`Unable to get property. ${e}`);
                         return JSON.parse(e.response.body);
                     }
                 }
             } catch (e) {
-                console.error('Error Fetching Tokens from DB');
+                console.error(`Error Fetching Tokens from DB when finding object property. ${e}`);
             }
         } catch (e) {
-            console.error('Alias not found');
+            console.error(`Alias not found when finding object property. ${e}`);
         }
     }
 
@@ -192,14 +190,14 @@ export class HubspotApiModel {
                         },
                     });
                 } catch (e) {
-                    console.error('==== WAS NOT ABLE TO POST NEW PROPERTY ===');
+                    console.error(`Was not able to post to create property. ${e}`);
                     return JSON.parse(e.response.body);
                 }
             } catch (e) {
-                console.error('Error Fetching Tokens from DB');
+                console.error(`Error Fetching Tokens from DB when creating object property. ${e}`);
             }
         } catch (e) {
-            console.error('Alias not found');
+            console.error(`Alias not found when creating object property. ${e}`);
         }
     }
 
@@ -234,14 +232,14 @@ export class HubspotApiModel {
 
                     return response;
                 } catch (e) {
-                    console.error('===== WAS NOT ABLE TO SEARCH FOR PROPERTIES OF OBJECT: ' + objectType);
+                    console.error(`Unable to post for search object. ${e}`);
                     return JSON.parse(e.response.body);
                 }
             } catch (e) {
-                console.error('Error Fetching Tokens from DB');
+                console.error(`Error Fetching Tokens from DB when searching for object. ${e}`);
             }
         } catch (e) {
-            console.error('Alias not found');
+            console.error(`Alias not found when searching for object. ${e}`);
         }
     }
 }
