@@ -132,7 +132,7 @@ export function OAuthFunction() {
                                                             if (
                                                                 response.data.hubspotID === hubspotID ||
                                                                 (response.data.hubspotID === '' &&
-                                                                    response.data.PushPartixipantsAsContacts ===
+                                                                    response.data.PushParticipantsAsContacts ===
                                                                         false &&
                                                                     response.data.PullParticipantsIntoContacts ===
                                                                         false &&
@@ -188,7 +188,7 @@ export function OAuthFunction() {
                             if (
                                 response.data.hubspotID === hubspotID ||
                                 (response.data.hubspotID === '' &&
-                                    response.data.PushPartixipantsAsContacts === false &&
+                                    response.data.PushParticipantsAsContacts === false &&
                                     response.data.PullParticipantsIntoContacts === false &&
                                     response.data.DeleteContactwhenParticipantDeleted === false &&
                                     response.data.PushContactsAsParticipants === false &&

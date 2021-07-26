@@ -27,6 +27,7 @@ export class ConfigurationModel {
         else throw Error(`Failed to find tenant alias for hubspotId: ${hubspotId}`);
     }
 
+
     public static async getTempUser(hubspotID: string): Promise<IntegrationTokens> {
         return PollTempUser(hubspotID);
     }

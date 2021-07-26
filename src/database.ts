@@ -26,7 +26,7 @@ export function AddToDatabase(
     tenantAlias: string,
     hubspotID: string,
     {
-        PushPartixipantsAsContacts = false,
+        PushParticipantsAsContacts = false,
         PullParticipantsIntoContacts = false,
         DeleteContactwhenParticipantDeleted = false,
         PushContactsAsParticipants = false,
@@ -48,7 +48,7 @@ export function AddToDatabase(
         .database()
         .ref('users/' + key + '/saasquach')
         .set({
-            PushPartixipantsAsContacts: PushPartixipantsAsContacts,
+            PushParticipantsAsContacts: PushParticipantsAsContacts,
             PullParticipantsIntoContacts: PullParticipantsIntoContacts,
             DeleteContactwhenParticipantDeleted: DeleteContactwhenParticipantDeleted,
         });
@@ -86,7 +86,7 @@ export function DeleteFromDatabase(tenantAlias: string): void {
 export function EditDatabase(
     tenantAlias: string,
     params: {
-        PushPartixipantsAsContacts: boolean;
+        PushParticipantsAsContacts: boolean;
         PullParticipantsIntoContacts: boolean;
         DeleteContactwhenParticipantDeleted: boolean;
         PushContactsAsParticipants: boolean;
@@ -98,12 +98,12 @@ export function EditDatabase(
     },
 ): void {
     const key = hashValue(tenantAlias);
-    if (params.PushPartixipantsAsContacts != undefined) {
+    if (params.PushParticipantsAsContacts != undefined) {
         firebase
             .database()
             .ref('users/' + key + '/saasquach')
             .update({
-                PushPartixipantsAsContacts: params.PushPartixipantsAsContacts,
+                PushParticipantsAsContacts: params.PushParticipantsAsContacts,
             });
     }
     if (params.PullParticipantsIntoContacts != undefined) {
@@ -187,6 +187,7 @@ export async function PollDatabase(tenantAlias: string): Promise<Configuration> 
         const snapshotReducerFactory = (snapshotChild: string) => (accumulator: any, key: string) => ({
             ...accumulator,
             [key]: snapshot.child(snapshotChild).child(key).val(),
+
         });
         return {
             ...[

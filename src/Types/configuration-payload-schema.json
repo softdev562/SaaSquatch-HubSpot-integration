@@ -4,7 +4,7 @@
 	"type": "object",
 	"properties": {
 		"SaaSquatchTenantAlias": {"type": "string"},
-		"PushPartixipantsAsContacts": { "type": "boolean" },
+		"PushParticipantsAsContacts": { "type": "boolean" },
 		"PullParticipantsIntoContacts": { "type": "boolean" },
 		"DeleteContactwhenParticipantDeleted": { "type": "boolean" },
 		"PushContactsAsParticipants": { "type": "boolean" },

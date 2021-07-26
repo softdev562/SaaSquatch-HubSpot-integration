@@ -157,6 +157,7 @@ async function processSaasquatchPayload(saasquatchPayload: SaasquatchPayload) {
         console.error(chalk.red.italic(error));
     }
 
+
 }
 
 async function processHubspotPayload(hubspotPayload: HubspotPayload) {
