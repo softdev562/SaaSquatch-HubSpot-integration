@@ -21,6 +21,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 import webhooks from './routes/webhooks';
+import { LookupHubspotID } from './database';
 
 // constants
 const PORT = process.env.PORT || 8000;
