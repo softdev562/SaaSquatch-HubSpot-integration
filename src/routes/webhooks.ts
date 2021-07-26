@@ -1,3 +1,5 @@
+import { LookupAlias } from '../database';
+
 require('dotenv').config();
 import { Router } from 'express';
 import * as jwt from 'jsonwebtoken';
@@ -154,6 +156,7 @@ async function processSaasquatchPayload(saasquatchPayload: SaasquatchPayload) {
         console.error(chalk.red.bold('Failed to retrieve configuration for the given SaaSquatch tenant alias!'));
         console.error(chalk.red.italic(error));
     }
+
 }
 
 async function processHubspotPayload(hubspotPayload: HubspotPayload) {
@@ -162,6 +165,7 @@ async function processHubspotPayload(hubspotPayload: HubspotPayload) {
         console.log(chalk.italic('Received WebHook from HubSpot'));
         const hubSpotId: number = hubspotPayload.portalId;
         const configuration: Configuration = await ConfigurationModel.getConfigurationWithHubspotId(hubSpotId);
+
         if (configuration.PushContactsAsParticipants)
             switch (hubspotPayload.subscriptionType) {
                 case SubscriptionType.ContactCreation:
@@ -177,6 +181,7 @@ async function processHubspotPayload(hubspotPayload: HubspotPayload) {
                     console.error(
                         'No matching subscriptionType. May not yet be implemented.\
 					Received subscriptionType: ' +
+
                             hubspotPayload.subscriptionType,
                     );
             }
@@ -184,6 +189,7 @@ async function processHubspotPayload(hubspotPayload: HubspotPayload) {
     } catch (error) {
         console.error(chalk.red.bold('Failed to retrieve configuration for the given HubSpot ID!'));
         console.error(chalk.red.italic(error));
+
     }
 }
 

@@ -34,6 +34,7 @@ export class saasquatchUpdatesController {
             ],
             limit: 1,
         };
+
         const contactsSearchResponse = await this.hubApiModel.searchObject('contacts', contactsSearchBody, 20465599);
         if (contactsSearchResponse?.data.total == 0) {
             const programShareLinks: { [key: string]: any } = {};
@@ -68,7 +69,6 @@ export class saasquatchUpdatesController {
                 firstname: saasquatchPayloadData.firstName,
                 lastname: saasquatchPayloadData.lastName,
             };
-
 
             const basicInfoAndProgramShareLinks = Object.assign(basicContactInfo, programShareLinks);
             const createContactBody = {
