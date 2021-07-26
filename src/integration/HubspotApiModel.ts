@@ -24,7 +24,7 @@ export class HubspotApiModel {
             try {
                 const token: any = await PollTokensFromDatabase(tenantAlias);
                 const access_token = token.accessToken;
-                const url = `https://api.hubapi.com/crm/v3/objects/contacts/${encodeURIComponent(contactObjectID)}`;
+                const url = `https://api.hubapi.com/crm/v3/objects/contacts/${contactObjectID}`;
                 let options: any = {
                     qs: { properties: 'email', archived: 'false' },
                     headers: { accept: 'application/json', authorization: `Bearer ${access_token}` },
