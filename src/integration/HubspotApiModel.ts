@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { access } from 'fs';
 import { PollTokensFromDatabase } from '../database';
 import { LookupAlias } from '../database';
 
@@ -85,11 +86,10 @@ export class HubspotApiModel {
                     });
                     return response;
                 } catch (e) {
-                    console.error(`Unable to create contact. ${e}`);
-                    return JSON.parse(e.response.body);
+                    return e.response.body;
                 }
             } catch (e) {
-                console.error(`Error Fetching Tokens from DB when creating object. ${e}`);
+                console.error(`Error Fetching Tokens from DB: ${e}`);
             }
         } catch (e) {
             console.error(`Alias not found when creating contact. ${e}`);
@@ -131,8 +131,10 @@ export class HubspotApiModel {
                     if (e.response.status == 404) {
                         return false;
                     } else {
-                        console.error(`Unable to get property. ${e}`);
-                        return JSON.parse(e.response.body);
+                        console.error(
+                            '======== WAS NOT ABLE TO MAKE CALL: STATUS CODE: ' + e.response.status + ' ========',
+                        );
+                        return e.response.body;
                     }
                 }
             } catch (e) {
@@ -190,8 +192,8 @@ export class HubspotApiModel {
                         },
                     });
                 } catch (e) {
-                    console.error(`Was not able to post to create property. ${e}`);
-                    return JSON.parse(e.response.body);
+                    console.error('==== WAS NOT ABLE TO POST NEW PROPERTY ===');
+                    return e.response.body;
                 }
             } catch (e) {
                 console.error(`Error Fetching Tokens from DB when creating object property. ${e}`);
@@ -232,8 +234,8 @@ export class HubspotApiModel {
 
                     return response;
                 } catch (e) {
-                    console.error(`Unable to post for search object. ${e}`);
-                    return JSON.parse(e.response.body);
+                    console.error('===== WAS NOT ABLE TO SEARCH FOR PROPERTIES OF OBJECT: ' + objectType);
+                    return e.response.body;
                 }
             } catch (e) {
                 console.error(`Error Fetching Tokens from DB when searching for object. ${e}`);
