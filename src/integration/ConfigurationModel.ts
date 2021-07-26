@@ -20,7 +20,7 @@ export class ConfigurationModel {
     /*
 	static configuration: Configuration = {
 		SaaSquatchTenantAlias: "",
-		PushPartixipantsAsContacts: false, 
+		PushParticipantsAsContacts: false, 
 		PullParticipantsIntoContacts: false,
 		DeleteContactwhenParticipantDeleted: false,
 		PushContactsAsParticipants: false,

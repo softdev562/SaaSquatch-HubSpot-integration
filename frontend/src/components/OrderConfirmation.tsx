@@ -182,7 +182,7 @@ export function Controller(state: Config) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 SaaSquatchTenantAlias: config.saasquatchTenantAlias,
-                PushPartixipantsAsContacts: config.pushIntoContacts,
+                PushParticipantsAsContacts: config.pushIntoContacts,
                 PullParticipantsIntoContacts: config.pullIntoContacts,
                 PushContactsAsParticipants: config.pushIntoParticipants,
                 PullContactsIntoParticipants: config.pullIntoParticipants,
@@ -198,7 +198,7 @@ export function Controller(state: Config) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 SaaSquatchTenantAlias: config.saasquatchTenantAlias,
-                PushPartixipantsAsContacts: config.pushIntoContacts,
+                PushParticipantsAsContacts: config.pushIntoContacts,
                 PullParticipantsIntoContacts: config.pullIntoContacts,
                 PushContactsAsParticipants: config.pushIntoParticipants,
                 PullContactsIntoParticipants: config.pullIntoParticipants,

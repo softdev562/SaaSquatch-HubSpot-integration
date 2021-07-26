@@ -132,7 +132,7 @@ export function Controller(state: Config) {
                     // Display config data for user from database
                     setConfig((config) => ({
                         ...config,
-                        pushIntoContacts: response.data.PushPartixipantsAsContacts || false,
+                        pushIntoContacts: response.data.PushParticipantsAsContacts || false,
                         pullIntoContacts: response.data.PullParticipantsIntoContacts || false,
                         pushIntoParticipants: response.data.PushContactsAsParticipants || false,
                         pullIntoParticipants: response.data.PullContactsIntoParticipants || false,
