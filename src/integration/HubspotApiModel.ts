@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { access } from 'fs';
 import { PollTokensFromDatabase } from '../database';
 import { LookupAlias } from '../database';
 
@@ -85,11 +86,10 @@ export class HubspotApiModel {
                     });
                     return response;
                 } catch (e) {
-                    console.error('Was not able to create contact');
-                    return JSON.parse(e.response.body);
+                    return e.response.body;
                 }
             } catch (e) {
-                console.error('Error Fetching Tokens from DB');
+                console.error(`Error Fetching Tokens from DB: ${e}`);
             }
         } catch (e) {
             console.error('Alias not found');
@@ -134,7 +134,7 @@ export class HubspotApiModel {
                         console.error(
                             '======== WAS NOT ABLE TO MAKE CALL: STATUS CODE: ' + e.response.status + ' ========',
                         );
-                        return JSON.parse(e.response.body);
+                        return e.response.body;
                     }
                 }
             } catch (e) {
@@ -193,7 +193,7 @@ export class HubspotApiModel {
                     });
                 } catch (e) {
                     console.error('==== WAS NOT ABLE TO POST NEW PROPERTY ===');
-                    return JSON.parse(e.response.body);
+                    return e.response.body;
                 }
             } catch (e) {
                 console.error('Error Fetching Tokens from DB');
@@ -235,7 +235,7 @@ export class HubspotApiModel {
                     return response;
                 } catch (e) {
                     console.error('===== WAS NOT ABLE TO SEARCH FOR PROPERTIES OF OBJECT: ' + objectType);
-                    return JSON.parse(e.response.body);
+                    return e.response.body;
                 }
             } catch (e) {
                 console.error('Error Fetching Tokens from DB');
