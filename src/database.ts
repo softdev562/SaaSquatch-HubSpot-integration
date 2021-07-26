@@ -248,6 +248,26 @@ export async function LookupAlias(hubspotID: string): Promise<string> {
     return data.ID;
 }
 
+export async function LookupHubspotID(tenantAlias: string): Promise<number> {
+    const key = hashValue(tenantAlias);
+    let data = 0;
+    const databseRef = firebase.database().ref();
+    await databseRef
+        .child('users/' + key + '/userinfo')
+        .get()
+        .then((snapshot) => {
+            if (snapshot.exists()) {
+                data = snapshot.child('hubspotID').val();
+            } else {
+                console.warn('No data available');
+            }
+        })
+        .catch((error) => {
+            console.error(error);
+        });
+    return data;
+}
+
 /**
  * Passing in a tenant alias as well as the access token and refresh token should update both, through the most
  * up to date version of both must be passed in. If only 1 needs to be changed, use the update function

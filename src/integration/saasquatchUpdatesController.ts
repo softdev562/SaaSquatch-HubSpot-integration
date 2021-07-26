@@ -1,3 +1,4 @@
+import { LookupHubspotID } from '../database';
 import { SaasquatchPayload } from '../Types/types';
 import { HubspotApiModel } from './HubspotApiModel';
 import { SaasquatchApiModel } from './SaasquatchApiModel';
@@ -35,14 +36,24 @@ export class saasquatchUpdatesController {
             limit: 1,
         };
 
-        const contactsSearchResponse = await this.hubApiModel.searchObject('contacts', contactsSearchBody, 20465599);
+        const contactsSearchResponse = await this.hubApiModel.searchObject(
+            'contacts',
+            contactsSearchBody,
+            await LookupHubspotID(saasquatchPayload.tenantAlias),
+        );
         if (contactsSearchResponse?.data.total == 0) {
             const programShareLinks: { [key: string]: any } = {};
             for (const key in saasquatchPayloadData.programShareLinks) {
                 const newProgramShareLinkName = key.replace(/\W/g, '') + 'saasquatch_program';
                 const newProgramShareLinkLabel = key.replace(/\W/g, '') + ' Saasquatch Program';
                 try {
-                    if (!(await this.hubApiModel.objectHasProperty('contacts', newProgramShareLinkName, 20465599))) {
+                    if (
+                        !(await this.hubApiModel.objectHasProperty(
+                            'contacts',
+                            newProgramShareLinkName,
+                            await LookupHubspotID(saasquatchPayload.tenantAlias),
+                        ))
+                    ) {
                         try {
                             await this.hubApiModel.createObjectProperty(
                                 'contacts',
@@ -51,7 +62,7 @@ export class saasquatchUpdatesController {
                                 'string',
                                 'textarea',
                                 'contactinformation',
-                                20465599,
+                                await LookupHubspotID(saasquatchPayload.tenantAlias),
                             );
                         } catch (e) {
                             console.log(e);
@@ -75,7 +86,11 @@ export class saasquatchUpdatesController {
                 properties: basicInfoAndProgramShareLinks,
             };
             try {
-                await this.hubApiModel.createObject('contacts', createContactBody, 20465599);
+                await this.hubApiModel.createObject(
+                    'contacts',
+                    createContactBody,
+                    await LookupHubspotID(saasquatchPayload.tenantAlias),
+                );
             } catch (e) {
                 console.log(e);
             }
