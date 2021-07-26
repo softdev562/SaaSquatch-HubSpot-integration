@@ -16,6 +16,7 @@ export class HubspotApiModel {
     public async getContact(contactObjectID: number, hub_id: number, paramToGet?: string): Promise<any> {
         try {
             const tenantAlias: any = await LookupAlias(hub_id.toString());
+
             if (tenantAlias == '') {
                 throw Error('Alias not found');
             }
@@ -67,6 +68,7 @@ export class HubspotApiModel {
     public async createObject(objectType: string, createObjectBody: any, hub_id: number) {
         try {
             const tenantAlias: any = await LookupAlias(hub_id.toString());
+
             if (tenantAlias == '') {
                 throw Error('Alias not found');
             }
@@ -102,6 +104,7 @@ export class HubspotApiModel {
     public async objectHasProperty(objectType: string, propertyName: string, hub_id: number) {
         try {
             const tenantAlias: any = await LookupAlias(hub_id.toString());
+
             if (tenantAlias == '') {
                 throw Error('Alias not found');
             }
@@ -162,6 +165,7 @@ export class HubspotApiModel {
     ) {
         try {
             const tenantAlias: any = await LookupAlias(hub_id.toString());
+
             if (tenantAlias == '') {
                 throw Error('Alias not found');
             }
@@ -204,6 +208,7 @@ export class HubspotApiModel {
     public async searchObject(objectType: string, body: any, hub_id: number) {
         try {
             const tenantAlias: any = await LookupAlias(hub_id.toString());
+
             if (tenantAlias == '') {
                 throw Error('Alias not found');
             }

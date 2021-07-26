@@ -13,6 +13,8 @@ import { hubspotUpdatesController } from '../integration/hubspotUpdatesControlle
 import { saasquatchUpdatesController } from '../integration/saasquatchUpdatesController';
 import { MOCK_SESSION_USER_ID } from '../mock';
 import { ConfigurationModel } from '../integration/ConfigurationModel';
+import { CompareSharp } from '@material-ui/icons';
+import chalk = require('chalk');
 
 /**
  * Handles Webhooks from SaaSquatch and Hubspot by validating they actually came from SaaSquatch
@@ -130,34 +132,39 @@ router.post('/hubspot-webhook', async (req, res) => {
 });
 
 async function processSaasquatchPayload(saasquatchPayload: SaasquatchPayload) {
-    //  TODO: Change to use information from webhook
-
-    const userIdentifier: string = saasquatchPayload.tenantAlias;
-
-    const configuration: Configuration = await ConfigurationModel.getConfiguration(userIdentifier);
-    if (configuration.PushParticipantsAsContacts)
-        switch (saasquatchPayload.type) {
-            case EventType.UserCreated:
-                saasUpdatesController.NewUser(saasquatchPayload);
-                break;
-            case EventType.Test:
-                saasUpdatesController.Test(saasquatchPayload);
-                break;
-            default:
-                console.error(
-                    'No matching EventType. May not yet be implemented.\
-                    Received type: ' +
-                        saasquatchPayload.type,
-                );
-        }
-    else console.warn(`Ignored SaaSquatch WebHook:\t${saasquatchPayload.type}`);
+    try {
+        console.log(chalk.italic('Received WebHook from SaaSquatch'));
+        const tenantAlias: string = saasquatchPayload.tenantAlias;
+        const configuration: Configuration = await ConfigurationModel.getConfigurationWithSaaSquatchTenantAlias(
+            tenantAlias,
+        );
+        if (configuration.PushParticipantsAsContacts)
+            switch (saasquatchPayload.type) {
+                case EventType.UserCreated:
+                    saasUpdatesController.NewUser(saasquatchPayload);
+                    break;
+                case EventType.Test:
+                    saasUpdatesController.Test(saasquatchPayload);
+                    break;
+                default:
+                    console.error(
+                        `No matching EventType. May not yet be implemented.\nReceived type: ${saasquatchPayload.type}`,
+                    );
+            }
+        else console.warn(`Ignored SaaSquatch WebHook:\t${saasquatchPayload.type}`);
+    } catch (error) {
+        console.error(chalk.red.bold('Failed to retrieve configuration for the given SaaSquatch tenant alias!'));
+        console.error(chalk.red.italic(error));
+    }
 }
 
 async function processHubspotPayload(hubspotPayload: HubspotPayload) {
     try {
-        const tenantAlias: any = await LookupAlias(hubspotPayload.portalId.toString());
-        const userIdentifier: string = tenantAlias;
-        const configuration: Configuration = await ConfigurationModel.getConfiguration(userIdentifier);
+        // grab email address from request
+        console.log(chalk.italic('Received WebHook from HubSpot'));
+        const hubSpotId: number = hubspotPayload.portalId;
+        const configuration: Configuration = await ConfigurationModel.getConfigurationWithHubspotId(hubSpotId);
+
         if (configuration.PushContactsAsParticipants)
             switch (hubspotPayload.subscriptionType) {
                 case SubscriptionType.ContactCreation:
@@ -172,13 +179,14 @@ async function processHubspotPayload(hubspotPayload: HubspotPayload) {
                 default:
                     console.error(
                         'No matching subscriptionType. May not yet be implemented.\
-                    Received subscriptionType: ' +
+					Received subscriptionType: ' +
                             hubspotPayload.subscriptionType,
                     );
             }
         else console.warn(`Ignored HubSpot WebHook:\t${hubspotPayload.subscriptionType}`);
-    } catch (e) {
-        console.error('processHubspotPayload ERROR');
+    } catch (error) {
+        console.error(chalk.red.bold('Failed to retrieve configuration for the given HubSpot ID!'));
+        console.error(chalk.red.italic(error));
     }
 }
 
