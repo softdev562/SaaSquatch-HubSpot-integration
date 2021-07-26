@@ -5,8 +5,8 @@
 	"main": "index.js",
 	"proxy": "http://localhost:8000",
 	"scripts": {
-		"lint": "eslint src/**/*.{js,ts,tsx} --fix",
-		"prettify": "prettier src/**/*.{js,ts,tsx} --write",
+		"lint": "eslint src/**/*.ts --fix",
+		"prettify": "prettier src/**/*.ts --write",
 		"tsc": "tsc",
 		"server": "nodemon src/index.ts",
 		"frontend": "cd frontend && yarn start",
