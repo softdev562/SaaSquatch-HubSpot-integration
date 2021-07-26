@@ -78,8 +78,9 @@ export class HubspotApiModel {
                 try {
                     const createObjectURL = 'https://api.hubapi.com/crm/v3/objects/' + objectType;
                     const response = await axios.post(createObjectURL, createObjectBody, {
-                        params: {
-                            headers: { accept: 'application/json', authorization: `Bearer ${access_token}` },
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: `Bearer ${access_token}`,
                         },
                     });
                     return response;
@@ -115,8 +116,9 @@ export class HubspotApiModel {
 
                 try {
                     const response = await axios.get(readPropertyURL, {
-                        params: {
-                            headers: { accept: 'application/json', authorization: `Bearer ${access_token}` },
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: `Bearer ${access_token}`,
                         },
                     });
                     if (response.status == 200) {
@@ -183,8 +185,10 @@ export class HubspotApiModel {
                 };
                 try {
                     await axios.post(contactCreatePropertyURL, body, {
-                        params: {
-                            headers: { accept: 'application/json', authorization: `Bearer ${access_token}` },
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Content-Length': JSON.stringify(body).length,
+                            Authorization: `Bearer ${access_token}`,
                         },
                     });
                 } catch (e) {
@@ -221,8 +225,10 @@ export class HubspotApiModel {
                     const searchObjectURL = 'https://api.hubapi.com/crm/v3/objects/' + objectType + '/search';
 
                     const response = await axios.post(searchObjectURL, body, {
-                        params: {
-                            headers: { accept: 'application/json', authorization: `Bearer ${access_token}` },
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Content-Length': JSON.stringify(body).length,
+                            Authorization: `Bearer ${access_token}`,
                         },
                     });
 
