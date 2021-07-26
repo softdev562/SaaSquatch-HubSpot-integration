@@ -187,11 +187,10 @@ export async function PollDatabase(tenantAlias: string): Promise<Configuration> 
         const snapshotReducerFactory = (snapshotChild: string) => (accumulator: any, key: string) => ({
             ...accumulator,
             [key]: snapshot.child(snapshotChild).child(key).val(),
-
         });
         return {
             ...[
-                'PushPartixipantsAsContacts',
+                'PushParticipantsAsContacts',
                 'PullParticipantsIntoContacts',
                 'DeleteContactwhenParticipantDeleted',
             ].reduce(snapshotReducerFactory('saasquach'), {}),
@@ -207,7 +206,7 @@ export async function PollDatabase(tenantAlias: string): Promise<Configuration> 
     } else {
         return {
             SaaSquatchTenantAlias: '',
-            PushPartixipantsAsContacts: false,
+            PushParticipantsAsContacts: false,
             PullParticipantsIntoContacts: false,
             DeleteContactwhenParticipantDeleted: false,
             PushContactsAsParticipants: false,

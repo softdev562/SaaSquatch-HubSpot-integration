@@ -138,7 +138,7 @@ async function processSaasquatchPayload(saasquatchPayload: SaasquatchPayload) {
         const configuration: Configuration = await ConfigurationModel.getConfigurationWithSaaSquatchTenantAlias(
             tenantAlias,
         );
-        if (configuration.PushPartixipantsAsContacts)
+        if (configuration.PushParticipantsAsContacts)
             switch (saasquatchPayload.type) {
                 case EventType.UserCreated:
                     saasUpdatesController.NewUser(saasquatchPayload);
@@ -156,8 +156,6 @@ async function processSaasquatchPayload(saasquatchPayload: SaasquatchPayload) {
         console.error(chalk.red.bold('Failed to retrieve configuration for the given SaaSquatch tenant alias!'));
         console.error(chalk.red.italic(error));
     }
-
-
 }
 
 async function processHubspotPayload(hubspotPayload: HubspotPayload) {
@@ -182,7 +180,6 @@ async function processHubspotPayload(hubspotPayload: HubspotPayload) {
                     console.error(
                         'No matching subscriptionType. May not yet be implemented.\
 					Received subscriptionType: ' +
-
                             hubspotPayload.subscriptionType,
                     );
             }
@@ -190,7 +187,6 @@ async function processHubspotPayload(hubspotPayload: HubspotPayload) {
     } catch (error) {
         console.error(chalk.red.bold('Failed to retrieve configuration for the given HubSpot ID!'));
         console.error(chalk.red.italic(error));
-
     }
 }
 
