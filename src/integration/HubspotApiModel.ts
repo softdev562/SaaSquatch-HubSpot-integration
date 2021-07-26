@@ -49,10 +49,10 @@ export class HubspotApiModel {
                         return resp.data;
                     }
                 } catch (e) {
-                    console.error('Error getting a contact from HubSpot');
+                    console.error(`Error getting a contact from HubSpot. ${e}`);
                 }
             } catch (e) {
-                console.error('Error Fetching Tokens from DB');
+                console.error(`Error Fetching Tokens from DB when getting contact. ${e}`);
             }
         } catch (e) {
             console.error('Alias not found');
@@ -92,7 +92,7 @@ export class HubspotApiModel {
                 console.error(`Error Fetching Tokens from DB: ${e}`);
             }
         } catch (e) {
-            console.error('Alias not found');
+            console.error(`Alias not found when creating contact. ${e}`);
         }
     }
 
@@ -138,10 +138,10 @@ export class HubspotApiModel {
                     }
                 }
             } catch (e) {
-                console.error('Error Fetching Tokens from DB');
+                console.error(`Error Fetching Tokens from DB when finding object property. ${e}`);
             }
         } catch (e) {
-            console.error('Alias not found');
+            console.error(`Alias not found when finding object property. ${e}`);
         }
     }
 
@@ -196,10 +196,10 @@ export class HubspotApiModel {
                     return e.response.body;
                 }
             } catch (e) {
-                console.error('Error Fetching Tokens from DB');
+                console.error(`Error Fetching Tokens from DB when creating object property. ${e}`);
             }
         } catch (e) {
-            console.error('Alias not found');
+            console.error(`Alias not found when creating object property. ${e}`);
         }
     }
 
@@ -238,10 +238,10 @@ export class HubspotApiModel {
                     return e.response.body;
                 }
             } catch (e) {
-                console.error('Error Fetching Tokens from DB');
+                console.error(`Error Fetching Tokens from DB when searching for object. ${e}`);
             }
         } catch (e) {
-            console.error('Alias not found');
+            console.error(`Alias not found when searching for object. ${e}`);
         }
     }
 }
