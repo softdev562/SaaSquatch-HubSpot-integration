@@ -154,6 +154,7 @@ export function Controller(state: Config) {
                         });
                 })
                 .catch(function (err) {
+                    history.push('/login');
                     console.error(err + 'Error getting Hubspot Authorization from: ' + HUBSPOT_AUTHORIZATION);
                 });
         };

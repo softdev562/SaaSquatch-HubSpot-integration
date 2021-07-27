@@ -198,10 +198,8 @@ export async function PollDatabase(tenantAlias: string): Promise<Configuration> 
                 'PushContactsAsParticipants',
                 'PullContactsIntoParticipants',
                 'DeleteParticipantWhenContactDeleted',
-                'hubspotID',
-                'accessToken',
-                'refreshToken',
             ].reduce(snapshotReducerFactory('hubspot'), {}),
+            ...['hubspotID', 'accessToken', 'refreshToken'].reduce(snapshotReducerFactory('userinfo'), {}),
         } as Configuration;
     } else {
         return {
