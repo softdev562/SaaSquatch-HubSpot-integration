@@ -1,12 +1,12 @@
-import chalk from 'chalk';
 import firebase from 'firebase/app';
 import 'firebase/database';
 import { Configuration, IntegrationTokens } from './Types/types';
 const crypto = require('crypto');
 
-//#todo: The tenant alias is a number event after converting it to string
-//      the has function requires "data" argument must be of type
-//      string or an instance of Buffer, TypedArray, or DataView.
+/**
+ * @param String 
+ * @returns Hashed String
+ */
 function hashValue(stringValue: string){
     return crypto.createHash('sha1').update(stringValue).digest('hex');
 }
@@ -83,7 +83,12 @@ export function DeleteFromDatabase(tenantAllias: string): void {
         .ref('users/' + key)
         .remove();
 }
-
+/**
+ * Takes parameters and edits database entris according to the entries given. Only edits the values for the
+ * feilds that have been changed which are passed to the function, not for the others.
+ * @param tenantAllias 
+ * @param params 
+ */
 export function EditDatabase(
     tenantAllias: string,
     params: {
@@ -171,6 +176,12 @@ export function EditDatabase(
         });
 }
 
+
+/**
+ * Returns a configuration object containing configuration information. This object is defined in types.js
+ * @param tenantAllias 
+ * @returns Configuration
+ */
 export async function PollDatabase(tenantAllias: string): Promise<Configuration> {
     const key = hashValue(tenantAllias);
     const databseRef = firebase.database().ref();
@@ -218,6 +229,11 @@ export async function PollDatabase(tenantAllias: string): Promise<Configuration>
     return configuration;
 }
 
+/**
+ * Given a hubspot Id, returns an empty string "" if there exists no tenant alias, of returns the tenant alias.
+ * @param hubspotID 
+ * @returns tenantAlias
+ */
 export async function LookupAllias(hubspotID: string): Promise<string> {
     const key = hashValue(hubspotID);
     let data = '';
@@ -301,6 +317,11 @@ export function AddTempUser(hubspotID: string, accessToken = '', refreshToken = 
         });
 }
 
+/**
+ * Deletes a user from the temp user table. This is not in use right now, but could potentially be used if
+ * in the future, we wanted to clear out the old unused temp users.
+ * @param hubspotID 
+ */
 export function DeleteTempUser(hubspotID: string) {
     const key = hashValue(hubspotID);
     firebase
