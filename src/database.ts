@@ -4,6 +4,7 @@ import { Configuration, IntegrationTokens } from './Types/types';
 const crypto = require('crypto');
 
 /**
+ * Given a hubspot Id, returns an empty string "" if there exists no tenant alias, of returns the tenant alias.
  * @param String 
  * @returns Hashed String
  */
@@ -13,21 +14,21 @@ function hashValue(stringValue: string){
 
 /**
  * Adds Values to Database
- * The default values for this function's parameters are false. Tennant alias is the
- * database key value, so passing it is nessesary. Other parameters can be set in the objet,
+ * The default values for this function's parameters are false. Tenant alias is the
+ * database key value, so passing it is necessary. Other parameters can be set in the objet,
  * and if not set will default to false or the empty string.
- * Function call should look like AddToDatabase(tenantAllias,{parameter:value,...})
+ * Function call should look like AddToDatabase(tenantAlias,{parameter:value,...})
  * as many or as few of the parameters should be filled out as needed, but if non still include the {}
- * possible paramters include:
- * PushPartixipantsAsContacts bool, PullParticipantsIntoContacts bool, DeleteContactwhenParticipantDeleted bool
+ * possible parameters include:
+ * PushParticipantsAsContacts bool, PullParticipantsIntoContacts bool, DeleteContactWhenParticipantDeleted bool
  * PushContactsAsParticipants bool, PullContactsIntoParticipants bool, DeleteParticipantWhenContactDeleted bool
  * accessToken string, refreshToken string
  */
 export function AddToDatabase(
-    tenantAllias: string,
+    tenantAlias: string,
     hubspotID: string,
     {
-        PushPartixipantsAsContacts = false,
+        PushParticipantsAsContacts = false,
         PullParticipantsIntoContacts = false,
         DeleteContactwhenParticipantDeleted = false,
         PushContactsAsParticipants = false,
@@ -37,19 +38,19 @@ export function AddToDatabase(
         refreshToken = '',
     },
 ): void {
-    const key = hashValue(tenantAllias);
+    const key = hashValue(tenantAlias);
     const id = hashValue(hubspotID);
     firebase
         .database()
         .ref('keyTable/' + id + '/SasID')
         .set({
-            ID: tenantAllias,
+            ID: tenantAlias,
         });
     firebase
         .database()
         .ref('users/' + key + '/saasquach')
         .set({
-            PushPartixipantsAsContacts: PushPartixipantsAsContacts,
+            PushParticipantsAsContacts: PushParticipantsAsContacts,
             PullParticipantsIntoContacts: PullParticipantsIntoContacts,
             DeleteContactwhenParticipantDeleted: DeleteContactwhenParticipantDeleted,
         });
@@ -65,7 +66,7 @@ export function AddToDatabase(
         .database()
         .ref('users/' + key + '/userinfo')
         .set({
-            tenantAllias: tenantAllias,
+            tenantAlias: tenantAlias,
             hubspotID: hubspotID,
             accessToken: accessToken,
             refreshToken: refreshToken,
@@ -73,11 +74,11 @@ export function AddToDatabase(
 }
 
 /**
- * Given a tenant alliase, deletes the coresponding db entry.
- * @param tenantAllias
+ * Given a tenant alias, deletes the corresponding db entry.
+ * @param tenantAlias
  */
-export function DeleteFromDatabase(tenantAllias: string): void {
-    const key = hashValue(tenantAllias);
+export function DeleteFromDatabase(tenantAlias: string): void {
+    const key = hashValue(tenantAlias);
     firebase
         .database()
         .ref('users/' + key)
@@ -90,25 +91,26 @@ export function DeleteFromDatabase(tenantAllias: string): void {
  * @param params 
  */
 export function EditDatabase(
-    tenantAllias: string,
+    tenantAlias: string,
     params: {
-        PushPartixipantsAsContacts: boolean;
+        PushParticipantsAsContacts: boolean;
         PullParticipantsIntoContacts: boolean;
         DeleteContactwhenParticipantDeleted: boolean;
         PushContactsAsParticipants: boolean;
         PullContactsIntoParticipants: boolean;
         DeleteParticipantWhenContactDeleted: boolean;
+        hubspotID: string;
         accessToken: string;
         refreshToken: string;
     },
 ): void {
-    const key = hashValue(tenantAllias);
-    if (params.PushPartixipantsAsContacts != undefined) {
+    const key = hashValue(tenantAlias);
+    if (params.PushParticipantsAsContacts != undefined) {
         firebase
             .database()
             .ref('users/' + key + '/saasquach')
             .update({
-                PushPartixipantsAsContacts: params.PushPartixipantsAsContacts,
+                PushParticipantsAsContacts: params.PushParticipantsAsContacts,
             });
     }
     if (params.PullParticipantsIntoContacts != undefined) {
@@ -152,6 +154,14 @@ export function EditDatabase(
                 DeleteParticipantWhenContactDeleted: params.DeleteParticipantWhenContactDeleted,
             });
     }
+    if (params.hubspotID != undefined) {
+        firebase
+            .database()
+            .ref('users/' + key + '/userinfo')
+            .update({
+                accessToken: params.hubspotID,
+            });
+    }
     if (params.accessToken != undefined) {
         firebase
             .database()
@@ -172,71 +182,58 @@ export function EditDatabase(
         .database()
         .ref('users/' + key + '/userinfo')
         .update({
-            tenantAllias: tenantAllias,
+            tenantAlias: tenantAlias,
         });
 }
-
 
 /**
  * Returns a configuration object containing configuration information. This object is defined in types.js
- * @param tenantAllias 
+ * @param tenantAlias 
  * @returns Configuration
  */
-export async function PollDatabase(tenantAllias: string): Promise<Configuration> {
-    const key = hashValue(tenantAllias);
+export async function PollDatabase(tenantAlias: string): Promise<Configuration> {
+    const key = hashValue(tenantAlias);
     const databseRef = firebase.database().ref();
-    const configuration: Configuration = {
-        SaaSquatchTenantAlias: '',
-        PushPartixipantsAsContacts: false,
-        PullParticipantsIntoContacts: false,
-        DeleteContactwhenParticipantDeleted: false,
-        PushContactsAsParticipants: false,
-        PullContactsIntoParticipants: false,
-        DeleteParticipantWhenContactDeleted: false,
-        hubspotID: '',
-        accessToken: '',
-        refreshToken: '',
-    };
-    await databseRef
-        .child('users/' + key)
-        .get()
-        .then((snapshot) => {
-            if (snapshot.exists()) {
-                configuration.PushPartixipantsAsContacts = snapshot.child('saasquach/PushPartixipantsAsContacts').val();
-                configuration.PullParticipantsIntoContacts = snapshot
-                    .child('saasquach/PullParticipantsIntoContacts')
-                    .val();
-                configuration.DeleteContactwhenParticipantDeleted = snapshot
-                    .child('saasquach/DeleteContactwhenParticipantDeleted')
-                    .val();
-
-                configuration.PushContactsAsParticipants = snapshot.child('hubspot/PushContactsAsParticipants').val();
-                configuration.PullContactsIntoParticipants = snapshot
-                    .child('hubspot/PullContactsIntoParticipants')
-                    .val();
-                configuration.DeleteParticipantWhenContactDeleted = snapshot
-                    .child('hubspot/DeleteParticipantWhenContactDeleted')
-                    .val();
-
-                configuration.accessToken = snapshot.child('userinfo/accessToken').val();
-                configuration.refreshToken = snapshot.child('userinfo/refreshToken').val();
-                configuration.hubspotID = snapshot.child('userinfo/hubspotID').val();
-            } else console.warn('No configuration data available!');
-        })
-        .catch((error) => {
-            console.error(error);
+    const snapshot: firebase.database.DataSnapshot = await databseRef.child(`users/${key}`).get();
+    if (snapshot.exists()) {
+        const snapshotReducerFactory = (snapshotChild: string) => (accumulator: any, key: string) => ({
+            ...accumulator,
+            [key]: snapshot.child(snapshotChild).child(key).val(),
         });
-    return configuration;
+        return {
+            ...[
+                'PushParticipantsAsContacts',
+                'PullParticipantsIntoContacts',
+                'DeleteContactwhenParticipantDeleted',
+            ].reduce(snapshotReducerFactory('saasquach'), {}),
+            ...[
+                'PushContactsAsParticipants',
+                'PullContactsIntoParticipants',
+                'DeleteParticipantWhenContactDeleted',
+            ].reduce(snapshotReducerFactory('hubspot'), {}),
+            ...['hubspotID', 'accessToken', 'refreshToken'].reduce(snapshotReducerFactory('userinfo'), {}),
+        } as Configuration;
+    } else {
+        return {
+            SaaSquatchTenantAlias: '',
+            PushParticipantsAsContacts: false,
+            PullParticipantsIntoContacts: false,
+            DeleteContactwhenParticipantDeleted: false,
+            PushContactsAsParticipants: false,
+            PullContactsIntoParticipants: false,
+            DeleteParticipantWhenContactDeleted: false,
+            hubspotID: '',
+            accessToken: '',
+            refreshToken: '',
+        };
+    }
 }
 
-/**
- * Given a hubspot Id, returns an empty string "" if there exists no tenant alias, of returns the tenant alias.
- * @param hubspotID 
- * @returns tenantAlias
- */
-export async function LookupAllias(hubspotID: string): Promise<string> {
+export async function LookupAlias(hubspotID: string): Promise<string> {
     const key = hashValue(hubspotID);
-    let data = '';
+    let data = {
+        ID: '',
+    };
     const databseRef = firebase.database().ref();
     await databseRef
         .child('keyTable/' + key)
@@ -251,31 +248,56 @@ export async function LookupAllias(hubspotID: string): Promise<string> {
         .catch((error) => {
             console.error(error);
         });
+    return data.ID;
+}
+
+/**
+ * Given a hubspot Id, returns an empty string "" if there exists no tenant alias, of returns the tenant alias.
+ * @param hubspotID 
+ * @returns tenantAlias
+ */
+export async function LookupHubspotID(tenantAlias: string): Promise<number> {
+    const key = hashValue(tenantAlias);
+    let data = 0;
+    const databseRef = firebase.database().ref();
+    await databseRef
+        .child('users/' + key + '/userinfo')
+        .get()
+        .then((snapshot) => {
+            if (snapshot.exists()) {
+                data = snapshot.child('hubspotID').val();
+            } else {
+                console.warn('No data available');
+            }
+        })
+        .catch((error) => {
+            console.error(error);
+        });
     return data;
 }
 
 /**
- * Passing in a tenant alias as well as the access token and refresh token should update both, thoough the most
- * up to date version of both must be passed in. If only 1 needs to be changed, use the update fnction
+ * Passing in a tenant alias as well as the access token and refresh token should update both, through the most
+ * up to date version of both must be passed in. If only 1 needs to be changed, use the update function
  */
-export function AddTokensToDatabase(tenantAllias: string, accessToken: string, refreshToken: string): void {
-    const key = hashValue(tenantAllias);
+export function AddTokensToDatabase(tenantAlias: string, accessToken: string, refreshToken: string): void {
+    const key = hashValue(tenantAlias);
     firebase
         .database()
         .ref('users/' + key + '/userinfo')
         .set({
-            tenantAllias: tenantAllias,
+            tenantAlias: tenantAlias,
             accessToken: accessToken,
             refreshToken: refreshToken,
         });
 }
 
 /**
- * Retreives the stored access and refresh tokens for a given tenant allias. returns an object of the form
+ * Retrieves the stored access and refresh tokens for a given tenant alias. returns an object of the form
  * { accessToken, refreshToken } if the entry is available. If no entry is available, it will return two empty strings
  */
-export async function PollTokensFromDatabase(tenantAllias: string): Promise<IntegrationTokens> {
-    const key = hashValue(tenantAllias);
+export async function PollTokensFromDatabase(tenantAlias: string): Promise<IntegrationTokens> {
+    const key = hashValue(tenantAlias);
 
     const databseRef = firebase.database().ref();
     const data: IntegrationTokens = {
@@ -331,7 +353,7 @@ export function DeleteTempUser(hubspotID: string) {
 }
 
 /**
- * Allowes us to read the values stored in the temporary user table
+ * Allows us to read the values stored in the temporary user table
  * @param hubspotID
  * @returns { accessToken, refreshToken }
  *  Fields will be empty if it does not return
@@ -345,10 +367,10 @@ export async function PollTempUser(hubspotID: string): Promise<IntegrationTokens
         .get()
         .then((snapshot) => {
             if (snapshot.exists()) {
-                data.accessToken = snapshot.child('userinfo/accessToken').val();
-                data.refreshToken = snapshot.child('userinfo/refreshToken').val();
+                data.accessToken = snapshot.child('accessToken').val();
+                data.refreshToken = snapshot.child('refreshToken').val();
             } else {
-                console.log('No data available');
+                console.error('No data available');
             }
         })
         .catch((error) => {
