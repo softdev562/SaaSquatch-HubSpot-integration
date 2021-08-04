@@ -1,5 +1,17 @@
 import { Meta } from '@storybook/react';
 import { View } from '../components/ConfigurationP1';
+import { createTheme, ThemeProvider } from '@material-ui/core';
+
+const theme = createTheme({
+    palette: {
+        primary: {
+            main: '#255fcc',
+        },
+        secondary: {
+            main: '#5BC236',
+        },
+    },
+});
 
 const defaultProps = {
     config: {
@@ -29,49 +41,40 @@ export default {
     },
 } as Meta;
 
-export const Default = () => <View {...defaultProps} />;
-export const TogglesSelected = () => (
-    <View
-        {...defaultProps}
-        config={{
-            saasquatchTenantAlias: '',
-            pushIntoParticipants: false,
-            pullIntoParticipants: false,
-            pushIntoContacts: true,
-            pullIntoContacts: true,
-            contactsImported: false,
-            participantsImported: false,
-            newUser: false,
-        }}
-    />
-);
-export const PreviousImport = () => (
-    <View
-        {...defaultProps}
-        config={{
-            saasquatchTenantAlias: '',
-            pushIntoParticipants: false,
-            pullIntoParticipants: false,
-            pushIntoContacts: true,
-            pullIntoContacts: true,
-            contactsImported: true,
-            participantsImported: true,
-            newUser: false,
-        }}
-    />
-);
-export const ImportModal = () => (
-    <View
-        {...defaultProps}
-        config={{
-            saasquatchTenantAlias: '',
-            pushIntoParticipants: false,
-            pullIntoParticipants: false,
-            pushIntoContacts: true,
-            pullIntoContacts: true,
-            contactsImported: false,
-            participantsImported: false,
-            newUser: false,
-        }}
-    />
-);
+const render = (component: any) => {
+    return <ThemeProvider theme={theme}>{component}</ThemeProvider>;
+};
+
+export const Default = () => render(<View {...defaultProps} />);
+export const TogglesSelected = () =>
+    render(
+        <View
+            {...defaultProps}
+            config={{
+                saasquatchTenantAlias: '',
+                pushIntoParticipants: false,
+                pullIntoParticipants: false,
+                pushIntoContacts: true,
+                pullIntoContacts: true,
+                contactsImported: false,
+                participantsImported: false,
+                newUser: false,
+            }}
+        />,
+    );
+export const PreviousImport = () =>
+    render(
+        <View
+            {...defaultProps}
+            config={{
+                saasquatchTenantAlias: '',
+                pushIntoParticipants: false,
+                pullIntoParticipants: false,
+                pushIntoContacts: true,
+                pullIntoContacts: true,
+                contactsImported: true,
+                participantsImported: true,
+                newUser: false,
+            }}
+        />,
+    );
