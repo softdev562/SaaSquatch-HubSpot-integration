@@ -4,13 +4,12 @@
 	"type": "object",
 	"properties": {
 		"SaaSquatchTenantAlias": {"type": "string"},
-		"PushParticipantsAsContacts": { "type": "boolean" },
+		"PushPartixipantsAsContacts": { "type": "boolean" },
 		"PullParticipantsIntoContacts": { "type": "boolean" },
 		"DeleteContactwhenParticipantDeleted": { "type": "boolean" },
 		"PushContactsAsParticipants": { "type": "boolean" },
 		"PullContactsIntoParticipants": { "type": "boolean" },
 		"DeleteParticipantWhenContactDeleted": { "type": "boolean" },
-		"hubspotID": { "type": "string" },
 		"accessToken": { "type": "string" },
 		"refreshToken": { "type": "string" }
 	},

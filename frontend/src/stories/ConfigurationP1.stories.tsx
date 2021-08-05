@@ -14,32 +14,32 @@ const theme = createTheme({
 });
 
 const defaultProps = {
-    config: {
-        saasquatchTenantAlias: '',
-        pushIntoParticipants: false,
-        pullIntoParticipants: false,
-        pushIntoContacts: false,
-        pullIntoContacts: false,
-        contactsImported: false,
-        participantsImported: false,
-        newUser: false,
-    },
-    handleSubmit: () => {},
-    handleToggles: {
-        toggleHubPush: () => {},
-        toggleHubPull: () => {},
-    },
+  config: {
+    saasquatchTenantAlias: '',
+    pushIntoContacts: false,
+    pullIntoContacts: false,
+  },
+  handleSubmit: ()=>{},
+  handleToggles: {
+    toggleHubPush: ()=>{},
+    toggleHubPull: ()=>{},
+  },
+  open: false,
+  handleClose: ()=>{},
+  imported: false,
+  oneway: true,
 };
 
 export default {
-    title: 'Integration/ConfigurationP1',
-    component: View,
-    parameters: {
-        cucumber: {
-            data: 'SyncContactsWithSaaSquatch.feature',
-        },
+  title: 'Integration/ConfigurationP1',
+  component: View,
+  parameters: {
+    cucumber: {
+      data: 'SyncContactsWithSaaSquatch.feature',
     },
+  },
 } as Meta;
+
 
 const render = (component: any) => {
     return <ThemeProvider theme={theme}>{component}</ThemeProvider>;
@@ -78,3 +78,4 @@ export const PreviousImport = () =>
             }}
         />,
     );
+

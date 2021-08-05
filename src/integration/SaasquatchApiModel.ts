@@ -1,136 +1,71 @@
-import axios, { Method } from 'axios';
-import { getSaasquatchToken } from '../routes/oath';
-
-/**
- * SaaSquatch model for interacting with the SaaSquatch's API
- */
+import axios from 'axios';
 
 export class SaasquatchApiModel {
-    private SaasquatchToken = '';
+    // Temp access until DB has OAuth access tokens
+    private SAPIKEY: string;
+    private TENANTALIAS: string;
 
-    /**
-     * Saasquatch GraphQL API request wrapper.
-     *
-     * @param tenantAlias
-     * @param query GraphQL query to be executed.
-     * @return Expected data from request.
-     */
-    public saasquatchGraphqlRequest = async (tenantAlias: string, query: string) => {
-        const url = `https://staging.referralsaasquatch.com/api/v1/${tenantAlias}/graphql`;
-        const header = {
-            Authorization: `Bearer ${this.SaasquatchToken}`,
-            'Content-Type': 'application/json',
-            'Content-Length': query.length,
-        };
-        let tries = 2; // Only two tries to get request right.
-        while (tries > 0) {
-            try {
-                const resp: any = await axios.post(url, query, {
-                    headers: header,
-                });
-                // API token expired.
-                if (resp.data.errors != undefined) {
-                    const tokenObject = await getSaasquatchToken();
-                    this.SaasquatchToken = tokenObject.access_token;
-                    header.Authorization = `Bearer ${this.SaasquatchToken}`;
-                    tries -= 1;
-                    continue;
-                }
-                return resp;
-            } catch (e) {
-                throw new Error(`Unable to complete request to Saasquatch. ${e}`);
-            }
-        }
-        throw new Error(`Unable to complete request to Saasquatch. Max tries exceeded.`);
-    };
-
-    /**
-     * Saasquatch REST API request wrapper.
-     *
-     * @param tenantAlias
-     * @param query GraphQL query to be executed.
-     * @return Expected data from request.
-     */
-    public saasquatchApiRequest = async (tenantAlias: string, method: Method, url: string, body: any) => {
-        const header = {
-            Authorization: `Bearer ${this.SaasquatchToken}`,
-            'Content-Type': 'application/json',
-        };
-        let tries = 2; // Only two tries to get request right.
-        while (tries > 0) {
-            try {
-                const resp: any = await axios.request({
-                    method: method,
-                    url: url,
-                    headers: header,
-                    data: body,
-                });
-
-                return resp;
-            } catch (e) {
-                // API token expired.
-                const tokenObject = await getSaasquatchToken();
-                this.SaasquatchToken = tokenObject.access_token;
-                header.Authorization = `Bearer ${this.SaasquatchToken}`;
-                tries -= 1;
-            }
-        }
-        throw new Error(`Unable to complete request to Saasquatch. Max tries exceeded.`);
-    };
-
-    /**
-     * Get users from SaaSquatch
-     */
-    public async getUsers(tenantAlias: string) {
-        const query = `{
-			users {
-				data {
-				}
-			}
-		}`;
-        try {
-            const resp = await this.saasquatchGraphqlRequest(tenantAlias, query);
-            return resp.data;
-        } catch (e) {
-            throw new Error(e);
-        }
+    constructor(apiKey: string, tenantAlias: string) {
+        this.SAPIKEY = apiKey;
+        this.TENANTALIAS = tenantAlias;
     }
 
     /**
-     * Get users from SaaSquatch that match the email provided
+     * Get users from SaaSquatch that match paramToFilterBy
+     * Currently gets all users or zero users as filter is not working
      *
-     * @param tenantAlias tenant alias...
-     * @param email email of participant.
-     * @return users with email.
+     * @param paramToFilterBy list of query parameters to filter by. eg. 'email:example@example.com'?
      */
-    public async getUserByEmail(tenantAlias: string, email: string) {
-        // TODO: Edit query to return needed data of user.
-        const body = JSON.stringify({
-            query: `{ 
-				users(
-					filter: { 
-						email_eq: "${email}" 
-					}) { 
-						count, 
-				} 
-			}`,
-        });
+    public async getUsers(paramToFilterBy?: string): Promise<any> {
+        const headers = { accept: 'application/json' };
+        const url = `https://staging.referralsaasquatch.com/api/v1/${encodeURIComponent(this.TENANTALIAS)}/users`;
+        let qs = '';
+        if (paramToFilterBy) {
+            qs = paramToFilterBy;
+        }
         try {
-            const resp = await this.saasquatchGraphqlRequest(tenantAlias, body);
-            return resp.data.data.users;
+            const resp = await axios.get(url, {
+                params: {
+                    query: qs,
+                    limit: 10,
+                    offset: 0,
+                },
+                headers: headers,
+                auth: {
+                    username: '',
+                    password: this.SAPIKEY,
+                },
+            });
+            if (resp.status != 200) {
+                throw Error('Error getting a contact from SaaSquatch.' + resp.data['error']);
+            } else {
+                console.log(resp);
+                return resp.data;
+            }
         } catch (e) {
-            throw new Error(e);
+            console.error(e);
         }
     }
 
-    public async createParticipant(tenantAlias: string, participantBody: any) {
+    public async createParticipant(email: string, createParticipantBody: any) {
         try {
             //URL should be built using express URL class
-            const url = `https://staging.referralsaasquatch.com/api/v1/${tenantAlias}/open/account/${participantBody.email}/user/${participantBody.email}`;
-            const resp = await this.saasquatchApiRequest(tenantAlias, 'post', url, participantBody);
-            return resp.data;
+            const createParticipantURL =
+                'https://staging.referralsaasquatch.com/api/v1/' +
+                this.TENANTALIAS +
+                '/open/account/' +
+                email +
+                '/user/' +
+                email;
+            const response = await axios.post(createParticipantURL, createParticipantBody, {
+                headers: {
+                    Authorization: 'token ' + this.SAPIKEY,
+                },
+            });
+            return response;
         } catch (e) {
-            throw new Error(`Was not able to create contact. ${e}`);
+            console.error('Was not able to create contact');
+            console.log(e);
         }
     }
 }

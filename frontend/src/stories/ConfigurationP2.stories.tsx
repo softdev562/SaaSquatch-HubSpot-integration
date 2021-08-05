@@ -14,33 +14,36 @@ const theme = createTheme({
 });
 
 const defaultProps = {
-    config: {
-        saasquatchTenantAlias: '',
-        pushIntoContacts: false,
-        pullIntoContacts: false,
-        pushIntoParticipants: false,
-        pullIntoParticipants: false,
-        contactsImported: false,
-        participantsImported: false,
-        newUser: false,
-    },
-    handleBack: () => {},
-    handleSubmit: () => {},
-    handleToggles: {
-        toggleSaasPush: () => {},
-        toggleSaasPull: () => {},
-    },
+  config: {
+    saasquatchTenantAlias: '',
+    pushIntoParticipants: false,
+    pullIntoParticipants: false,
+  },
+  handleBack: ()=>{},
+  handleSubmit: ()=>{},
+  handleToggles: {
+    toggleSaasPush: ()=>{},
+    toggleSaasPull: ()=>{},
+  },
+  open: false,
+  handleClose: ()=>{},
+  openError: false,
+  handleErrorClose: ()=>{},
+  imported: false,
+  oneway: true,
+  noway: false,
 };
 
 export default {
-    title: 'Integration/ConfigurationP2',
-    component: View,
-    parameters: {
-        cucumber: {
-            data: 'SyncParticipantsWithHubSpot.feature',
-        },
+  title: 'Integration/ConfigurationP2',
+  component: View,
+  parameters: {
+    cucumber: {
+      data: 'SyncParticipantsWithHubSpot.feature',
     },
+  },
 } as Meta;
+
 
 const render = (component: any) => {
     return <ThemeProvider theme={theme}>{component}</ThemeProvider>;

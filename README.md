@@ -12,15 +12,18 @@ To setup your development environment:
 The backend can be viewed at `http://localhost:8000`. The port `8000` can be changed with the `PORT` environment variable.
 
 ## Environment Variables
-The API requires environment variables PORT.
+The API requires environment variables PORT and HAPIKEY.
 You can specify them in the terminal:
 
-e.g. `PORT=8000 npm run watch`
+e.g. `PORT=8000 HAPIKEY= ... npm run watch`
 
 or alternatively create a `.env` file with the following:
 
 ```
 PORT=3000
+HAPIKEY=...
+SAPIKEY=...
+STENANTALIAS=...
 SERVER_TOKEN_SECRET=2c175eff51d2c03d2e1afac045ce026013f04a2e472cd08440b07307e99a6932cf81346513c5acec43899ef577e582aab8feceb0fd7a76b2bc49f0fa0df1c194
 
 // Hubspot App Properties
